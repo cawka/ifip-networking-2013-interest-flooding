@@ -17,6 +17,45 @@ Networking; Security; Denial-of-Service; Distributed
 Denial-of-Service.
 
 \section{Introduction \label{intro}}
+Current Internet architecture and its resilience to DoS and DDOS. Requirements from a new architecture such as CCN with respect to DoS and DDoS resilience.
+
+Our contributions.
+
+Paper organization.
+
+\section{ CCN Overview\label{ccn-intro}}
+
+\section { DDoS Attacks in CCN \label{ccn-ddos}}
+Brief overview of possible attacks in CCN, and scope of what we will tackle in this paper (Interest flooding).
+
+\section { Interest Flooding in CCN }
+
+\section {Countermeasures against Interest flooding}
+
+Basic limits, probablity based on statistics, and dynamic window adjustment
+
+(Description of each of the above, and their implications) 
+
+
+\section {Evaluation}
+ Both simulation, as well as emulation for various sized topologies (trees as well as real topologies), various parameters etc.
+List all possible parameters, say clearly which ones we vary, and which ones we do not, along with explanations.
+
+Metrics that we will consider in our evaluation (Satisfaction rate for good clients, Link utilization near producers, Latency for good clients, good versus bad interests as a function of time).
+
+\subsection{Simulation versus Emulation}
+Results establishing validity of  simulator.
+
+\subsection{Results from probability based on statistics}
+
+\subsection{Results from dynamic window adjustment}
+
+\section{Implications/Analysis}
+Lessons we learnt, comparison of different mitigation techniques. 
+Adapting these to mitigate other DDoS attacks.
+
+\section{Conclusions and Future Work}
+
 
 \bibliographystyle{plain}
 \bibliography{references}
