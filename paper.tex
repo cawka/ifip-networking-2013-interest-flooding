@@ -1,7 +1,18 @@
 \documentclass[conference]{IEEEtran}
 \title{Mitigating (D)DoS in Named-Data Networking}%:\\ Cache/Content Poisoning}
 \author{anonymous}
-\date{}
+
+\usepackage{graphicx}
+% \usepackage[colorlinks]{hyperref}
+\usepackage[]{hyperref}
+\usepackage{breakurl}
+\usepackage{url}
+\usepackage[nocompress]{cite}
+% \usepackage{verbatim}
+% \usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 \begin{document}
 \maketitle
 
@@ -56,9 +67,17 @@ Adapting these to mitigate other DDoS attacks.
 
 \section{Conclusions and Future Work}
 
-
 \bibliographystyle{plain}
 \bibliography{references}
+
+\appendix
+
+\input{algos/stats.tex}
+
+\subsection{Dynamic limits assignment algorithm}
+
+
+\subsection{Probabilistic Interest accept algorithm}
 
 
 \end{document}
