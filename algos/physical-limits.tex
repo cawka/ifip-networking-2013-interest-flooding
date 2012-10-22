@@ -1,0 +1,31 @@
+\subsection{Physical limits}
+
+The requirement to send an Interest in order to receive Data packet, provides an NDN consumer a unique opportunity to request the right amount of Data.
+Moreover, the same opportunity to control the amount of data flow is given not only to consumers, but all routers between consumer and producer (or nearby caches).  
+In other words, every node, either a consumer or an intermediate router, is able to control how much data it wants to receive by limiting the number of forwarded Interests.
+
+The limitation can implemented in a number of different ways, including leaky bucket scheduling and window-based flow control.
+We decided to following TCP-like window-based flow control and applied the sliding window approach to implement Interest limits.
+
+The size of the window defines how many Interests can be send out before Interests get satisfied or expired.
+From the one hand, this size should be large enough to ``fill the pipe,'' meaning that a node needs to send enough Interests to receive Data at full capacity of the incoming link.
+On the other hand, the window's size should not be too large to avoid excessive buffering and congestion of the Data packet.
+Thus, the ideal size for such a window need to be defined proportional to link's bandwidth-delay product~\cite{tcp-survey}.
+With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
+
+\[
+\mathrm{Interest\ Limit} = Delay\ [s] \cdot \frac{\mathrm{Bandwidth\ [Bytes/s]}}{\mathrm{Data\ packet\ size\ [Bytes]}}
+\]
+
+Note that the value of \textit{Delay} is not known a priory and varies between different Interest-Data flows.
+However, we do not need to know the exact value of the delay and can set it as an average round trip delay among all flows (with a reasonable filtering of outliers).
+This way, the statistical traffic multiplexing with link-level buffering will allow full utilization of the downstream link.
+Exactly the same reasoning can be applied to the \textit{Data packet size} parameter, which can also be set to an average observed Data packet size.
+
+Unlike rate-based approaches, window-based limiting does not require precise knowledge about the rate, as well does not need precise scheduling mechanisms.
+Like in TCP, the window-based flow is self-clocking, easily adjusting itself to any traffic patterns.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End: 
