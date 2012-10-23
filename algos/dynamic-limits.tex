@@ -3,11 +3,77 @@
 \subsection{Dynamic limits assignment algorithm}
 \label{sec:dynamic limits}
 
-% At the same time, 
-% semi-guarantee 
+A notable problem of the queuing method is that the method tries to differentiate between good and malicious Interests, but does not effectively limit the amount of malicious Interests.
+That is, if an attacker has a large number of malicious Interests to send, it will receive a slightly lower priority in sending these Interests (some will be delayed more, some number will be dropped), but a lot of these Interests will get through.
+To solve this problem, we propose announcing and dynamically readjusting Interest limits for classes (e.g., per prefix and per incoming face), based on Interest satisfaction ratios for those classes. 
+Pseudocode~\ref{alg:dynamic limits} summarizes our proposal, which is a variation of a well-known push-back mechanism.
 
-% that there will not be congestion, while fully utilizing downstream link.
 
+\floatname{algorithm}{Pseudocode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{algorithm}[h]
+\caption{Dynamic limits}
+\label{alg:dynamic limits}
+\begin{algorithmic}[1]
+\Function{InInterest}{Interest $i$, InFace $if$}
+\For{\textbf{each} OutFace $of$ \textbf{in} ForwardingDecision($i,if$)}
+    \State $l \leftarrow of$.GetPerPrefixLimit($i$)
+    \If{$l$ is under dynamics limits \textbf{and} $of$ is under physical limits}
+        \State Forward($i$, $of$)
+    \Else
+        \State Drop or enqueue Interest $i$
+    \EndIf
+\EndFor
+\EndFunction
+
+\vspace{0.2cm}
+
+\Function{AnnounceLimits}{} \Comment{\textit{E.g., every second}}
+\For{\textbf{each} prefix $p$ in FIB}
+    % \State{} \Comment{Get total limit for the prefix $p$}
+    \State $L \leftarrow \displaystyle\sum\limits_{\mathrm{\forall \mathit{of} \in FIB(\mathit{p})}}{}{}of$.GetPerPrefixLimit($p$)
+    \State $R \leftarrow 0$
+    \For{\textbf{each} available face $f$}
+        \State $l_f \leftarrow L \times p$.$f$.GetSatisfactionRatio()
+        \State $R \leftarrow R + p$.$f$.GetSatisfactionRatio()
+    \EndFor
+
+    \If{$\displaystyle\sum\limits_{\forall f}^{}l_f < l$} \Comment{If under-utilization detected}
+        \State $\forall f : l_f \leftarrow \displaystyle\frac{l_f}{R}$ \Comment{Normalize limits}
+    \EndIf
+
+        \State AnnounceLimit($f$, $p$, $l$)
+\EndFor
+\EndFunction
+
+\vspace{0.2cm}
+
+\State{} \Comment{\textit{When announcement from the neighbor is received}}
+\Function{InLimits}{InFace $if$, Prefix $p$, Limit $l$}
+    \State $if$.GetPerPrefixLimit($p$) $\leftarrow l$ 
+\EndFunction
+
+\end{algorithmic}
+\end{algorithm}
+
+When an Interest arrives, in addition to be checked against per-outgoing interface limits, it is subjected to per-prefix per-incoming interface limits (lines 3 and 4 in Pseudocode~\ref{alg:dynamic limits}).
+In other words, for each prefix in FIB a node cannot send more Interests than a specified limit for this prefix (``dynamic limits''), as well as the node cannot send out more Interests out of the face, than the limit specified for this face (``physical limit'').
+While the latter is defined in the same manner as in Section~\ref{sec:physical limits}, ``dynamic limits'' are periodically announced to all neighbors (\textit{AnnounceLimits} function) and adjusted based on received announcements from neighbors (\textit{InLimits} function).%
+\footnote{The initial value (not specified in the pseudocode) for the dynamic limits is the corresponding physical limits.}
+
+During the announcement phase, a node tries to determine ``quality'' of neighbors in terms of Interest satisfaction rations and tries to give more resources (accept more Interests from) neighbors with better satisfaction ratios.
+At the same time, it is undesirable to over-limit neighbors when there are available resources.
+That is, when the sum of all limits calculated by directly applying the satisfaction ratios to the total available limit (lines 15-18 in Pseudocode~\ref{alg:dynamic limits}), limits should be normalized so the sum of all announced limits is at least equal to the total available limit (lines 19-21).
+
+When the satisfaction ratio for a particular prefix and incoming interface becomes close to zero, a node starts announcing (and in real implementation, enforcing) the zero limit.
+The node will keep announcing this zero limit for a time period, depending on statistics degradation curve (see more in Section~\ref{sec:stats}).
+
+The dynamic limits method can work as standalone algorithm, as well as it can be (and we believe that it should be, and all results presented in this paper are based on) coupled with the queuing algorithms.
+This way, the dynamic limits part pushes back malicious traffic, while queueing part provides limited per-incoming interface fairness for good traffic.
 
 
 %%% Local Variables: 

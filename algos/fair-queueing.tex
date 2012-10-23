@@ -4,7 +4,7 @@
 Physical limits (per-outgoing-interface) described in Section~\ref{sec:physical limits} provide ability to fully utilize a downstream link, (almost completely) avoiding congestion in the link.
 However, this limitation approach does not attempt to utilize data plane performance knowledge (i.e., Interest satisfaction ratio statistics) to discriminate good and malicious Interests.
 
-One way of augmenting the physical limits method with data performance knowledge is to perform some sort of class-based Interest queueing and weighted scheduling (e.g., weighted round-robin) of the enqueued interests with the weight equal to the Interest satisfaction ratio for the class (see Algorithm~\ref{alg:queuing}).
+One way of augmenting the physical limits method with data performance knowledge is to perform some sort of class-based Interest queueing and weighted scheduling (e.g., weighted round-robin) of the enqueued interests with the weight equal to the Interest satisfaction ratio for the class (see Pseudocode~\ref{alg:queuing}).
 For example, Interests can be divided into separate classes based on incoming interface, where Interests arriving from different incoming interfaces are treated differently:
 an Interest from an interface with higher satisfaction ratio will have more priority than an Interest from an interface with lower satisfaction ratio.
 
@@ -33,10 +33,10 @@ an Interest from an interface with higher satisfaction ratio will have more prio
 \vspace{0.2cm}
 \State{} \Comment{\textit{Called when an Interest is satisfied or times out}}
 \Function{OnReady}{OutFace $of$}
-\State{} \Comment{\textit{get a non-empty queue using weighted round-robin}}
-\State Queue $q \leftarrow$ $of$.GetNonEmptyQueue 
-\State $i \leftarrow$ $q$.PopInterest
-\State Forward($i$, $of$)
+    \State{} \Comment{\textit{get a non-empty queue using weighted round-robin}}
+    \State Queue $q \leftarrow$ $of$.GetNonEmptyQueue 
+    \State $i \leftarrow$ $q$.PopInterest
+    \State Forward($i$, $of$)
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -48,7 +48,7 @@ Second, there should be a reasonable limit (smaller that Interest lifetime) of h
 Otherwise, there could be a case when Interests is still in a queue upstream, while pending Interest state already gone (timed out) downstream, effectively making such an Interest useless.%
 \footnote{Additional mechanisms of pair-wise agreements between NDN routers and period Interest refresh can solve this particular problem, but it is out of the scope of the present paper.}
 
-While we experimented with more complicated classes (see Sections~\ref{sec:dynamic limits} and \ref{sec:probabilistic model}), limitations of the queuing method nullify benefits of implementing such classes.
+While we experimented with more complicated classes (see Sections~\ref{sec:dynamic limits} and \ref{sec:probabilistic}), limitations of the queuing method nullify benefits of implementing such classes.
 In particular, weighted round-robin scheduling can effectively work only if queues are not empty.
 But, as we evaluation results in Section~\ref{sec:evaluation} show, queues are tend to be empty, when number of bottlenecks (mixing points, nodes that receive more Interests that they can forward on a face) on paths more than one.
 
