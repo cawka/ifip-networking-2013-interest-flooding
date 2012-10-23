@@ -5,7 +5,8 @@
 
 A notable problem of the queuing method is that the method tries to differentiate between good and malicious Interests, but does not effectively limit the amount of malicious Interests.
 That is, if an attacker has a large number of malicious Interests to send, it will receive a slightly lower priority in sending these Interests (some will be delayed more, some number will be dropped), but a lot of these Interests will get through.
-To solve this problem, we propose announcing and dynamically readjusting Interest limits for classes (e.g., per prefix and per incoming face), based on Interest satisfaction ratios for those classes. 
+
+One way to solve this problem is announce and dynamically readjust Interest limits for classes (e.g., per prefix and per incoming face), based on Interest satisfaction ratios for those classes. 
 Pseudocode~\ref{alg:dynamic limits} summarizes our proposal, which is a variation of a well-known push-back mechanism.
 
 
