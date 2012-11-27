@@ -13,6 +13,14 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
+\newcommand{\note}[1]{\vspace{2 mm}\par \noindent \textsc{Note}
+\framebox{\begin{minipage}[c]{0.40 \textwidth}
+\tt #1 \end{minipage}}\vspace{5 mm}\par}
+
+\newcommand{\todo}[1]{\vspace{2 mm}\par \noindent \textsc{ToDo}
+\framebox{\begin{minipage}[c]{0.42 \textwidth}
+\tt #1 \end{minipage}}\vspace{5 mm}\par}
+
 \begin{document}
 \maketitle
 
@@ -47,19 +55,22 @@ Basic limits, probablity based on statistics, and dynamic window adjustment
 
 (Description of each of the above, and their implications) 
 
-
 \section {Evaluation}
- Both simulation, as well as emulation for various sized topologies (trees as well as real topologies), various parameters etc.
+\todo{Both simulation, as well as emulation for various sized topologies (trees as well as real topologies), various parameters etc.
 List all possible parameters, say clearly which ones we vary, and which ones we do not, along with explanations.
 
-Metrics that we will consider in our evaluation (Satisfaction rate for good clients, Link utilization near producers, Latency for good clients, good versus bad interests as a function of time).
+Metrics that we will consider in our evaluation (Satisfaction rate for good clients, Link utilization near producers, Latency for good clients, good versus bad interests as a function of time).}
 
-\subsection{Simulation versus Emulation}
-Results establishing validity of  simulator.
+We want to explore the effectiveness of designed mitigation techniques in a two distinctive ways. First, we need to understand how each method works on a very ground level of a just few nodes and links. Second, we want to pick promising techniques and see if they work in a large scale networks of hundreds and thousands of nodes. To ensure the correct transition from small scale experiments to large scale experiments we had to use the same evaluation tool in order to eliminate any possibility of implementation discrepancy. As of today the only network simulator supporting full NDN logic is the NS-3 based ndnSIM software. 
+
+\input{simulation-emulation.tex}
+
 
 \subsection{Results from probability based on statistics}
 
 \subsection{Results from dynamic window adjustment}
+
+\input{large-scale.tex}
 
 \section{Implications/Analysis}
 Lessons we learnt, comparison of different mitigation techniques. 
