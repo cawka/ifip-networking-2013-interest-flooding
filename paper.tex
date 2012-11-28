@@ -1,5 +1,5 @@
 \documentclass[conference]{IEEEtran}
-\title{Mitigating (D)DoS in Named-Data Networking}%:\\ Cache/Content Poisoning}
+\title{Mitigating DDoS attacks in Named Data Networking}%:\\ Cache/Content Poisoning}
 \author{anonymous}
 
 \usepackage{graphicx}
@@ -26,7 +26,11 @@
 
 \begin{abstract}
 %
-abstract
+Distributed Denial of Service attack is a major problem on the existing Internet.
+Named Data Networking (NDN) is a future Internet architecture that makes most existing DDoS attack infeasible.
+At the same, NDN may be vulnerable to NDN-specific attacks, such as Interest flooding attack. 
+This paper presents a simulation-based study on effects of Interset flooding DDoS attack, as well as study of a number of DDoS-attack prevention algorithms that can be implemented on NDN routers.
+The presented results give evidences that flooding-based attacks have much less effective in NDN than in the current Internet, as well as that inherent flow-balance property of NDN (i.e., one Interests brings at most one Data) can be used as a basis for effective DDoS mitigation algorithms. 
 %
 \end{abstract}
 

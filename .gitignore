@@ -3,3 +3,15 @@ selected-results.aux
 selected-results.log
 selected-results.out
 selected-results.toc
+
+_region_.*
+algos/*.log
+paper.aux
+paper.bbl
+paper.blg
+paper.log
+paper.out
+paper.pdf
+paper.rel
+paper.synctex.gz
+prv_paper.log
