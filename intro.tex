@@ -3,16 +3,18 @@ Denial of service (DoS) and distributed denial of service attacks (DDoS) appeare
 
 In 2011 for the first time IPv6 DDoS attacks on commercial networks were observed. They occur rarely, but it only means that IPv6 is not widespread enough for attackers to put significant resources into such DDoS attacks. Principally, in terms of DDoS security IPv6 didn't advance that much comparing to standard IPv4 networks.
 
-We believe that future Internet architectures can do and must do more for DDoS prevention.
+IP architecture has a wide surface for denial of service attacks which takes the beginning from the thin-waist IP protocol, goes through transport level and up to DNS level. In IP it is very easy to forge source address and specify the exact destination that needs to be placed under attack that creates possibilities to perform various types of reflection DoS attacks. On transport level in TCP/IP SYN flood, RST flood and FIN-way attacks are very effective and popular. DNS system can be attacked in multiple ways, e.g. DNS amplification attack. 
+
+We believe that future Internet architectures can do and must do more for DDoS prevention. By its design NDN architecture is not sensitive to any kind of reflection attacks due to the lack of host addresses and ubiquitous data caching. NDN architecture can operate without any DNS-like architecture since it routes and forwards packets based on human-readable names instead of IP addresses that need to be resolved with DNS. 
   
-\todo{
-Current Internet architecture and its resilience to DoS and DDOS. Requirements from a new architecture such as CCN with respect to DoS and DDoS resilience.
+%\todo{
+%Current Internet architecture and its resilience to DoS and DDOS. Requirements from a new architecture such as CCN with respect to DoS and DDoS resilience.
 
-Our contributions.
+%Our contributions.
 
-Paper organization.}
+%Paper organization.}
 
-In this paper we analyze all aspects of Interest flooding attack in NDN architecture, propose multiple defensive techniques against such kind of attacks, establish evaluation methodology using ndnSIM simulation software, execute small scale and Internet scale attack scenarios, and analyze our experimental results.
+In this paper we provide a brief overview of possible DDoS attacks in NDN architecture, analyze all aspects of Interest flooding attack in NDN architecture, propose multiple defensive techniques against such attacks, establish evaluation methodology using ndnSIM simulation software, execute small scale and Internet scale attack scenarios, and analyze our experimental results.
 
 Following this introduction, Section 2 gives a brief overview of NDN architecture, and Section 3 lists and overviews possible attack in NDN. Section 4 thoroughly discusses Interest flooding attack, and Section 5 proposes multiple defensive techniques against it. Section 6 describes evaluation methodology and gives experimental results. Section 7 provides analysis based on our results. Section 8 concludes and describes future work.
 
