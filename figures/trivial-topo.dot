@@ -1,0 +1,9 @@
+digraph G {
+0[label="Legitimate user",style=filled,fillcolor="green"];
+1[label="Attacker",style=filled,fontcolor="white",fillcolor="red"];
+2[label="Gateway",style=filled,fillcolor="gray"];
+4[label="Producer",style=filled,fontcolor="white",fillcolor="blue"];
+0->2 ;
+1->2 ;
+2->4 ;
+}
