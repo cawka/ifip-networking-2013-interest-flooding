@@ -1,4 +1,6 @@
-\section { DDoS Attacks in NDN \label{ddos-ndn}}
+\section{Interest Flooding in NDN}
+\label{sec:interest flooding}
+
 Any DoS attack aims to exhaust system resources. In the context of NDN by term "system" we understand two things: 1) every individual NDN router 2) a distributed system consisting of some collection of NDN routers. In a first case, every major data structure (FIB, CS, PIT) is a potential surface for denial of service attack. In a second case, we consider: 1) bandwidth between NDN routers 2) caching capabilities of NDN routers 3) packet processing capabilities of NDN routers.
 
 Let's examine an individual NDN router first. Certainly, as any other piece of software each specific NDN implementation can have bugs and exploits e.g. buffer overflows leading to data corruption in cache, etc. In this paper we are assuming an idealized NDN implementation lacking any implementation bugs. 

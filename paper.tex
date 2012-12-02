@@ -1,6 +1,6 @@
 \documentclass[10pt, conference, compsocconf]{IEEEtran}
 
-\title{Mitigating DDoS attacks in Named Data Networking}%:\\ Cache/Content Poisoning}
+\title{Mitigating Interest Flooding DDoS Attacks in Named Data Networking}%:\\ Cache/Content Poisoning}
 \author{anonymous}
 
 \usepackage{graphicx}
@@ -15,14 +15,6 @@
 \usepackage{algpseudocode}
 
 \graphicspath{{figures/}}
-
-\newcommand{\note}[1]{\vspace{2 mm}\par \noindent \textsc{Note}
-\framebox{\begin{minipage}[c]{0.40 \textwidth}
-\tt #1 \end{minipage}}\vspace{5 mm}\par}
-
-\newcommand{\todo}[1]{\vspace{2 mm}\par \noindent \textsc{ToDo}
-\framebox{\begin{minipage}[c]{0.42 \textwidth}
-\tt #1 \end{minipage}}\vspace{5 mm}\par}
 
 \begin{document}
 \maketitle
@@ -41,60 +33,24 @@ We use simulations to evaluate the design and our results show that our proposed
 Information-Centric Networks, Named-data Networking, Denial-of-Service
 \end{IEEEkeywords}
 
-\input{intro}
-\input{ndn-overview}
-\input{ddos-ndn}
+\input{01-intro}
 
-\section {Interest Flooding in NDN}
+\input{02-ndn-background}
 
-\section {Countermeasures against Interest flooding}
+\input{03-interest-flooding}
 
-Basic limits, probablity based on statistics, and dynamic window adjustment
+\input{04-design}
 
-(Description of each of the above, and their implications) 
+\input{05-evaluation}
 
-\input{design}
+\input{06-related}
 
-\section{Evaluation}
-\todo{Both simulation, as well as emulation for various sized topologies (trees as well as real topologies), various parameters etc.
-List all possible parameters, say clearly which ones we vary, and which ones we do not, along with explanations.
+\input{07-discussion}
 
-Metrics that we will consider in our evaluation (Satisfaction rate for good clients, Link utilization near producers, Latency for good clients, good versus bad interests as a function of time).}
+\input{08-conclusion}
 
-We want to explore the effectiveness of designed mitigation techniques in a two distinctive ways. First, we need to understand how each method works on a very ground level of a just few nodes and links. Second, we want to pick promising techniques and see if they work in a large scale networks of hundreds and thousands of nodes. To ensure the correct transition from small scale experiments to large scale experiments we had to use the same evaluation tool in order to eliminate any possibility of implementation discrepancy. As of today the only network simulator supporting full NDN logic is the NS-3 based ndnSIM software. 
-
-\input{small-scale}
-\input{large-scale}
-
-% \input{simulation-emulation.tex}
-
-
-\subsection{Results from probability based on statistics}
-
-\subsection{Results from dynamic window adjustment}
-
-\section{Implications/Analysis}
-Lessons we learnt, comparison of different mitigation techniques. 
-Adapting these to mitigate other DDoS attacks.
-
-\section{Conclusions and Future Work}
 
 \bibliographystyle{plain}
 \bibliography{references}
-
-\appendix
-
-\input{algos/physical-limits.tex}
-
-\input{algos/fair-queueing.tex}
-
-\input{algos/dynamic-limits.tex}
-
-\input{algos/probabilistic.tex}
-
-\input{algos/stats.tex}
-
-
-
 
 \end{document}

@@ -1,5 +1,14 @@
-\section{Design}
+\section{Design of Interest flooding mitigation methods}
 \label{sec:design}
+
+% \section {Countermeasures against Interest flooding}
+
+% Basic limits, probablity based on statistics, and dynamic window adjustment
+
+% (Description of each of the above, and their implications) 
+
+% \input{design}
+
 
 \subsection{Interest satisfaction statistics}
 
@@ -17,6 +26,16 @@
   \caption{Dynamics of the unsatisfied Interests statistics on gateway's interface towards the attacker}
   \label{fig:ratio example}
 \end{figure}
+
+\input{algos/physical-limits.tex}
+
+\input{algos/fair-queueing.tex}
+
+\input{algos/dynamic-limits.tex}
+
+\input{algos/probabilistic.tex}
+
+\input{algos/stats.tex}
 
 
 %%% Local Variables: 
