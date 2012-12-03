@@ -14,9 +14,9 @@ On the other hand, the window's size should not be too large to avoid excessive 
 Thus, the ideal size for such a window need to be defined proportional to link's bandwidth-delay product~\cite{tcp-survey}.
 With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
 
-\[
+\begin{equation}
 \mathrm{Interest\ Limit} = Delay\ [s] \cdot \frac{\mathrm{Bandwidth\ [Bytes/s]}}{\mathrm{Data\ packet\ size\ [Bytes]}}
-\]
+\end{equation}
 
 Note that the value of \textit{Delay} is not known a priory and varies between different Interest-Data flows.
 However, we do not need to know the exact value of the delay and can set it as an average round trip delay among all flows (with a reasonable filtering of outliers).
@@ -25,6 +25,33 @@ Exactly the same reasoning can be applied to the \textit{Data packet size} param
 
 Unlike rate-based approaches, window-based limiting does not require precise knowledge about the rate, as well does not need precise scheduling mechanisms.
 Like in TCP, the window-based flow is self-clocking, easily adjusting itself to any traffic patterns.
+
+\begin{algorithm}[h]
+\caption{Simple physical limits}
+\label{alg:simple limits}
+\begin{algorithmic}[1]
+\For{\textbf{each} interface \em{f}}
+    \State $L_{f} \leftarrow$ Interest Limit according to (1)
+    \State $O_{f} \leftarrow 0$ \Comment{Outstanding Interests on interface \textbf{f}}
+\EndFor
+
+\vspace{0.2cm}
+\Function{InInterest}{Interest $i$, InInterface $if$}
+\For{\textbf{each} OutInterface $of$ \textbf{in} FwDecision($i,if$)}
+    \If{$O_{of} < L_{of}$} \Comment{\textbf{of} is under physical limits}
+        \State $O_{of} \leftarrow O_{of} + 1$
+        \State Forward($i$, $of$)
+    \Else
+        \State drop Interest
+    \EndIf
+\EndFor
+\EndFunction
+
+\vspace{0.2cm}
+
+\end{algorithmic}
+\end{algorithm}
+
 
 %%% Local Variables: 
 %%% mode: latex

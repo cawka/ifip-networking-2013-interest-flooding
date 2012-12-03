@@ -1,42 +1,44 @@
-\section{Design of Interest flooding mitigation methods}
+\section{Interest flooding mitigation methods}
 \label{sec:design}
 
-% \section {Countermeasures against Interest flooding}
+% Points what should be here:
+% - What can be done (in general) to mitigate flooding attack
+% - Which building blocks NDN architecture gives to mitigate Interest flooding attacks: Interest limits, ability to measure Interest satisfaction performance (Interest satisfaction stats)
+% - Methods to set these limits: static/dynamic
+% - Methods how limits can be applied: best-effort (fifo), "fair" queuing, probabilistic
+% - Reference to caching: we don't consider it here, but caching provides additional level of protection, especially for certain types of attacks
+
+% Our definition of attack mitigation is that good clients are still able to access data on the producer.
+
+In this section we present several methods to mitigate Interest flooding attacks in NDN, featuring different degrees of implementation complexity, as well as different degrees of effectiveness.
+
+The presented methods rely on the core NDN principle of the flow balance between Interest and Data packets: Data packet can be forwarded only in response to the incoming Interest and each Interest is satisfied by at most one Data packet.
+As a result of this principle, all traffic on NDN is ``receiver''-driven, where the ``receiver'' is either a user or any router on the path between the user and a Data producer.
+Therefore, any node can limit the number of forwarded Interests, effectively limiting the amount of the retrieved Data.
+At the same time, each forwarded Interest can be used to build up various data plane performance statistics, such as per-incoming interface ratios of satisfied Interests.
+
+% Combining per-incoming interface data plane performance statistics with 
+
+% Disclaimer
+% The presented solutions to mitigate Interest flooding DDoS attacks 
+
+% In particular, we explore different mechanisms to app
 
 % Basic limits, probablity based on statistics, and dynamic window adjustment
 
-% (Description of each of the above, and their implications) 
-
-% \input{design}
 
 
-\subsection{Interest satisfaction statistics}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=4.5cm]{trivial-topo}
-  \caption{Trivial topology (all links are 3Mbps/10ms)}
-  \label{fig:trivial topology}
-\end{figure}
-
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[scale=1]{limits}
-  \caption{Dynamics of the unsatisfied Interests statistics on gateway's interface towards the attacker}
-  \label{fig:ratio example}
-\end{figure}
 
 \input{algos/physical-limits.tex}
 
-\input{algos/fair-queueing.tex}
+\input{algos/stats.tex}
 
-\input{algos/dynamic-limits.tex}
+\input{algos/fair-queueing.tex}
 
 \input{algos/probabilistic.tex}
 
-\input{algos/stats.tex}
-
+\input{algos/dynamic-limits.tex}
 
 %%% Local Variables: 
 %%% mode: latex

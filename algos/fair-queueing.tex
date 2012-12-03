@@ -1,7 +1,7 @@
 \subsection{Physical limits with ``fair'' queuing}
 \label{sec:queuing}
 
-Physical limits (per-outgoing-interface) described in Section~\ref{sec:physical limits} provide ability to fully utilize a downstream link, (almost completely) avoiding congestion in the link.
+Physical limits (per-outgoing-interface) described in Section~\ref{sec:physical limits} provide ability to fully utilize a downstream link, largely avoiding congestion in the link.
 However, this limitation approach does not attempt to utilize data plane performance knowledge (i.e., Interest satisfaction ratio statistics) to discriminate good and malicious Interests.
 
 One way of augmenting the physical limits method with data performance knowledge is to perform some sort of class-based Interest queueing and weighted scheduling (e.g., weighted round-robin) of the enqueued interests with the weight equal to the Interest satisfaction ratio for the class (see Pseudocode~\ref{alg:queuing}).
@@ -18,22 +18,21 @@ an Interest from an interface with higher satisfaction ratio will have more prio
 \caption{Physical limits with ``fair'' queueing}
 \label{alg:queuing}
 \begin{algorithmic}[1]
-\Function{InInterest}{Interest $i$, InFace $if$}
-\For{\textbf{each} OutFace $of$ \textbf{in} ForwardingDecision($i,if$)}
+\Function{InInterest}{Interest $i$, InInterface $if$}
+\For{\textbf{each} OutInterface $of$ \textbf{in} FwDecision($i,if$)}
     \If{$of$ is under physical limits}
         \State Forward($i$, $of$)
     \Else
         \State Queue $q \leftarrow of$.GetQueueByClass($if$)
         \State $q$.PushInterest($i$)
-        \State $q$.UpdateWeight($if$.GetSatisfactionRatio())
     \EndIf
 \EndFor
 \EndFunction
 
 \vspace{0.2cm}
 \State{} \Comment{\textit{Called when an Interest is satisfied or times out}}
-\Function{OnReady}{OutFace $of$}
-    \State{} \Comment{\textit{get a non-empty queue using weighted round-robin}}
+\Function{OnReady}{OutInterface $of$}
+    \State{} \Comment{\textit{get a non-empty queue using round-robin}}
     \State Queue $q \leftarrow$ $of$.GetNonEmptyQueue 
     \State $i \leftarrow$ $q$.PopInterest
     \State Forward($i$, $of$)

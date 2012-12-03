@@ -1,6 +1,12 @@
 \section{Interest Flooding in NDN}
 \label{sec:interest flooding}
 
+% Points here:
+% - Definition of the Interest flooding attack
+% - What makes Interest attack effective
+% - Assumptions about the network, attackers, attack traffic, and legitimate consumers
+% - References about other attacks and explicitly stating that this work aims to build a baseline for general Interest Flooding mitigation problem, with other attack profiles and malicious gateways.
+
 Any DoS attack aims to exhaust system resources. In the context of NDN by term "system" we understand two things: 1) every individual NDN router 2) a distributed system consisting of some collection of NDN routers. In a first case, every major data structure (FIB, CS, PIT) is a potential surface for denial of service attack. In a second case, we consider: 1) bandwidth between NDN routers 2) caching capabilities of NDN routers 3) packet processing capabilities of NDN routers.
 
 Let's examine an individual NDN router first. Certainly, as any other piece of software each specific NDN implementation can have bugs and exploits e.g. buffer overflows leading to data corruption in cache, etc. In this paper we are assuming an idealized NDN implementation lacking any implementation bugs. 
@@ -11,11 +17,16 @@ Pending Interest Table (PIT) is used to keep per packet forwarding state in NDN 
 
 Content Store (CS) is an effective obstacle for several types of DDoS attacks. CS possesses two important characteristics: maximum size and replacement policy. However, by knowing replacement policy attacker can construct a specific traffic generator that is using weaknesses of a chosen replacement procedure that will lead to increased processing time, slower packet delivery and in some cases de facto a complete inability to cache legitimate data. 
 
-An infrastructure consisting of NDN routers is vulnerable to the following types of attacks: 
-\begin{enumerate}
-\item Interest flooding. 
-\item fkjgkfjgkfg
-\end{enumerate} 
+The primary goal behind any flooding denial of service attack is to overwhelm network, CPU, or memory resources on routers or the target host.
+
+
+% An infrastructure consisting of NDN routers is vulnerable to the following types of attacks: 
+% \begin{enumerate}
+% \item Interest flooding. 
+% \item fkjgkfjgkfg
+% \end{enumerate} 
+
+
 %\begin{figure}[htpb]
 %  \centering
 %  \includegraphics[scale=0.5]{figures/sim-emu-power.pdf}

@@ -20,18 +20,6 @@ Pseudocode~\ref{alg:dynamic limits} summarizes our proposal, which is a variatio
 \caption{Dynamic limits}
 \label{alg:dynamic limits}
 \begin{algorithmic}[1]
-\Function{InInterest}{Interest $i$, InFace $if$}
-\For{\textbf{each} OutFace $of$ \textbf{in} ForwardingDecision($i,if$)}
-    \State $l \leftarrow of$.GetPerPrefixLimit($i$)
-    \If{$l$ is under dynamics limits \textbf{and} $of$ is under physical limits}
-        \State Forward($i$, $of$)
-    \Else
-        \State Drop or enqueue Interest $i$
-    \EndIf
-\EndFor
-\EndFunction
-
-\vspace{0.2cm}
 
 \Function{AnnounceLimits}{} \Comment{\textit{E.g., every second}}
 \For{\textbf{each} prefix $p$ in FIB}

@@ -21,19 +21,18 @@ For simplicity, for the example we are using Interest differentiation only per i
 \label{alg:probabilistic model}
 \begin{algorithmic}[1]
 
-\Function{InInterest}{Interest $i$, InFace $if$}
+\Function{InInterest}{Interest $i$, InInterface $if$}
 
     \State{} \Comment{Use uniform probability distribution model $P(X)$}
     \State{} \Comment{$P(X) : \forall x \in [0,1] \Rightarrow P(x) = x$}
     
-    \For{\textbf{each} OutFace $of$ \textbf{in} ForwardingDecision($i,if$)}
-        \State $s \leftarrow if$.GetSatisfactionRatio()
-        \If{$s \in [0,1]$} \Comment{A valid stats exists}
-            \State Stop processing with probability $P(s)$
+    \For{\textbf{each} OutInterface $of$ \textbf{in} FwDecision($i,if$)}
+        \If{$F_{if} > 1$} \Comment{At least one Interest was forwarded}
+            \State $s \leftarrow 1 - \min(0, U_{if} / F_{if})$
+            \State Drop interest with probability $P(s)$
         \EndIf
-        \If{$of$ is under physical limits}
-            \State Forward($i$, $of$)
-        \EndIf
+
+        \State{forward the Interest, subjecting to physical limits}
     \EndFor
 \EndFunction
 
