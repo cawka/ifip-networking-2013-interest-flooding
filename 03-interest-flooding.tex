@@ -16,7 +16,7 @@ Interest flooding attack belongs to a class of network-level flooding attacks, w
 %
 % Definition of service
 %
-Service for legitimate users is disrupted when the network fails to satisfy Interests either because the Interests did not get through to (one of) the data producer(s) or nearby caches or the Data were lost on the way back (e.g., because of congested links).
+Service for legitimate users is disrupted when the network fails to satisfy Interests either because the Interests did not get through to the data producer or nearby cache, or the Data were lost on the way back to the requester (e.g., because of congested links).
 
 \begin{figure}[htbp]
   \centering
@@ -27,7 +27,7 @@ Service for legitimate users is disrupted when the network fails to satisfy Inte
 
 \paragraph{Mechanism}
 
-The Interest flooding attack has two-fold effect on service quality in NDN network: \textbf{creates network congestion} and \textbf{exhaust resources on routers}.
+The Interest flooding attack has two-fold effect on service quality in NDN network: it \textbf{creates network congestion} and \textbf{exhaust resources on routers}.
 
 Like any other packets in the network, malicious Interests consume a portion network capacity.
 Thus, a large amount of malicious Interests can lead to network congestion and drop of the legitimate Interests and Data packets.
@@ -39,7 +39,7 @@ As NDN routers maintain per-packet states for each forwarded Interest (entry in 
 When a router has no memory to create a PIT entry for an incoming Interest, it drops this Interest.
 % there is no point in forwarding the Interest further.
 % Otherwise, if Data comes back, it would be considered unsolicited and dropped anyways.
-Therefore, the routers' memory exhaustion effect may disrupt service for legitimate users even without causing network congestion.
+Therefore, the routers' memory exhaustion effect may disrupt service for legitimate users even without causing network congestion, if the router has limited memory resources.
 
 \paragraph{Target}
 
@@ -52,76 +52,37 @@ It should be noted that if connectivity in NDN network is rich (users are multi-
 
 \paragraph{Effectiveness}
 % Эффективность атаки
-% - как можно повысить эффективность
 
-% Effectiveness of the attack depends on how well volume of the Interests creates congestion near the Data producer, as well as how well r
+To efficiently implement the Interest flooding attack, an adversary needs to make sure that (1) the expressed Interests are getting as close to the Data producer as possible, as well as (2) the corresponding PIT entry (state) is kept on NDN routers for as long as possible.
+In order to achieve effectively the first requirement, the malicious Interests should avoid collapsing and cache hits.
+To keep PIT entry for a prolonged period of time, the malicious Interests should not bring any data.%
+\footnote{While NDN allows users to specify lifetime of the Interest inside the Interest packet~\cite{ndn-conext,ndn-tr}, it is router's decision for how long it is willing to keep the PIT entry.  For example, and we assume this in the rest of the paper, the maximum time for which any Interest is admitted is one second.} 
 
-Effectiveness of the Interest flooding attack directly depends on attack mechanism.
-
-If the attack is primarily implemented using network congestion mechanism, then 
-
-One of the key parameters for the effective Interest flooding attack is the way attackers generate names for the malicious Interests.
-The stateful Interest forwarding and in-network data storage in NDN may nullify effect even of the large-scale flooding attack, if names for the malicious Interests are generated in a wrong way.
-In particular, if distributed attackers generate similar names for the Interests, these Interests will be collapsed on NDN routers, resulting in a minuscule volume of the malicious Interests actually reaching the Data producer.
-Also, if attackers express Interests for the data that can be returned from caches (popular Data or Data recently pulled by another attacker), the Data producer may not even receive any malicious Interest.
-
-% Another parameter is how long Interests are sta
-
-To implement an effective Interest flooding attack, one needs to ensure that a large volume of Interests is reaching targe 
-
-Increase time Interests are staying on NDN routers.
-
-
-
-NDN collapses similar Interests: attackers need to express different Interests in order to avoid collapsing
-NDN caches data: attackers need to express junk Interests in order for interest to reach the data producer.
-
-
-
-If malicious Interests can be collapsed or hit caches on the way towards to the Data producer, attack can have no effect at all.
-
-
-the effect of the attack can be almost nullified. 
-
-Lastl
-
-
-Second factor is how well attack traffic is penetra
-
-% How interest flooding attack can be the most effective
-%
-
-%Content Store (CS) is an effective obstacle for several types of DDoS attacks. CS possesses two important characteristics: maximum size and replacement policy. However, by knowing replacement policy attacker can construct a specific traffic generator that is using weaknesses of a chosen replacement procedure that will lead to increased processing time, slower packet delivery and in some cases de facto a complete inability to cache legitimate data. 
-
+In other words, to maximize effect of the attack, each malicious Interest generated by individual attack bots should have a unique name and should not correspond to any existing data (\emph{unique junk Interests}).
 
 \paragraph{Assumptions}
 % - assumptions about attacker position
 % - assumptions about the producer / producer namespace
 % - assumptions about the attack traffic / attack pattern
 
-Not considering colluding attackers
+In this paper we are making the following assumptions about the Interest flooding attack:
+\begin{itemize}
+\item only client nodes can be compromised and become attack bots;
+\item there are no colluding attackers inside the Data producer's network; and
+\item the attack is carried only using unique junk Interests.
+\end{itemize}
 
-% In this paper we are making an assumption that the attacker is trying to prevent legitimate users to access data from the producer by sending excessive amounts of Interests for data in the producers namespace, but which cannot be satisfied by the producer. 
-% Assuming the network has only static content.  
-% If the network having only static content, then there is no point for the attacker to issue satisfiable interests, as they I'll brig data, which will be cached nearby and future interests for the same name would not even reach vicinity of the producer. 
-% That is, the effect of the attack will be minimized.
-% Another point, that is probably is better. 
-% If attacker issues interess that can be satisfied, then such interests will not stay in PITs long, not creating any challenges for the NDN routers' resources. 
+We also assume that NDN forwarding strategy uses only single-path Interest forwarding, always choosing the best-metric route advertised by the routing protocol.
+This way, we are able to analyze the attack in its best environment, as enabling the multi-path forwarding would only alleviate effects of the Interest flooding attack.
 
-% In this paper we are considering network level attacks performed by sending Interests with for non-existing data using prefix names with some random components. We make the assumption that the set of malicious clients (botnet) has a greedy behavior and tries to send as many false Interest packets as possible at any time given its connectivity options. Though NDN is capable of multipath Interest forwarding and forwarding strategy switching, we are using Best Route (single path) forwarding strategy in all of our experiments. 
 
+% Though NDN is capable of multipath Interest forwarding and forwarding strategy switching, we are using Best Route (single path) forwarding strategy in all of our experiments. 
 
 \paragraph{Disclaimer}
+
 In this paper we are not trying to completely solve all denial of service problems that can be caused by various variations of the Interest flooding attack.
-Our primary focus is to demonstrate that while NDN opens door to new types of denial of service attacks, stateful packet forwarding in NDN makes it possible to mitigate such attacks, adding little additional complexity to the network.
-
-
-
-
-
-
-
-
+Our primary focus is to demonstrate that while NDN opens doors to new types of denial of service attacks, stateful packet forwarding of NDN makes it possible to mitigate such attacks, adding little additional complexity to the network.
+In section~\ref{sec:discussion} we discuss our choice of the assumptions in more detail, as well as discuss potential of the Interest flooding attack under several other attack assumptions.
 
 
 %%% Local Variables: 
