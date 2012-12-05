@@ -1,12 +1,30 @@
 % \subsection{Physical limits with ``fair'' queuing}
 % \label{sec:queuing}
 
-Physical limits (per-outgoing-interface) described in Section~\ref{sec:physical limits} provide ability to fully utilize a downstream link, largely avoiding congestion in the link.
-However, this limitation approach does not attempt to utilize data plane performance knowledge (i.e., Interest satisfaction ratio statistics) to discriminate good and malicious Interests.
+% However, this limitation approach does not attempt to utilize data plane performance knowledge (i.e., Interest satisfaction ratio statistics) to discriminate good and malicious Interests.
 
-One way of augmenting the physical limits method with data performance knowledge is to perform some sort of class-based Interest queueing and weighted scheduling (e.g., weighted round-robin) of the enqueued interests with the weight equal to the Interest satisfaction ratio for the class (see Pseudocode~\ref{alg:queuing}).
-For example, Interests can be divided into separate classes based on incoming interface, where Interests arriving from different incoming interfaces are treated differently:
-an Interest from an interface with higher satisfaction ratio will have more priority than an Interest from an interface with lower satisfaction ratio.
+To partially overcome deficiencies of the Physical limits algorithm we need to ensure that the forwarded Interests represent at least a ``fair'' mix of the Interests received from different neighbors (interfaces).
+That is, if the routers A on Fig.~\ref{fig:flooding example} has a very tight token budget, these tokens should be fairly distributed between incoming interfaces \texttt{eth0} and \texttt{eth1}.
+Because of the very small volume of Interests, we cannot simply rely on network buffers to do statistical multiplexing of Interests, as they would almost never be buffered.
+At the same time, until bag of tokens is not empty, there is no reason to delay Interest forwarding, as we do not known how many and from which interfaces Interests will arrive in the future.
+Therefore, in order to achieve the goal of ``fair'' mixing of Interests, we need to implement additional mechanisms to buffer and mix incoming Interests, only if they cannot be immediately forwarded.
+
+For the buffering part, we can reuse Pending Interest Table, with a small extension to support flagging of the Interests that cannot be forwarded immediately (see example on Fig.~\ref{fig:queueing}). 
+As for the mixing part, we need an additional fair queuing mechanism, which can be implemented in a form of hierarchical queues (on Fig.~\ref{fig:queueing})\footnote{This essentially is a class based queuing, with classes for each outgoing/incoming interface.} or using virtual time approach~\cite{zhang1990virtual}. 
+It should be noted that unlike normal queuing, Interest queues do not actually store a packet, but merely a bi-directional pointer to the existing PIT entry.
+This way, PIT entry can be quickly updated when the Interest is actually forwarded, as well as the element can be removed from the queue when the Interest expires.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[scale=0.65]{queue}
+  \caption{Interest queuing: if tokens are unavailable, the router creates PIT entry, but instead of forwarding, enqueued the Interest}
+  \label{fig:queueing}
+\end{figure}
+
+A more formalized description of the Physical limits algorithms with per-interface fairness is presented in Pseudocode~\ref{alg:queuing}.
+The algorithm extends the base Physical limits algorithm by enabling queuing when the bag of tokens is empty (lines 7--10), as well as by triggering an action (lines 16--21), when a token becomes available and enqueued Interest can be finally forwarded.
+At the same time, the algorithm limits number of Interests allowed in a queue, constraining memory usage increase by at most a constant factor, compared to the base Physical limits algorithm (i.e., memory attack on routers are still unfeasible).
+
 
 \floatname{algorithm}{Pseudocode}
 
@@ -15,42 +33,46 @@ an Interest from an interface with higher satisfaction ratio will have more prio
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{algorithm}[h]
-\caption{Physical limits with ``fair'' queueing}
+\caption{Physical limits with per-interface fairness}
 \label{alg:queuing}
 \begin{algorithmic}[1]
-\Function{InInterest}{Interest $i$, InInterface $if$}
-\For{\textbf{each} OutInterface $of$ \textbf{in} FwDecision($i,if$)}
-    \If{$of$ is under physical limits}
-        \State Forward($i$, $of$)
+\State{} \Comment{Same initialization, InData and Timeout functions as in Physical Limits algorithm}
+
+\vspace{0.2cm}
+
+\Function{OutInterest}{Interest \textbf{i}, InInterface \textbf{if}, OutInterface \textbf{of}}
+    \If{$L_{of} - O_{of} > 0$} \Comment{\textbf{of} is under physical limits}
+        \State $O_{of} \leftarrow O_{of} + 1$  \Comment{``Borrow'' token}
+        \State add \textbf{of} to PIT entry and forward \textbf{i} to \textbf{of}
     \Else
-        \State Queue $q \leftarrow of$.GetQueueByClass($if$)
-        \State $q$.PushInterest($i$)
+        \State Queue $q \leftarrow of$.GetSubQueue($if$)
+        \If{$Size(q) < L_{of}$}
+           \State $q$.PushInterest($i$)
+           \State add \textbf{of} to PIT entry, and link PIT entry with the queue
+        \Else
+           \State drop Interest
+        \EndIf
     \EndIf
-\EndFor
 \EndFunction
 
 \vspace{0.2cm}
-\State{} \Comment{\textit{Called when an Interest is satisfied or times out}}
-\Function{OnReady}{OutInterface $of$}
-    \State{} \Comment{\textit{get a non-empty queue using round-robin}}
-    \State Queue $q \leftarrow$ $of$.GetNonEmptyQueue 
+\State{} \Comment{\textit{Whenever $L_{of} - O_{of}$ becomes larger than zero}}
+\Function{TokenBecomesAvailable}{}
+    \State Queue $q \leftarrow$ $of$.GetRoundRobinSubQueue 
     \State $i \leftarrow$ $q$.PopInterest
-    \State Forward($i$, $of$)
+    \State update PIT entry and Forward($i$, $of$)
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
-A couple of notable comments.
-First, queueing is not (and should not be) active until there is something to enqueue.
-In our case, until physical limits are reached, all Interests are not subjected to any additional queueing.
-Second, there should be a reasonable limit (smaller that Interest lifetime) of how long Interests are stayed in the queues.
-Otherwise, there could be a case when Interests is still in a queue upstream, while pending Interest state already gone (timed out) downstream, effectively making such an Interest useless.%
-\footnote{Additional mechanisms of pair-wise agreements between NDN routers and period Interest refresh can solve this particular problem, but it is out of the scope of the present paper.}
 
-While we experimented with more complicated classes (see Sections~\ref{sec:dynamic limits} and \ref{sec:probabilistic}), limitations of the queuing method nullify benefits of implementing such classes.
-In particular, weighted round-robin scheduling can effectively work only if queues are not empty.
-But, as we evaluation results in Section~\ref{sec:evaluation} show, queues are tend to be empty, when number of bottlenecks (mixing points, nodes that receive more Interests that they can forward on a face) on paths more than one.
+It should be noted that enqueued Interests should not be kept in the queue for a prolonged period of time.
+Otherwise, by the time the Interests reaches the Data, the state could have been long expired downstream, effectively making such an Interest useless.
+Additional mechanisms of pair-wise agreements between NDN routers and periodic Interest refresh can solve this particular problem, but it is out of the scope of the present paper.
 
+As we show in Section~\ref{sec:evaluation}, fair queueing provides a partial relief from the Interest flooding attack, allowing legitimate users to successfully fetch Data for 15--20\% of the expressed Interests (compared to 0-10\% without fair queueing).
+At the same time, the Physical limits with or without fair queueing allows attackers to send a relatively small volume of Interests in order to significantly impact service for the legitimate users.
+Therefore, to successfully solve the problem, we need a more intelligent approach, allowing us to localize the attack traffic as close to the attack origin as possible.
 
 %%% Local Variables: 
 %%% mode: latex
