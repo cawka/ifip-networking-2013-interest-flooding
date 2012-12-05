@@ -37,7 +37,7 @@ At the same time, each forwarded Interest can be used to build up various data p
 % All communication in NDN network is host-to-host and receiver-driven.
 
 The most obvious and na\"{i}ve method to mitigate the Interest flooding attack is to limit the number of forwarded Interests out of each interface. 
-That is, if it is known that the amount of already forwarded Interests can fully utilize the downstream link, an NDN node---an end-user or an NDN router---has absolutely no point in forwarding new incoming Interests and creating corresponding PIT entries.
+That is, if it is known that the amount of already requested data ($=$~amount of forwarded Interests) can fully utilize the downstream link, an NDN node---either an end-user or an NDN router---has absolutely no point in forwarding new incoming Interests and creating corresponding PIT entries.
 For example, if a router A on Fig.~\ref{fig:flooding example} already forwarded 125 Interests requesting 1000-byte Data packets, any new incoming Interests can be almost safely dropped, provided the link capacity between A--B is 100~Mbps and delay is 10~ms.
 In other words, 125 Data packets returned by router B will fully utilize the link ($125 \times 1000 \mathrm{~bytes} \approx 10\mathrm{~ms} \times 100\mathrm{~Mbps}$) and any excess Data would be dropped.
 

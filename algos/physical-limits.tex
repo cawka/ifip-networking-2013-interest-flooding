@@ -14,7 +14,7 @@ At the same time, when the requested Data comes back or the Interest times out, 
 \end{figure}
 
 Since the number of tokens in the bag defines how many Interests are forwarded and not yet satisfied or timed out (pending Interests), this number should be large enough to fully utilize the network and small enough to avoid excessive buffering and drops at the upstream routers.
-The ideal value for the number of tokens (interest limit) for each individual link would be defined proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}.
+The ideal value for the number of tokens (\emph{Interest Limit}) for each individual link would be defined proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}.
 This can be formalized in the following way:
 % With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
 
@@ -26,11 +26,11 @@ In this equation, \emph{Delay} is the expected time of Interest being satisfied 
 Although both these values are not known a priory and vary between different Interest-Data exchanges, it is not really necessary to know their exact values.
 One can simply set the Interest limit based on the average values of round trip time and observed Data packet size, as the network buffers can smooth out most of the network fluctuations.
 
-In the rest of the paper we will refer to Interest limits set based on the bandwidth-delay product as \emph{Physical limits}.
-Pseudocode~\ref{alg:simple limits} shows implementation details of how the Physical limits algorithms.
-Every time an Interest is ready to be send to an outgoing interface $of$ (OutInterest function), we check if the token bag is not empty.
+In the rest of the paper we will refer to Interest limits set based on the bandwidth-delay product as \emph{Physical limits}, as we set the limit based on the physical link capacity.
+Pseudocode~\ref{alg:simple limits} shows implementation details of the Physical limits algorithms.
+Every time an Interest is ready to be send to an outgoing interface $of$ (\emph{OutInterest} function), we check if the token bag is not empty.
 If there is at least one free token available, we are ``borrowing'' it, forwarding the Interests, and remembering the outgoing interface in the corresponding entry of PIT.
-Functions InData and Timeout ensure that tokens are returned whenever the requested Data is received or Interest times out.
+Functions \emph{InData} and \emph{Timeout} ensure that tokens are ``returned'' whenever the requested Data is received or Interest times out.
 
 \floatname{algorithm}{Pseudocode}
 
@@ -77,9 +77,9 @@ Functions InData and Timeout ensure that tokens are returned whenever the reques
 % In our experiments Interest/Data size ratio is about 1:30
 Considering the fact that normally the size of the Interests packets is significantly smaller than the size of the requested Data packets, a router needs to consume only a small portion of the upstream link (from A to B) to fully utilize the downstream link (from B to A).
 The direct conclusion from this observation, confirmed by our evaluations in the Section~\ref{sec:evaluation}, is that if a router forwards only the right amount of Interests, both mechanisms of the Interests flooding attack will stop working: the forwarded Interests would neither congest the upstream nor exhaust router's memory resources.
-At the same time, the Physical limits may become a new mechanisms to carry out a denial of service attacks.
-For example, if the router A has forwarded 125 junk Interests, it will not be able to accept any other Interests neither from a legitimate user or an attacker, until these junk Interests start to expire (e.g., within one second).
-This essentially reduces the probability of legitimate Interests getting through and can result in an effective low-rate denial of service attack (e.g., see Fig.~\ref{fig:small-scale-topo 3}).
+At the same time, the Physical limits may become a new mechanisms to carry out denial of service attacks.
+For example, if the router A has forwarded 125 junk Interests, it will not be able to accept any other Interests neither from a legitimate user or an adversary, until these junk Interests start to expire.
+This essentially reduces the probability of legitimate Interests getting through and can result in an effective low-rate denial of service attack (refer to Section~\ref{sec:small-scale}).
 
 
 %%% Local Variables: 
