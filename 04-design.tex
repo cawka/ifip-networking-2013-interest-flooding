@@ -12,31 +12,90 @@
 
 In this section we present several methods to mitigate Interest flooding attacks in NDN, featuring different degrees of implementation complexity, as well as different degrees of effectiveness.
 
-The presented methods rely on the core NDN principle of the flow balance between Interest and Data packets: Data packet can be forwarded only in response to the incoming Interest and each Interest is satisfied by at most one Data packet.
-As a result of this principle, all traffic on NDN is ``receiver''-driven, where the ``receiver'' is either a user or any router on the path between the user and a Data producer.
+%   - Naive approach to Interest Limits (that is called physical limits everywhere else)
+%     Example how this can be implemented in a simple way
+%     Baseline solution
+%   - Interest limits with "fair" queuing
+%     Improving problem of simple limits (no single face can dominate), but doesn't solve the proble
+
+% - Attack mitigation
+%   - Per-incoming interface Interest statistics
+
+%   - Dynamic Interests limit adjustments
+
+%   - Probabilistic Interest accept
+
+Our methods to mitigate Interest flooding attack rely on the fundamental principle of the NDN architecture: the flow balance between Interest and Data packets: one Interest packet (the only communication initiator) can be satisfied with at most one Data packet.
+Because NDN is host-to-host architecture (as opposed to end-to-end in the current IP Internet), the flow balance principle allow any entity on the network, end-hosts and routers, control what and how much Data they want to receive.
 Therefore, any node can limit the number of forwarded Interests, effectively limiting the amount of the retrieved Data.
 At the same time, each forwarded Interest can be used to build up various data plane performance statistics, such as per-incoming interface ratios of satisfied Interests.
 
-% Combining per-incoming interface data plane performance statistics with 
+\subsection{Na\"{i}ve attack mitigation}
 
-% Disclaimer
-% The presented solutions to mitigate Interest flooding DDoS attacks 
+% In a normal network operation, the size of Interests packets is supposed to be significantly smaller than the size of the requested Data.
 
-% In particular, we explore different mechanisms to app
+% All communication in NDN network is host-to-host and receiver-driven.
 
-% Basic limits, probablity based on statistics, and dynamic window adjustment
+The most obvious and na\"{i}ve method to mitigate the Interest flooding attack is to limit the number of forwarded Interests out of each interface. 
+That is, if it is known that the amount of already forwarded Interests can fully utilize the downstream link, an NDN node---an end-user or an NDN router---has absolutely no point in forwarding new incoming Interests and creating corresponding PIT entries.
+For example, if a router A on Fig.~\ref{fig:flooding example} already forwarded 125 Interests requesting 1000-byte Data packets, any new incoming Interests can be almost safely dropped, provided the link capacity between A--B is 100~Mbps and delay is 10~ms.
+In other words, 125 Data packets returned by router B will fully utilize the link ($125 \times 1000 \mathrm{~bytes} \approx 10\mathrm{~ms} \times 100\mathrm{~Mbps}$) and any excess Data would be dropped.
 
-
-
-
+\subsubsection{Interest limits (physical limits)}
+\label{sec:physical limits}
 
 \input{algos/physical-limits.tex}
 
-\input{algos/stats.tex}
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Interest limits with per-interface fairness}
+\label{sec:queuing}
 
 \input{algos/fair-queueing.tex}
 
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Intelligent attack mitigation}
+
+About additional knowledge about interests.  
+
+Another unique feature of the NDN architecture is stateful packet forwarding~\cite{adaptive-forwarding} and symmetric flow of Interests and Data packets.  Every time Interests is send out to the Interface, the router will be able to learn various parameters about this Interest.
+
+
+From the DDoS mitigation point of view, one of the important parameters is to determine from which interface
+
+
+In order to mitigate a denial of service attack it is vital to know the origin of the attack.  I the origin of the attack is known, then the attack can be easily suppressed and eventually localized.  In our definition of the attack is that 
+
+interest of the attackers are not getting satisfied. 
+Every router can learn fro m which interfaces attack traffic is coming and do certain actions to limit forwarding of suspicious interest.   In other words, without trying to distinguish legitimate and malicious interests on the basis of the Interest prefix, routers distinguish them based on recent performance.
+
+
+
+\subsubsection{Data plane performance tracking}
+\label{sec:stats}
+
+\input{algos/stats.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Probabilistic Interest accept}
+\label{sec:probabilistic}
+
 \input{algos/probabilistic.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Dynamic adjustments of window-based limits}
+\label{sec:dynamic limits}
 
 \input{algos/dynamic-limits.tex}
 
