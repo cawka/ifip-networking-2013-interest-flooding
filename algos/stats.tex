@@ -1,18 +1,12 @@
-% \subsection{Satisfaction rate statistics generation algorithm}
-% \label{sec:stats}
 
-Statistic generation is performed at different time and name prefix granularities.  
-% Figure~\ref{fig:stats tree} shows an overall design of the implemented statistics generation module and Pseudocodes~\ref{algo:loadstats}, \ref{algo:interest stats}, \ref{algo:prefix stats}, \ref{algo:stats} show implementation details.
-
-% \begin{figure}[htpb]
-%   \centering
-%   \includegraphics[scale=0.7]{figures/stats-illustration.pdf}
-%   \caption{Statistics tree}
-%   \label{fig:stats tree}
-% \end{figure}
+% Note that there is a condition (line 6 in Pseudocode~\ref{alg:probabilistic model}) to check if there is a valid statistics point.
+% This condition is extremely important, because it first provides a basis to distinguish between known facts (i.e., good or bad satisfaction ratio for the incoming interface) and unknown facts (e.g., the first time an Interests arrives on the interfaces).
+% Second, it gives an opportunity to recover from a bad history (history of unsatisfied Interests) after malicious Interests are ceased to flow in.
+% Essentially, this recovery relies on statistics module to perform time-based invalidation of historical data (timely, but not too quickly\footnote{Otherwise, attackers may send short bursts of malicious Interests, successfully avoiding differential Interest treatment}).
 
 
-% A separate set of statistical information is kept for each Interest name, as well as aggregated to all Interest name prefixes, including root (``/'') prefix (per-prefix statistics tree on Figure~\ref{fig:stats tree}).
+Pseudocode~\ref{algo:interest stats} formally defines per-incoming interface statistics generation.
+Please note that in order to ensure decaying of relative statistics (e.g., ratio between the number of unsatisfied and forwarded Interest), only unsatisfied statistics needs to be exponentially smoothed (lines 23--26).  
 
 \floatname{algorithm}{Pseudocode}
 
@@ -52,16 +46,18 @@ Statistic generation is performed at different time and name prefix granularitie
 
 \vspace{0.2cm}
 
-\State {} \Comment{\textit{Exponential weighted moving average smoothing}}
+\State {} \Comment{\textit{Exponentially weighted moving average smoothing}}
 \Function{EWMA}{} \Comment{Every second}
 \State $\alpha \leftarrow e^{-1.0/30.0}$  %\Comment{$\approx$ 30~sec average}
 
 \For{\textbf{each} interface \em{if}}
-    \State $\hat F_{if} \leftarrow \alpha \cdot \hat F_{if} + (1 - \alpha) \cdot I_{if}$ 
     \State $\hat U_{if} \leftarrow \alpha \cdot \hat U_{if} + (1 - \alpha) \cdot U_{if}$ 
-
-    \State $F_{if} \leftarrow 0$ \Comment{Reset counters}
     \State $U_{if} \leftarrow 0$ 
+
+    \If{$F_{if} > 0$} \Comment{To ensure decaying of ratio $U_{if}/F_{if}$ when Interest flow stops}
+        \State $\hat F_{if} \leftarrow \alpha \cdot \hat F_{if} + (1 - \alpha) \cdot I_{if}$ 
+        \State $F_{if} \leftarrow 0$ \Comment{Reset counters}
+    \EndIf
 \EndFor
 
 \EndFunction
@@ -69,87 +65,13 @@ Statistic generation is performed at different time and name prefix granularitie
 \end{algorithmic}
 \end{algorithm}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \begin{algorithm}[h]
-% \caption{Prefix stats component}
-% \label{algo:prefix stats}
-% \begin{algorithmic}[1]
-
-
-
-% \vspace{0.2cm}
-% \Function{Advance}{} \Comment{Every second}
-% \State $T.$advance()
-% \For{\textbf{each} Face $f$}
-%     \State $Stats[iface].$advance()
-% \EndFor
-
-% \EndFunction
-
-% \end{algorithmic}
-% \end{algorithm}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \begin{algorithm}[h]
-% \caption{Statistics generation algorithm}
-% \label{algo:stats}
-% \begin{algorithmic}[1]
-
-% \State stats $\leftarrow$ empty tree of Prefix stats \Comment{Stats tree}
-
-% \vspace{0.2cm}
-% \Function{ProcessEvent}{new Interest, inFace}
-%   \State stats[Interest.Name].NewPitEntry()
-%   \State stats[Interest.Name].Incoming(inFace);
-%   \State stats[Interest.Name].Timeout()
-% \EndFunction
-
-% \vspace{0.2cm}
-% \Function{ProcessEvent}{Interest rejected, inFace}
-%   \State stats[Interest.Name].NewPitEntry()
-%   \State stats[Interest.Name].Incoming(inFace)
-% \EndFunction
-
-% \vspace{0.2cm}
-% \Function{ProcessEvent}{Interest forwarded, outFace}
-%   \State stats[Interest.Name].Outgoing(outFace)
-% \EndFunction
-
-% \vspace{0.2cm}
-% \Function{ProcessEvent}{pending Interest timeout}
-%   \State stats[Interest.Name].Timeout()
-% \EndFunction
-
-% \vspace{0.2cm}
-% \Function{ProcessEvent}{pending Interest satisfied}
-%   \State stats[Interest.Name].Satisfy()
-% \EndFunction
-
-% \vspace{0.2cm}
-% \Function{Periodic}{every second}
-% \For{every node, walking from children to root}
-%     \State $node.parent.$Combine($node$)
-%     \State $node.$Advance()
-% \EndFor
-% \EndFunction
-
-
-% \end{algorithmic}
-% \end{algorithm}
-
-% \begin{figure}[htbp]
-%   \centering
-%   \includegraphics[width=4.5cm]{trivial-topo}
-%   \caption{Trivial topology (all links are 3Mbps/10ms)}
-%   \label{fig:trivial topology}
-% \end{figure}
-
+Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistic during (10--70~seconds) and after the attack.
+Before the attack started, the percentage of unsatisfied Interests is zero.  
+The statistics starts to build up rapidly as soon as Interests start to time out, which happens approximately after one second since the start of the attack.\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
+For the following duration of the attack, statistics fluctuates near the 100\% mark: 
+when the ratio is close to 100\%, routers drop all incoming Interests, resulting in decaying of the statistics until a new Interest is admitted, which eventually brings statistics back near 100\% point.
+Finally, the ratio exponentially decays after the attack ceases.
 
 \begin{figure}[htbp]
   \centering

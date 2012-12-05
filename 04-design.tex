@@ -41,7 +41,7 @@ That is, if it is known that the amount of already requested data ($=$~amount of
 For example, if a router A on Fig.~\ref{fig:flooding example} already forwarded 125 Interests requesting 1000-byte Data packets, any new incoming Interests can be almost safely dropped, provided the link capacity between A--B is 100~Mbps and delay is 10~ms.
 In other words, 125 Data packets returned by router B will fully utilize the link ($125 \times 1000 \mathrm{~bytes} \approx 10\mathrm{~ms} \times 100\mathrm{~Mbps}$) and any excess Data would be dropped.
 
-\subsubsection{Interest limits (physical limits)}
+\subsubsection{\textbf{Interest limits (physical limits)}}
 \label{sec:physical limits}
 
 \input{algos/physical-limits.tex}
@@ -50,7 +50,7 @@ In other words, 125 Data packets returned by router B will fully utilize the lin
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Physical limits with per-interface fairness}
+\subsubsection{\textbf{Physical limits with per-interface fairness}}
 \label{sec:queuing}
 
 \input{algos/fair-queueing.tex}
@@ -61,23 +61,26 @@ In other words, 125 Data packets returned by router B will fully utilize the lin
 
 \subsection{Intelligent attack mitigation}
 
-About additional knowledge about interests.  
+While the Interest limit is the key building block to suppress mechanisms of the Interest flooding attack, legitimate Interests need to be somehow prioritized and malicious Interests need to be somehow penalized in order to completely suppress the attack.
+That is, instead of processing Interests always based on the first-in-first-serve rule, NDN routers need some basis to treat the incoming Interests differently.
+Thus, the primary task in bringing intelligence to the Interest flooding attack mitigation is to proactively distinguish between legitimate and malicious Interests.
 
-Another unique feature of the NDN architecture is stateful packet forwarding~\cite{adaptive-forwarding} and symmetric flow of Interests and Data packets.  Every time Interests is send out to the Interface, the router will be able to learn various parameters about this Interest.
+To achieve such an Interest differentiation we can leverage another unique feature of the stateful forwarding in NDN---namely, the guaranteed symmetric flow of Interest and Data packets.
+In other words, NDN guarantees that a forwarded Interest would always results in receiving a corresponding Data, provided such Data exists and Interest/Data packets were not lost on the way.
+Therefore, all Interests that result in Data return can be considered legitimate, while the ones that always timeout should be deemed as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest flooding}).  Implications of other types of attacks are discussed in Section~\ref{sec:discussion}.}
 
+Unfortunately, the timeout-based differentiation is reactive by nature: one cannot know in advance that an Interest would timeout or bring Data back.
+What we can do proactively is to keep an up-to-date statistics of Interests satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistics to project outcomes for new Interests.
+For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface can be enough to estimate whether an Interest received from a neighbor will bring Data or time out.
+Statistics can also be kept at more granular levels (e.g., per outgoing interface, per prefix, etc.), which can further improve the estimation quality.
 
-From the DDoS mitigation point of view, one of the important parameters is to determine from which interface
+The devil is always in the details.
+From the one hand, such statistics needs to start penalizing adversaries as soon as possible (i.e., negative stats should build up fast).
+On the other hand, the positive statistics should not deteriorate too fast (i.e., positive stats should be relatively long-term).
+Our preliminary experiments showed that the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window, provides a good balance between the two contradictory requirements.
 
-
-In order to mitigate a denial of service attack it is vital to know the origin of the attack.  I the origin of the attack is known, then the attack can be easily suppressed and eventually localized.  In our definition of the attack is that 
-
-interest of the attackers are not getting satisfied. 
-Every router can learn fro m which interfaces attack traffic is coming and do certain actions to limit forwarding of suspicious interest.   In other words, without trying to distinguish legitimate and malicious interests on the basis of the Interest prefix, routers distinguish them based on recent performance.
-
-
-
-\subsubsection{Data plane performance tracking}
-\label{sec:stats}
+% \subsubsection{\textbf{Data plane performance tracking}}
+% \label{sec:stats}
 
 \input{algos/stats.tex}
 
@@ -85,7 +88,7 @@ Every router can learn fro m which interfaces attack traffic is coming and do ce
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Probabilistic Interest accept}
+\subsubsection{\textbf{Probabilistic Interest accept}}
 \label{sec:probabilistic}
 
 \input{algos/probabilistic.tex}
@@ -94,7 +97,7 @@ Every router can learn fro m which interfaces attack traffic is coming and do ce
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Dynamic adjustments of window-based limits}
+\subsubsection{\textbf{Dynamic adjustments of window-based limits}}
 \label{sec:dynamic limits}
 
 \input{algos/dynamic-limits.tex}
