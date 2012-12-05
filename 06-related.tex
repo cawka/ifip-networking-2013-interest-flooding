@@ -1,11 +1,17 @@
-\section{Related work \label{related-section}}
+\section{Related work}
+\label{sec:related work}
+
 In this section we provide a classification of mitigation techniques against DDoS flooding attacks in IP networks, because of the lack of any in NDN or other information centric architectures. 
-\begin{itemize}
-\item{Capability-based systems} allow routers to negotiate, perform and enforce limitations on bandwidth consumption on router-to-router and router-to-client links. Usually such systems require an extensive trust infrastructure in order to validate secure keys used by routers and clients. This implies that each client must pass through an authentication process prior to using any bandwidth ~\cite{Capabilities}.   
-\item{Computation-based systems} provide each client an access to the network resources only after performing a significant computations such as solving puzzles. Spending a huge amounts of computational resources can effectively slow down a flooding attack by the botnet, however it also creates additional computational burden for legitimate clients ~\cite{Portcullis}.
-\item{Push back systems} are trying to detect bad and good traffic flows on each router, and once attack is detected by one of the routers, it starts a coordinated push back by downrating incoming flows with a bad traffic in order to provide more capacity for a good traffic. This process is reiterating downstream till it reaches edge routers, which are directly connected to attacking bot machines ~\cite{Pushback}. 
-\item{Congestion control systems} do per flow traffic analysis and drop of packets belonging to misbehaving flows. For instance, Random Early Detect (RED)~\cite{RED} identifies flows that do not comply with TCP-friendly end-to-end congestion control, and preferentially drop them. If largely deployed such techniques could perform well, however, they cannot provide effective defense against non-greedy botnets that are creating a huge amount of low-bandwidth flows. 
-\end{itemize}
+
+
+Capability-based systems allow routers to negotiate, perform and enforce limitations on bandwidth consumption on router-to-router and router-to-client links. Usually such systems require an extensive trust infrastructure in order to validate secure keys used by routers and clients. This implies that each client must pass through an authentication process prior to using any bandwidth ~\cite{Capabilities}.   
+
+Computation-based systems provide each client an access to the network resources only after performing a significant computations such as solving puzzles. Spending a huge amounts of computational resources can effectively slow down a flooding attack by the botnet, however it also creates additional computational burden for legitimate clients ~\cite{Portcullis}.
+
+Push back systems are trying to detect bad and good traffic flows on each router, and once attack is detected by one of the routers, it starts a coordinated push back by downrating incoming flows with a bad traffic in order to provide more capacity for a good traffic. This process is reiterating downstream till it reaches edge routers, which are directly connected to attacking bot machines ~\cite{Pushback}. 
+
+Congestion control systems do per flow traffic analysis and drop of packets belonging to misbehaving flows. For instance, Random Early Detect (RED)~\cite{RED} identifies flows that do not comply with TCP-friendly end-to-end congestion control, and preferentially drop them. If largely deployed such techniques could perform well, however, they cannot provide effective defense against non-greedy botnets that are creating a huge amount of low-bandwidth flows. 
+
 
 %%% Local Variables: 
 %%% mode: latex
