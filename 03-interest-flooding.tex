@@ -10,7 +10,7 @@
 
 %??? - References to the discussion about other types of attacks (ordifferent attack assumptions) about other attacks and explicitly stating that this work aims to build a baseline for general Interest Flooding mitigation problem, with other attack profiles and malicious gateways.
 
-\paragraph{Classification}
+% \paragraph{Classification}
 
 Interest flooding attack belongs to a class of network-level flooding attacks, where an attacker or a set of distributed attackers inject excessive amounts of Interests in order to overload the network and cause service disruptions for legitimate users (Fig.~\ref{fig:flooding example}).
 Service for legitimate users is disrupted when the network fails to satisfy Interests either because the Interests did not get through to the data producer or nearby cache, or the Data were lost on the way back to the requester (e.g., because of congested links).
@@ -24,7 +24,7 @@ Service for legitimate users is disrupted when the network fails to satisfy Inte
 
 \paragraph{Mechanism}
 
-The Interest flooding attack has two-fold effect on service quality in NDN network: it \emph{creates network congestion} and \emph{exhaust resources on routers}.
+The Interest flooding attack has two main mechanisms to affect service quality in NDN network: it \emph{creates network congestion} and \emph{exhaust resources on routers}.
 
 Like any other packets in the network, malicious Interests consume a portion network capacity.
 Thus, a large amount of malicious Interests can lead to network congestion and drop of the legitimate Interests and Data packets.
