@@ -4,9 +4,9 @@
 Lessons we learnt, comparison of different mitigation techniques. 
 Adapting these to mitigate other DDoS attacks.
 
-In section ~\ref{sec:interest flooding} we made assumptions regarding the Interest flooding traffic shape (requesting non-existing data with non-aggregatable prefix name ) and single-path forwarding strategy, which jointly create the most powerful congestion at the producer link. 
+In section~\ref{sec:interest flooding} we made assumptions regarding the Interest flooding traffic shape (requesting non-existing data with non-aggregatable prefix name ) and single-path forwarding strategy, which jointly create the most powerful congestion at the producer link. 
 
-In this paper we are using a simple attacker profile Ñ greedy attacker, which is using all resources (available bandwidth) of its botnet in order to put producer down as quickly as possible. However, in a real life not all botnets are greedy and in fact can perform smart actions like constant switching between victims every other hour to fool defensive systems by nullifying gathered bad flow statistics. Or they can be non-greedy at all, for instance a large botnet of several hundreds of thousands nodes can perform a non-greedy attack by sending just a few Interests per second from each node. Nowadays, this situation is very hard to manage, because of the difficulties in detecting of bad flows in a traffic. 
+In this paper we are using a simple attacker profile and greedy attacker, which is using all resources (available bandwidth) of its botnet in order to put producer down as quickly as possible. However, in a real life not all botnets are greedy and in fact can perform smart actions like constant switching between victims every other hour to fool defensive systems by nullifying gathered bad flow statistics. Or they can be non-greedy at all, for instance a large botnet of several hundreds of thousands nodes can perform a non-greedy attack by sending just a few Interests per second from each node. Nowadays, this situation is very hard to manage, because of the difficulties in detecting of bad flows in a traffic. 
 
 Also, an adversary can mix Interests for non-existing data with Interests for existing-data. Thanks to NDN stateful packet forwarding, bad flows can be easily distinguished and penalized.  
 

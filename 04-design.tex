@@ -60,6 +60,7 @@ In other words, 125 Data packets returned by router B will fully utilize the lin
 %%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Intelligent attack mitigation}
+\label{sec:intelligent mitigating}
 
 While the Interest limit is the key building block to suppress mechanisms of the Interest flooding attack, legitimate Interests need to be somehow prioritized and malicious Interests need to be somehow penalized in order to completely suppress the attack.
 That is, instead of processing Interests always based on the first-in-first-serve rule, NDN routers need some basis to treat the incoming Interests differently.
@@ -97,7 +98,7 @@ Our preliminary experiments showed that the standard exponentially weighted movi
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{\textbf{Dynamic adjustments of window-based limits}}
+\subsubsection{\textbf{Dynamic limits}}
 \label{sec:dynamic limits}
 
 \input{algos/dynamic-limits.tex}
