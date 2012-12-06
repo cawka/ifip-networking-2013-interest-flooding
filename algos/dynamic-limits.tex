@@ -65,7 +65,7 @@ At the next iterations of the dynamic limits algorithm, the legitimate user will
 It should be noted that while in the description of the dynamic limits algorithm we used notions of ``outgoing'' and ``incoming'' interfaces, in the real system all interfaces can be both incoming and outgoing.
 Thus, it may not be entirely clear which outgoing limit $L_{of}$ (line 10 in the algorithm) should be used to calculate the incoming limit $L_{if}$.
 To overcome this problem, in our actual implementation we enforced separate incoming/outgoing interface limits for each individual FIB entry.
-That is, for each FIB entry we set a separate Interest limit for each incoming interface ($L'_{if}^{FIB}$) based on a sum of FIB entry limits for each outgoing interface $L=\sum{L_{of}^{FIB}}$.
+That is, for each FIB entry we set a separate Interest limit for each incoming interface ($L_{if}^{'FIB}$) based on a sum of FIB entry limits for each outgoing interface $L=\sum{L_{of}^{FIB}}$.
 
 
 % Alex: not sure if this paragraph belongs here
