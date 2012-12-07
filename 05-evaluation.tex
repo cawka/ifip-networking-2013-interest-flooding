@@ -16,23 +16,25 @@ Our study is based on simulations performed with the help of open-source ndnSIM~
 % what points we wanted to verify with larger-scale internet like topology
 
 % Metrics
+% not sure if i already explained that. our essential qualitative metric is .  
+% To quantify the effectiveness of the mitigation mechanism this  metric we use satisfaction percentages of user Interests.
 Quality of the attack mitigation methods directly corresponds to the quality of service for the legitimate users during an ongoing attack, which in NDN network can be quantified through percentage of satisfied Interest.
 For example, if the network implements a mitigation method $X$ and under the attack majority of user-expressed Interests are getting satisfied, then the method $X$ can be seen as highly effective.
 At the same time, if only a small percentage of the expressed Interest are getting satisfied during the attack, the method $X$ can be called ineffective. 
-
 
 % Traffic pattern
 In our experiments we made a simplistic assumption that both legitimate users and adversaries express Interests with constant average rates with randomized (uniform distribution) time gaps between each two consecutive Interests.
 % Alex: not sure how to argue about the traffic pattern
 Although this pattern is not truly realistic, it gives us a good statistical mix of traffic from all network users without excessive network buffering.
+
 In addition to that, in each run of the simulation we ensure that all Interests expressed by the legitimate users during a no-attack period are satisfied.
 For simplicity and without losing any generality, we also equalized the average rates with which the legitimate users express Interests.
+At the same time, the attackers are sending junk Interests as much as they can get through (remember, that Interest limits will not allow real flooding of Intersests in all of the designed mitigation algorithms).
 
 % Fixed parameters
 The \emph{Delay} and \emph{Data size} parameters for the Interest limits calculation (1) were set to fixed values for every node in the simulated topology.
 In particular, for the small-scale experiments we set Delay to 80~ms and for the large-scale experiments we used the value 330~ms (the order of the largest RTT).
 Data size parameter was set to 1100~bytes for all simulation runs and topologies.
-
 
 \input{eval-small-scale}
 \input{eval-large-scale}
