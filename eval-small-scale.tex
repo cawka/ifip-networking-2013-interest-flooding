@@ -71,7 +71,7 @@ We expect that reducing the maximum hold time for Interests (e.g., to an order o
 
 \paragraph{\textbf{Probabilistic Interest accept}}
 
-When routers apply a more intelligent metod to process incoming Interests (i.e., based on the incoming interface statistics), an Interest flooding attack becomes virtually ineffective.
+When routers more intelligently process incoming Interests (i.e., based on the incoming interface statistics), the Interest flooding attack becomes virtually ineffective.
 That is, malicious Interests are simply not getting admitted to the network, not being able to create much service disturbance for the legitimate users.
 The observed periodicity of the probabilistic Interest accept curve on Fig.~\ref{fig:small-scale attack progress} is a direct result from ``intelligence'' (Interest satisfaction rate statistics) decaying with time.
 The 50-second periods approximately correspond to the selected exponential decaying parameter $\alpha=e^{−1.0/30.0}$, which decays statistics to $1/e$ of the initial value within 30~seconds and to $\approx20\%$ within 50~seconds.
