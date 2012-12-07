@@ -1,12 +1,38 @@
 \section{Evaluation of Interest flooding mitigation methods}
 \label{sec:evaluation}
 
-% \todo{Both simulation, as well as emulation for various sized topologies (trees as well as real topologies), various parameters etc.
 % List all possible parameters, say clearly which ones we vary, and which ones we do not, along with explanations.
 
-% Metrics that we will consider in our evaluation (Satisfaction rate for good clients, Link utilization near producers, Latency for good clients, good versus bad interests as a function of time).}
+% Metrics that we will consider in our evaluation (Satisfaction rate for good clients, Link utilization near producers, 
 
-We want to explore the effectiveness of designed mitigation techniques in a two distinctive ways. First, we need to understand how each method works on a very ground level of a just few nodes and links. Second, we want to pick promising techniques and see if they work in a large scale networks of hundreds and thousands of nodes. To ensure the correct transition from small scale experiments to large scale experiments we had to use the same evaluation tool in order to eliminate any possibility of implementation discrepancy. As of today the only network simulator supporting full NDN logic is the NS-3 based ndnSIM software. 
+% alex: what's a point of latency?  it would matter only for queueing method and we not really pushing this method
+% Latency for good clients, good versus bad interests as a function of time
+
+In this section present an in-depth study, aiming to explore quality and effectiveness of the designed Interest flooding attack mitigation methods.
+Our study is based on simulations performed with the help of open-source ndnSIM~\cite{ndnsim} package, which implements NDN protocol stack for NS-3 network simulator.\footnote{\url{http://www.nsnam.org/}}
+
+% why we chose small scale topology
+% what point we wanted to show we small scale
+% what points we wanted to verify with larger-scale internet like topology
+
+% Metrics
+Quality of the attack mitigation methods directly corresponds to the quality of service for the legitimate users during an ongoing attack, which in NDN network can be quantified through percentage of satisfied Interest.
+For example, if the network implements a mitigation method $X$ and under the attack majority of user-expressed Interests are getting satisfied, then the method $X$ can be seen as highly effective.
+At the same time, if only a small percentage of the expressed Interest are getting satisfied during the attack, the method $X$ can be called ineffective. 
+
+
+% Traffic pattern
+In our experiments we made a simplistic assumption that both legitimate users and adversaries express Interests with constant average rates with randomized (uniform distribution) time gaps between each two consecutive Interests.
+% Alex: not sure how to argue about the traffic pattern
+Although this pattern is not truly realistic, it gives us a good statistical mix of traffic from all network users without excessive network buffering.
+In addition to that, in each run of the simulation we ensure that all Interests expressed by the legitimate users during a no-attack period are satisfied.
+For simplicity and without losing any generality, we also equalized the average rates with which the legitimate users express Interests.
+
+% Fixed parameters
+The \emph{Delay} and \emph{Data size} parameters for the Interest limits calculation (1) were set to fixed values for every node in the simulated topology.
+In particular, for the small-scale experiments we set Delay to 80~ms and for the large-scale experiments we used the value 330~ms (the order of the largest RTT).
+Data size parameter was set to 1100~bytes for all simulation runs and topologies.
+
 
 \input{eval-small-scale}
 \input{eval-large-scale}
