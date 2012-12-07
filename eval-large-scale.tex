@@ -47,7 +47,7 @@ Similarly to the first set of small-scale evaluations, we fixed the number of ma
 % The results for all attack mitigation algorithms and all runs are aggregated in Fig.~\ref{fig:small-scale attack progress}, where Y-axis represents a minimum and maximum range for observed Interest satisfaction percentages among all nodes and all simulation runs.
 % A short and simplistic summary of the results is that the first two attack mitigation methods do not work at all, and the last two are working quite good.
 
-The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, for both physical limits algorithms and dynamic limits algorithm show exactly the same trend as in small-scale evaluations, but with larger variations of minimum and maximum instantaneous satisfaction rates.
+The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that for both physical limits algorithms and dynamic limits algorithm the performance is about the same as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
 
 \begin{figure}[tbh]
  \centering
@@ -57,9 +57,9 @@ The evaluation results,\footnote{Note that for larger-scale experiments we reduc
  \label{fig:large-scale}
 \end{figure}
 
-At the same time, the probabilistic method completely failed to provide an adequate protection against the flooding attack, and in addition degraded service for the legitimate users after the attack finished.
+At the same time, the probabilistic method completely failed to provide an adequate protection against the Interest flooding attack, and in addition degraded service for the legitimate users after the attack finished.
 The main reason for the failure was already explained in Section~\ref{sec:probabilistic}.
-If the number of hops between legitimate users and the Data producer is large (15 on average in the simulated topology) uncoordinated probabilistic Interest drops result in minuscule probability for good Interests to reach the Data producer during an ongoing attack, resulting in negative Interests satisfaction ratio statistics.
+That is, if the number of hops between legitimate users and the Data producer is large (15 on average in the simulated topology) uncoordinated probabilistic Interest drops result in minuscule probability for good Interests to reach the Data producer during an ongoing attack, resulting in negative Interests satisfaction ratio statistics.
 This also explains why until the statistics ages out, not all legitimate users can get satisfy all of their Interests.
 
 In summary, in all of the simulated topologies, the dynamic limits algorithm largely restricts malicious traffic to even enter the network.
