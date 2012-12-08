@@ -1,14 +1,42 @@
 \section{Discussion}
 \label{sec:discussion}
 
-Lessons we learnt, comparison of different mitigation techniques. 
-Adapting these to mitigate other DDoS attacks.
+% Lessons we learnt, comparison of different mitigation techniques. 
+% Adapting these to mitigate other DDoS attacks.
 
-In section~\ref{sec:interest flooding} we made assumptions regarding the Interest flooding traffic shape (requesting non-existing data with non-aggregatable prefix name ) and single-path forwarding strategy, which jointly create the most powerful congestion at the producer link. 
+% In section~\ref{sec:interest flooding} we made assumptions regarding the Interest flooding traffic shape (requesting non-existing data with non-aggregatable prefix name ) and single-path forwarding strategy, which jointly create the most powerful congestion at the producer link. 
 
-In this paper we are using a simple attacker profile and greedy attacker, which is using all resources (available bandwidth) of its botnet in order to put producer down as quickly as possible. However, in a real life not all botnets are greedy and in fact can perform smart actions like constant switching between victims every other hour to fool defensive systems by nullifying gathered bad flow statistics. Or they can be non-greedy at all, for instance a large botnet of several hundreds of thousands nodes can perform a non-greedy attack by sending just a few Interests per second from each node. Nowadays, this situation is very hard to manage, because of the difficulties in detecting of bad flows in a traffic. 
+% In this paper we are using a simple attacker profile and greedy attacker, which is using all resources (available bandwidth) of its botnet in order to put producer down as quickly as possible. However, in a real life not all botnets are greedy and in fact can perform smart actions like constant switching between victims every other hour to fool defensive systems by nullifying gathered bad flow statistics. Or they can be non-greedy at all, for instance a large botnet of several hundreds of thousands nodes can perform a non-greedy attack by sending just a few Interests per second from each node. Nowadays, this situation is very hard to manage, because of the difficulties in detecting of bad flows in a traffic. 
 
-Also, an adversary can mix Interests for non-existing data with Interests for existing-data. Thanks to NDN stateful packet forwarding, bad flows can be easily distinguished and penalized.  
+% Also, an adversary can mix Interests for non-existing data with Interests for existing-data. Thanks to NDN stateful packet forwarding, bad flows can be easily distinguished and penalized.  
+
+% What are the variations of the attack.
+% When defining the Interest flooding attack (Section~\ref{sec:interest flooding}) we made a key assumption that adversaries are trying to achieve the maximum harm (network congestion and router overload) to unprotected NDN network by sending a large volume of \emph{junk Interests}.
+
+The attack mitigation methods studied in this paper provide ways to eliminate network congestion and router overload problems caused by junk Interest flooding (Section~\ref{sec:interest flooding}), but unfortunately not without inducing some new problems.
+In particular, during an ongoing attack, a number of legitimate Interests successfully forwarded towards the Data producer can be substantially larger in unprotected network, then in the network that implements Interests mitigation algorithms.  
+This is simply because an unprotected network allows clients to pump more packets and does not impose any artificial restrictions on packet forwarding.
+Therefore, unless a mitigation algorithm uses some form of intelligence (e.g., statistics for Interest satisfiability), a smaller scale flooding attack can cause greater damage to the service quality (recall service quality curves for physical limits in small-scale and larger-scale evaluations, Fig.~\ref{fig:small-scale} and Fig.~\ref{fig:large-scale}).
+
+Let us take one small step back.
+In a general case, the adversaries would not be aware that the network is or is not protected, e.g., using dynamic the limits algorithm.
+As a result, they will try to do as much harm as possible using junk Interests and the mitigation algorithm will work as expected: small service quality degradation during first seconds of the attack, followed by practically full recovery from the attack.
+However, a careful reader may ask a totally legitimate question: what would happen if adversaries know that the network is protected and know that it is using the dynamic limits algorithm?
+Would there be an optimal strategy to deny service for the legitimate users?
+Would it be better to send ``legitimate'' Interests instead, at least partially, and attempt to always keep the network in the transitional state?
+
+% Hopefully, I'll have some results to back up my claims, otherwise these are just words
+
+% We acknowledge that this could be a probl
+Although a complete investigation of this problem deserves a separate study, we anticipate that the problem may not be as severe as it seems.
+When attacker's Interests can be satisfied (e.g., an attacker requesting dynamically generated Data), these Interest would not linger on routers for extended periods of time, giving opportunities for Interests from the legitimate users to get through and bring Data back.
+Essentially, in the worst case scenario (assuming that dynamic limits are augmented with some form fair queuing), legitimate users and attackers would ``fairly'' share the network.
+(Note that router resource overloading is still impossible, as there is always an upper bound of admitted Interets.)
+
+Technically, the ``fair'' sharing of network resources is the only possible way to mitigate the denial of service attacks, if there are no basis to make any distinction between packets, e.g., when attackers are statistically indistinguishable from legitimate users.
+At the same time, fairness can be defined in a number different ways, including per interface fairness, per-flow fairness, or even per-computation fairness~\cite{Capabilities, Portcullis}, resulting in different service qualities depending on how the attack is organized.
+
+
 
 %%% Local Variables: 
 %%% mode: latex
