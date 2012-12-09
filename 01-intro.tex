@@ -5,38 +5,48 @@
 % Brief introduction about attacks in NDN
 % Contributions of the paper
 
-Denial of service (DoS) and distributed denial of service attacks (DDoS) appeared not very long time after Internet got traction and since then a constant arms race is going on between information providers and attackers who want to knock a certain source of information down. Running a DDoS attack has become a very successful business model due to its general scalable nature, cheapness and lack of protection of information providers by government and law. Most popular and economically effective DDoS attacks are organized with botnets. A botnet agents get installed by many various ways on computers of ordinary people that leads to a very wide geographical distribution of the source of attack that makes blacklisting impossible (in contrast to single source DoS attacks).
+% Introduction to the problem: ndn, solves many problems, but has potential to introduce new problems.
+% in this paer we are studing a number of remedies to Interest floodig attack, as well as trying to doscover ptential of tjese dolutions and their shortcomings
 
-In 2011 for the first time IPv6 DDoS attacks on commercial networks were observed ~\cite{Arbor}. They occur rarely, which only means that IPv6 is not widespread enough for attackers to put significant resources into such DDoS attacks. Principally, in terms of DDoS security IPv6 didn't advance that much comparing to standard IPv4 networks.
+% Structure. Hopefully around three paragraps. 
+% - what is happening with ndn and what is interest floodog
+% - what are the general approaches we are taking, ranging from naïve to more intelligent
+% - basic summary of the results
 
-IP architecture has a wide surface for denial of service attacks which takes the beginning from the thin-waist IP protocol, goes through transport level and up to DNS level. In IP it is very easy to forge source address and specify the exact destination that needs to be placed under attack that creates possibilities for performing various types of reflection DoS attacks. On transport level in TCP/IP stack SYN flood, RST flood and FIN-way attacks are very effective and popular. DNS system can be attacked in multiple ways, e.g. DNS amplification attack. 
+% move disclaimer from section 3 to the intro.
 
-We believe that future Internet architectures can do and must do more for DDoS mitigation. By its design NDN architecture is not sensitive to any kind of reflection attacks due to the lack of host addresses and ubiquitous data caching. NDN architecture can operate without any DNS-like architecture since it routes and forwards packets based on human-readable names instead of IP addresses that have been received from DNS. 
-  
-%\todo{
-%Current Internet architecture and its resilience to DoS and DDOS. Requirements from a new architecture such as CCN with respect to DoS and DDoS resilience.
+Various forms of distributed denial of services attack (DDoS) pose a significant and constant threat to the existing Internet infrastructure~\cite{arbor-report}.
+The recently proposed Named Data Networking (NDN) architecture~\cite{ndn-conext, ndn-tr} completely changes the communication paradigm in the network by removing the notion of network host identities and making the application-level Data names the first-class network citizens.
+That is, instead of requiring users to explicitly connect to specific servers and then use application-level protocols to request desired Data, users can directly ask the network for the Data.
+% In other words, NDN changes communication from host-centric to data-centric.
+Such a shift automatically solves several long standing problems, including source address spoofing and reflector DDoS attacks~\cite{mirkovic2004taxonomy}.
 
-%Our contributions.
+However, as long as there is still a notion of destination, requests (Interests in NDN terms) can still be send towards the destinations,%
+\footnote{Note that ```destination'' is much more vague in NDN than in IP. 
+Copies of the requested Data, towards which Interests may be forwarded, can be in many places, including long-term and short-term caches on NDN routers and alternative locations of the Data producer.} 
+potentially disrupting service to legitimate users.
+Taking into account that NDN requires the stateful forwarding of Interets---as the only way for routers to return Data back is to remember from where the Interest came in---an attacker may specifically target the stateful forwarding of NDN, e.g., in a form of Interest flooding attack. 
 
-%Paper organization.}
+Our primary goal in this paper is not to completely solve all denial of service problems in NDN, but to demonstrate using the Interest flooding attack example (Section~\ref{sec:interest flooding}) that although new NDN-specific DDoS attacks are possible in NDN network, the network is fully equipped to mitigate effects of these attacks.
+In the paper we design several algorithms to mitigate the Interest flooding attack (Section~\ref{sec:design}), exploring the following two unique venues provided by NDN.
+First, an NDN router does not need to accept, create state, and forward all the incoming Interests, but only the amount that would fully utilize downstream link capacity.
+Second, the fact that Data always follows the Interest paths can be used to distinguish between good (e.g., a forwarded Interest gets satisfied) and ``bad'' Interests. 
 
-In this paper we provide a analyze all aspects of Interest Flooding attack in NDN architecture, propose multiple defensive techniques against such attacks, establish evaluation methodology using ndnSIM simulation software, execute small scale and Internet scale DDoS attack scenarios, and analyze our experimental results.
+% Alex: Not sure whether it should be mentioned in intro or not.  If it should, then I don't really like it...
+To quantify the quality of the designed attack mitigation algorithms, we performed a simulation-based study (Section~\ref{sec:evaluation}) based on trivial small-scale and Internet-like larger-scale topologies.
+The results show a great potential of one of the designed algorithms (dynamic limits, Section~\ref{sec:dynamic limits}), where the attack traffic can be effectively localized near the attacker himself.
 
-Following this introduction, Section 2 gives a brief overview of NDN architecture. Section 3 thoroughly discusses Interest flooding attack, and Section 4 proposes multiple defensive techniques against it. Section 5 describes evaluation methodology and gives experimental results. Section 6 contains related work. Section 7 provides analysis based on our results. Section 8 concludes and describes future work.
 
-%\begin{figure}[htpb]
-%  \centering
-%  \includegraphics[scale=0.5]{figures/sim-emu-power.pdf}
-%  \caption{Strength of Interest flooding attack}
-%  \label{fig:simemupower}
-%\end{figure}
+% Section 2 gives a brief overview of NDN architecture. 
+% Section 3 defines Interest flooding attack, 
+% Section 4 designes several attack mitigation algorithms.
+% Section 5 describes evaluation methodology and gives experimental results. Section 6 contains related work. Section 7 provides analysis based on our results. Section 8 concludes and describes future work.
 
-%\begin{figure}[htpb]
-%  \centering
-%  \includegraphics[scale=0.5]{figures/sim-emu-performance.pdf}
-%  \caption{Data retrieval by legitimate clients}
-%  \label{fig:simemuperf}
-%\end{figure}
+
+
+
+
+
 
 
 %%% Local Variables: 
