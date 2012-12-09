@@ -1,6 +1,27 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
+% Main take out from the paper:  could be a problem, but problem is solvable.  
+
+% one may think that 
+
+
+One of the key components in the Named Data Networking architecture is its stateful data delivery model, which potentially can be abused by new types of denial of service attacks.
+However, one should not forget that the same stateful data delivery provides effective mechanisms to fight back against such attacks.
+In this paper we demonstrated that NDN architecture can be quite resilient against Interest flooding attacks, which aim to overwhelm network capacity as well as memory resources on NDN routers.
+The most effective of the designed algorithms---dynamic limits---almost completely eliminates the attack (or at least mitigates it to an acceptable ``fair'' level), leveraging two key aspects: Interest/Data pah symmetry and full receiver-based traffic control.
+In particular, it measures how well Interests are getting satisfied (path symmetry) and uses these measurements to adjust how many Intersets can be accepted from each individual interface (receiver-based control), effectively pushing the attack to the edges.
+
+% Alex: I feel that we should say something else in the conclusion, but not sure what...
+
+% In conclusion, we want to emphasize that Named Data Networking architecture has much more potential, even to protect against attacks,
+
+
+% We hope that this paper will change attitude to NDN design
+% We hope that insights of NDN design potential will 
+% Change thinking 
+% will spark change in thinking about NDN architecture... 
+
 
 %%% Local Variables: 
 %%% mode: latex
