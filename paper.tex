@@ -20,6 +20,9 @@
 \newfont{\nicettfont}{cmtt10}
 \newcommand{\ndnName}[1]{``{\nicettfont #1}''}
 \renewcommand{\texttt}[1]{{\nicettfont #1}}
+\newcommand{\todo}[1]{\vspace{2 mm}\par \noindent \marginpar{\textsc{ToDo}}
+\framebox{\begin{minipage}[c]{0.95 \columnwidth}
+\tt #1 \end{minipage}}\vspace{5 mm}\par}
 
 \usepackage{graphicx}
 % \usepackage[colorlinks]{hyperref}
@@ -41,13 +44,12 @@
 \maketitle
 
 \begin{abstract}
-
-Distributed Denial of Service attack is an ongoing problem in today's Internet. 
-A newly proposed future Internet architecture, Named Data Networking (NDN), lets end users request desired data by sending Interest packets, and the network forwards data packets to end users upon request only. 
-Thus, NDN can effectively defeat the existing DDoS attacks, however it can be subject to new types of DoS attacks, namely Interest packet flooding.  
-In this paper we investigate effective solutions to mitigate Interest flooding attacks. 
-We use simulations to evaluate the design and our results show that our proposed solution can respond to Interest flooding attacks quickly, and that the inherent flow-balance property of NDN (i.e., one Interest packet retrieves at most one Data packet) can be used as a basis for effective DDoS mitigation algorithms.
-
+Distributed Denial of Service attack is an ongoing problem in today's Internet, where packets from large numbers of compromised hosts thwart the paths to the victim site and/or overload the victim machines. 
+In a newly proposed future Internet architecture, Named Data Networking (NDN), end users request desired data by sending Interest packets, and the network forwards data packets upon request only, effectively eliminating the existing DDoS attacks. 
+However an NDN network can be subject to a new type of DoS attacks, namely Interest packet flooding.  
+In this paper we investigate effective solutions to mitigate Interest flooding.
+We show that NDN's inherent properties of each router keeping per packet state and flow-balance (i.e., one Interest packet retrieves at most one Data packet) provides the  basis for effective DDoS mitigation algorithms.
+Our evaluation through simulations shows that the solution can quickly and effectively respond to Interest flooding.
 \end{abstract}
 
 \begin{IEEEkeywords}

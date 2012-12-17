@@ -16,36 +16,24 @@
 % move disclaimer from section 3 to the intro.
 
 Various forms of distributed denial of services attack (DDoS) pose a significant and constant threat to the existing Internet infrastructure~\cite{arbor-report}.
-The recently proposed Named Data Networking (NDN) architecture~\cite{ndn-conext, ndn-tr} completely changes the communication paradigm in the network by removing the notion of network host identities and making the application-level Data names the first-class network citizens.
-That is, instead of requiring users to explicitly connect to specific servers and then use application-level protocols to request desired Data, users can directly ask the network for the Data.
-% In other words, NDN changes communication from host-centric to data-centric.
-Such a shift automatically solves several long standing problems, including source address spoofing and reflector DDoS attacks~\cite{mirkovic2004taxonomy}.
+The recently proposed Named Data Networking (NDN) architecture~\cite{ndn-conext, ndn-tr} completely changes the communication paradigm in the network by removing the notion of addresses and making data the first-class network entities.
+That is, instead of letting end hosts sending packets to a given IP address, NDN lets end hosts request desired data by sending Interest packets carrying application level data names.
+Such a shift automatically eliminates several long standing DDoS attacks, including both direct flooding as well as reflector attack through source address spoofing~\cite{mirkovic2004taxonomy}.
 
-However, as long as there is still a notion of destination, requests (Interests in NDN terms) can still be send towards the destinations,%
-\footnote{Note that ```destination'' is much more vague in NDN than in IP. 
-Copies of the requested Data, towards which Interests may be forwarded, can be in many places, including long-term and short-term caches on NDN routers and alternative locations of the Data producer.} 
-potentially disrupting service to legitimate users.
-Taking into account that NDN requires the stateful forwarding of Interets---as the only way for routers to return Data back is to remember from where the Interest came in---an attacker may specifically target the stateful forwarding of NDN, e.g., in a form of Interest flooding attack. 
-
-Our primary goal in this paper is not to completely solve all denial of service problems in NDN, but to demonstrate using the Interest flooding attack example (Section~\ref{sec:interest flooding}) that although new NDN-specific DDoS attacks are possible in NDN network, the network is fully equipped to mitigate effects of these attacks.
-In the paper we design several algorithms to mitigate the Interest flooding attack (Section~\ref{sec:design}), exploring the following two unique venues provided by NDN.
-First, an NDN router does not need to accept, create state, and forward all the incoming Interests, but only the amount that would fully utilize downstream link capacity.
-Second, the fact that Data always follows the Interest paths can be used to distinguish between good (e.g., a forwarded Interest gets satisfied) and ``bad'' Interests. 
-
+However, since NDN allows any host to request any data, malicious users can attack an NDN network by Interest flooding. As we explain in the next section, NDN routers perform stateful forwarding of Interests, uncontrolled floods of Interest packets can potentially exhaust router resources, disrupting services for legitimate users.  
+One can also attack an NDN network by hijacking Interest packets and then injecting false data replies into the network.
+ 
+As a first step towards a complete solution to address various denial of service attack problems in NDN, in this paper we investigate the solution space for Interest flooding attack (Section~\ref{sec:interest flooding}).  
+We show how an NDN router can exploit its state information to mitigate Interest flooding (Section~\ref{sec:design}).
+We base our solution on the following two insights.
+First, instead of creating state for all incoming Interests, an NDN router only needs to accept enough Interest packets to fully utilize downstream link capacity.
+Second, because Data packets traverse the path taken by the Interests, an NDN router can observe whether an Interest retrieves Data (good Interest) or not (bad Interest).
 % Alex: Not sure whether it should be mentioned in intro or not.  If it should, then I don't really like it...
-To quantify the quality of the designed attack mitigation algorithms, we performed a simulation-based study (Section~\ref{sec:evaluation}) based on trivial small-scale and Internet-like larger-scale topologies.
+ 
+We conduct simulation-based evaluations to quantify the effectiveness of our proposed attack mitigation algorithms (Section~\ref{sec:evaluation}).
+%% based on trivial small-scale and Internet-like larger-scale topologies.
 The results show a great potential of one of the designed algorithms (dynamic limits, Section~\ref{sec:dynamic limits}), where the attack traffic can be effectively localized near the attacker himself.
-
-
-% Section 2 gives a brief overview of NDN architecture. 
-% Section 3 defines Interest flooding attack, 
-% Section 4 designes several attack mitigation algorithms.
-% Section 5 describes evaluation methodology and gives experimental results. Section 6 contains related work. Section 7 provides analysis based on our results. Section 8 concludes and describes future work.
-
-
-
-
-
+\todo{LZ: I did not modify this last paragraph; need to see the rest of the paper first.}
 
 
 
