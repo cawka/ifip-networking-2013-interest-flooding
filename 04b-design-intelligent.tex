@@ -2,23 +2,20 @@
 \subsection{Intelligent attack mitigation}
 \label{sec:intelligent mitigating}
 
-While the Interest limit is the key building block to suppress mechanisms of the Interest flooding attack, legitimate Interests need to be somehow prioritized and malicious Interests need to be somehow penalized in order to completely suppress the attack.
-That is, instead of processing Interests always based on the first-in-first-serve rule, NDN routers need some basis to treat the incoming Interests differently.
-Thus, the primary task in bringing intelligence to the Interest flooding attack mitigation is to proactively distinguish between legitimate and malicious Interests.
+%While the Interest limit is the key building block to suppress mechanisms of the Interest flooding attack, legitimate Interests need to be somehow prioritized and malicious Interests need to be somehow penalized in order to completely suppress the attack.
+%That is, instead of processing Interests always based on the first-in-first-serve rule, NDN routers need some basis to treat the incoming Interests differently.
+%Thus, the primary task in bringing intelligence to the Interest flooding attack mitigation is to proactively distinguish between legitimate and malicious Interests.
 
-To achieve such an Interest differentiation we can leverage another unique feature of the stateful forwarding in NDN---namely, the guaranteed symmetric flow of Interest and Data packets.
-In other words, NDN guarantees that a forwarded Interest would always results in receiving a corresponding Data, provided such Data exists and Interest/Data packets were not lost on the way.
-Therefore, all Interests that result in Data return can be considered legitimate, while the ones that always timeout should be deemed as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest flooding}).  Implications of other types of attacks are discussed in Section~\ref{sec:discussion}.}
+In order to distinguish between legitimate and malicious Interests, we leverage another unique feature of the stateful forwarding in NDN---namely, the guaranteed symmetric flow of Interest and Data packets. Since a Data packet takes the reverse path of the corresponding Interest packet, a router is guarateed to see if an Interest it forwarded resulted in a matching Data packet. The only exception being if Interest/Data packets were lost along the way due to congestion.
+Therefore, intermediate routers can classify all Interests that result in matching Data as legitimate, while the ones that timed out can be marked as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest flooding}).}  
+%Implications of other types of attacks are discussed in Section~\ref{sec:discussion}.}
 
-Unfortunately, the timeout-based differentiation is reactive by nature: one cannot know in advance that an Interest would timeout or bring Data back.
-What we can do proactively is to keep an up-to-date statistics of Interests satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistics to project outcomes for new Interests.
-For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface can be enough to estimate whether an Interest received from a neighbor will bring Data or time out.
-Statistics can also be kept at more granular levels (e.g., per outgoing interface, per prefix, etc.), which can further improve the estimation quality.
+This timeout-based differentiation method is reactive by nature: one cannot know in advance that an Interest would timeout or bring Data back. However, routers can proactively keep an up-to-date statistics of Interests satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistic to determine whether an incoming Interest must be forwarded or dropped. For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface is sufficient to estimate whether an Interest received from a neighboring interface will result in matching Data or a timeout. Statistics can also be kept at finer granularities such as per outgoing interface, per name prefix, etc. that can further improve the estimates. A router's goal is to penalize malicious Interests as soon as possible -- negative statistics should build up fast, while positive statistics should not deteriorate too quickly. Choosing the right balance between these contradictory requirements is a challenge and we explore this topic further  in the evaluation section.  {\it Priya: we should address the one that works best such as exponentially weighted moving average in eval section - it doesn't belong here.} 
 
-The devil is always in the details.
-From the one hand, such statistics needs to start penalizing adversaries as soon as possible (i.e., negative stats should build up fast).
-On the other hand, the positive statistics should not deteriorate too fast (i.e., positive stats should be relatively long-term).
-Our preliminary experiments showed that the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window, provides a good balance between the two contradictory requirements.
+%The devil is always in the details.
+%From the one hand, such statistics needs to start penalizing adversaries as soon as possible (i.e., negative stats should build up fast).
+%On the other hand, the positive statistics should not deteriorate too fast (i.e., positive stats should be relatively long-term).
+%Our preliminary experiments showed that the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window, provides a good balance between the two contradictory requirements.
 
 % \subsubsection{\textbf{Data plane performance tracking}}
 % \label{sec:stats}
