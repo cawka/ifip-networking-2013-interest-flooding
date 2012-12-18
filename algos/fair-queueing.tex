@@ -3,7 +3,7 @@
 
 % However, this limitation approach does not attempt to utilize data plane performance knowledge (i.e., Interest satisfaction ratio statistics) to discriminate good and malicious Interests.
 
-To address the lack of fairness associated with the naive {\it Token Bucket} algorithm, we can modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring interfaces. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  be fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
+To address the lack of fairness associated with the naive {\it Token Bucket} algorithm, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring interfaces. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
 %Due to the expected small volume of Interests, we cannot merely rely on network buffers to perform statistical multiplexing of Interests, as they would almost never be %buffered.
 %At the same time, until bag of tokens is not empty, there is no reason to delay Interest forwarding, as we do not known how many and from which interfaces Interests %will arrive in the future.
 In order to achieve our goal of ensuring ``fair'' mixing of Interests from all neighboring interfaces, 
@@ -21,7 +21,7 @@ Thus, a PIT entry can be quickly updated when the Interest is actually forwarded
   \label{fig:queueing}
 \end{figure}
 
-We present a more formalized description of the Physical limits algorithms with per-interface fairness in Pseudocode~\ref{alg:queuing}. We can control the amount of physical resources utilized at a router (such as memory and computation power) by setting appropriate queue sizes. It is also important to set apprpriate value for how long an Interest can be enqueued. If an Interest is enqueued for a long time, by the time it is dequeued and appropriately forwarded, the resulting Data packet might not be valid due to state expiration at previous downstream routers. We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
+We present a more formalized description of this algorithm in Pseudocode~\ref{alg:queuing}. We can control the amount of physical resources utilized at a router (such as memory and computation power) by setting appropriate queue sizes. It is also important to set apprpriate value for how long an Interest can be enqueued. If an Interest is enqueued for a long time, by the time it is dequeued and appropriately forwarded, the resulting Data packet might not be valid due to state expiration at previous downstream routers. We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
 {\it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
 
 %It should be noted that enqueued Interests should not be kept in the queue for a prolonged period of time.
@@ -72,7 +72,7 @@ We present a more formalized description of the Physical limits algorithms with 
 \end{algorithm}
 
 
-As we show in Section~\ref{sec:evaluation}, fair queueing provides partial relief from the Interest flooding attack, allowing legitimate users to successfully fetch Data for 15--20\% of the expressed Interests (compared to 0-10\% without fair queueing). While these might be reasonable techniques for preventing congestion in the network and for ensuring fairness, they are far from being effective in protecting legitimate users from malicious attackers. Malicious attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of Interests.
+As we show in Section~\ref{sec:evaluation}, fair queueing provides partial relief from the Interest flooding attack, allowing legitimate users to successfully fetch Data for 15--20\% of the expressed Interests (compared to 0-10\% without fair queueing). While this algorithm might be reasonable for ensuring fairness in an NDN network, it is completely ineffective in protecting legitimate users from malicious attackers. Malicious attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of Interests.
 
 
 %At the same time, the Physical limits with or without fair queueing allows attackers to send a relatively small volume of Interests in order to significantly impact service for the legitimate users.
