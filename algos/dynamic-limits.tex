@@ -1,8 +1,8 @@
 
 % Differential treatment of Interests received from different interfaces can be achieved in a more elegant way, without reverting to probabilistic methods.
 
-Essentially, the probabilistic Interest accept algorithm divides the available forwarding tokens between interfaces proportionally to their satisfaction ratios.
-Exactly the same effect can be achieved without using probabilistic methods, simply by enabling and enforcing additional Interest limits for each incoming interface, where the values of the limits directly depend on the interface satisfaction ratios.
+Essentially, the probabilistic Interest accept algorithm divides the available forwarding tokens between interfaces in proportion to their Interest satisfaction ratios.
+Given the drawbacks of this algorithm, the same effect can be achieved without using probabilistic methods. An alternate strategy is to enable and enforce additional Interest limits for each incoming interface, where the values of the limits directly depend on the interface satisfaction ratios.
 Additionally, routers may need to explicitly announce these limits to their downstream neighbors, ensuring that any forwarded Interest from the downstream is actually getting through, resulting in genuine Interest satisfaction statistics.
 
 The formal definition of the dynamic limits algorithm is presented in Pseudocode~\ref{alg:dynamic limits}, while Fig.~\ref{fig:dynamic limits example} illustrates how the algorithm would work in our toy example on Fig.~\ref{fig:flooding example}.
