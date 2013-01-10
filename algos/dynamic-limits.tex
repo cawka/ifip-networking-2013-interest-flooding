@@ -27,9 +27,10 @@ Assuming the initial (physical) limit $L=10$ and the current satisfaction ratios
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+{ 
 \begin{algorithm}[h]
-\caption{Dynamic limits}
+\footnotesize
+\caption{\small Dynamic limits}
 \label{alg:dynamic limits}
 \begin{algorithmic}[1]
 \State{} \Comment{Same initialization, InData and Timeout functions as in Physical Limits algorithm}
@@ -58,6 +59,7 @@ Assuming the initial (physical) limit $L=10$ and the current satisfaction ratios
 
 \end{algorithmic}
 \end{algorithm}
+
 
 The zero limit for the adversary's link means that the router A is temporarily not willing to accept any interests from this link, not until the statistics decays to the appropriate level (recall Fig.~\ref{fig:ratio example}).
 At the next iterations of the dynamic limits algorithm, the legitimate user will be able to gradually improve the statistics on both the router A and router B (all his Interests will get through and will return Data), eventually resulting in a full allowance ($L'=L=10$) in the links between the routers A and B, and the user and the router A.
