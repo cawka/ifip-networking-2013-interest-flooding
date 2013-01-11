@@ -36,12 +36,12 @@ A short and simplistic summary of the results is that the first two attack mitig
   \label{fig:small-scale attack progress}
 \end{figure}
 
-\paragraph{\textbf{Simple token buckets}}
+\paragraph{\textbf{Simple token bucket}}
 
 {\color{red}Alex: should this discussion be removed or we still want to keep it (as it is referenced later and potentially before)}
 
-Let us take a deeper look on what is happening with the physical limits algorithm.
-Essentially, we observe an extremely successful denial of service attack, where attackers almost completely shut down legitimate users from the Data producer (using a relatively small amount of Interests, as physical limits restricts the number of forwarded Intersets!).
+Let us take a deeper look on what is happening with the simple token bucket algorithm.
+Essentially, we observe an extremely successful denial of service attack, where attackers almost completely shut down legitimate users from the Data producer (using a relatively small amount of Interests, as token bucket restricts the number of forwarded Intersets!).
 This ``success'' can be explained using a simplistic example, illustrated on Fig.~\ref{fig:three router example}, where each router has only one token for Interest forwarding.
 In this example we assume that both the legitimate user and the adversary send Interests in about the same time.
 
@@ -65,7 +65,7 @@ As a result, the adversary recaptures router A's token and extends the ``lock ou
 \paragraph{\textbf{Token bucket with per interface fairness}}
 
 The described problem arises from the clocking effect and can be solved in a number different ways.
-Augmenting physical limits algorithms with per-interface fair queueing allows us to eliminate the clocking effect. 
+Augmenting token bucket algorithms with per-interface fair queueing allows us to eliminate the clocking effect. 
 That is, in the second case when router A releases the token after the first ``lock out'' period, it will immediately process previously enqueued Interests from the legitimate user.
 However, because the Interest time out (``lock out'' time) is most likely be larger than the time to actually fetch the Data, an adversary is still able to ``unfairly'' deny service to good guys.
 Ideally, if there are only 40\% of compromised users, the rest good users should get at least 60\% of network resources, which is not true as can be seen on Fig.~\ref{fig:small-scale attack progress}.
@@ -102,7 +102,7 @@ Since at this point the overall attack dynamics of all the attack mitigation alg
 \end{figure}
 
 The presented results demonstrate the overall, and somewhat obvious, trends for all attack mitigation algorithms: the larger is the attack, the lower service quality is observed by the legitimate users.
-Physical limits with and without per-interface fairness give perfect attack instrument even for a small number of attackers: just 3 attackers can either completely shut down or halve the service quality for the rest 13 users.
+Token bucket algorithm with and without per-interface fairness give perfect attack instrument even for a small number of attackers: just 3 attackers can either completely shut down or halve the service quality for the rest 13 users.
 At the same time, while both intelligent attack mitigation algorithms also show a decline in service quality, this decline is very subtle: when more than 50\% of users are compromised, service degrades less than by 25\% for the satisfaction-based Interest accept method and less than by 10\% in the satisfaction-based pushback algorithm.
 
 
