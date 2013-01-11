@@ -21,7 +21,7 @@ That is, sharing of the network links exponentially increases as decreasing leve
 \subsubsection{Network reaction to the attack}
 
 The first set of experiments aims to evaluate reaction of the network and Interest flooding attack mitigation methods mechanisms under a moderate-level DDoS attack.
-For this purpose, we simulated four different network scenarios, in which all routers implements the same attack mitigation algorithm, either physical limits, physical limits with per-interface fairness, probabilistic Interest accept, or dynamic limits (Section~\ref{sec:design}).
+For this purpose, we simulated four different network scenarios, in which all routers implements the same attack mitigation algorithm, either token bucket with per interface fairness, satisfaction-based Interest acceptance, or satisfaction-based pushback (Section~\ref{sec:design}).
 
 For each network scenario we performed ten independent simulation runs, where randomly chosen 7 client nodes represent adversaries (compromised users), and the rest 9 client nodes represent legitimate users.
 In each run we simulated a 10-minute attack window (total simulation time was 30 minutes, with attack starting at 10-minute mark).
@@ -31,12 +31,14 @@ A short and simplistic summary of the results is that the first two attack mitig
 
 \begin{figure}[t]
   \centering
-  \includegraphics[scale=1]{tree-topo-var-evils-max-consumers-30mins/tree-good-0-producer-gw}
+  \includegraphics[scale=0.8]{paper-topo-tree/tree-good-0-producer-gw}
   \caption{Satisfaction ratio dynamics during the attack (7 attackers / 9 legitimate)}
   \label{fig:small-scale attack progress}
 \end{figure}
 
-\paragraph{\textbf{Physical limits}}
+\paragraph{\textbf{Simple token buckets}}
+
+{\color{red}Alex: should this discussion be removed or we still want to keep it (as it is referenced later and potentially before)}
 
 Let us take a deeper look on what is happening with the physical limits algorithm.
 Essentially, we observe an extremely successful denial of service attack, where attackers almost completely shut down legitimate users from the Data producer (using a relatively small amount of Interests, as physical limits restricts the number of forwarded Intersets!).
@@ -60,7 +62,7 @@ In the case when malicious Interest is sent a little bit earlier, then router A 
 In the instant when the token gets released at router X, an adversary is able to push new Interest towards router A, which may arrive in the exact time A's token gets released (assuming an idealistic environment).
 As a result, the adversary recaptures router A's token and extends the ``lock out'' for another second, denying service to the legitimate user without sending any massive numbers of Interests.
 
-\paragraph{\textbf{Physical limits with per-interface fair queueing}}
+\paragraph{\textbf{Token bucket with per interface fairness}}
 
 The described problem arises from the clocking effect and can be solved in a number different ways.
 Augmenting physical limits algorithms with per-interface fair queueing allows us to eliminate the clocking effect. 
@@ -69,18 +71,18 @@ However, because the Interest time out (``lock out'' time) is most likely be lar
 Ideally, if there are only 40\% of compromised users, the rest good users should get at least 60\% of network resources, which is not true as can be seen on Fig.~\ref{fig:small-scale attack progress}.
 We expect that reducing the maximum hold time for Interests (e.g., to an order of average RTT) would improve overall performance for legitimate users, with negative effect of requiring extra complexity for Intersets processing.
 
-\paragraph{\textbf{Probabilistic Interest accept}}
+\paragraph{\textbf{Satisfaction-based Interest acceptance}}
 
 When routers more intelligently process incoming Interests (i.e., based on the incoming interface statistics), the Interest flooding attack becomes virtually ineffective.
 That is, malicious Interests are simply not getting admitted to the network, not being able to create much service disturbance for the legitimate users.
-The observed periodicity of the probabilistic Interest accept curve on Fig.~\ref{fig:small-scale attack progress} is a direct result from ``intelligence'' (Interest satisfaction rate statistics) decaying with time.
+The observed periodicity of the satisfaction-based Interest accept curve on Fig.~\ref{fig:small-scale attack progress} is a direct result from ``intelligence'' (Interest satisfaction rate statistics) decaying with time.
 The 50-second periods approximately correspond to the selected exponential decaying parameter $\alpha=e^{−1.0/30.0}$, which decays statistics to $1/e$ of the initial value within 30~seconds and to $\approx20\%$ within 50~seconds.
 The primary reason that such minimum peaks exist is the fact that when attack Interests start to get readmitted, they cause degradation of statistics on routers close to the producer (i.e., routers that observe traffic mix from legitimate and malicious users).
 This degradation subsequently reduces chances for legitimate Interests get through (see Section~\ref{sec:probabilistic}) until malicious Interests are ``pushed back'' to the edge.
 
-\paragraph{\textbf{Dynamic limits}}
+\paragraph{\textbf{Satisfaction-based pushback}}
 
-The only potential problem with the dynamic limits algorithm is that it features a sharp dive of the satisfaction ratio curve at the start of the attack.
+The only potential problem with the satisfaction-based pushback algorithm is that it features a sharp dive of the satisfaction ratio curve at the start of the attack.
 That is, until all routers become fully aware of the attack---malicious Interests start to time out---and until explicit Interest limits announcements successfully localize malicious Interests near the attacker, the network for a short period of time (under 10~seconds for all simulation runs) fails to provide 100\% service for the legitimate users.
 At the same time, we do not observe any periodic behavior, as dynamically adjusted limits during an ongoing attack effectively guarantee that once Interest is admitted, it will get through to the Data producer.
 
@@ -94,14 +96,14 @@ Since at this point the overall attack dynamics of all the attack mitigation alg
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.9]{tree-topo-var-evils-max-consumers-30mins/tree-good-0-producer-gw-avg-1-min}
+  \includegraphics[scale=0.8]{paper-topo-tree/tree-good-0-producer-gw-avg-1-min}
   \caption{Average consumer Interest satisfaction ratios (first minute)}
   \label{fig:small-scale-topo boxplot}
 \end{figure}
 
 The presented results demonstrate the overall, and somewhat obvious, trends for all attack mitigation algorithms: the larger is the attack, the lower service quality is observed by the legitimate users.
 Physical limits with and without per-interface fairness give perfect attack instrument even for a small number of attackers: just 3 attackers can either completely shut down or halve the service quality for the rest 13 users.
-At the same time, while both intelligent attack mitigation algorithms also show a decline in service quality, this decline is very subtle: when more than 50\% of users are compromised, service degrades less than by 25\% for probabilistic Interest accept method and less than by 10\% in dynamic limits algorithm.
+At the same time, while both intelligent attack mitigation algorithms also show a decline in service quality, this decline is very subtle: when more than 50\% of users are compromised, service degrades less than by 25\% for the satisfaction-based Interest accept method and less than by 10\% in the satisfaction-based pushback algorithm.
 
 
 % \begin{figure}[htbp]

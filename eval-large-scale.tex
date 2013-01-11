@@ -11,7 +11,7 @@ After categorizing the nodes, we randomly assigned bandwidths and link delays ba
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.26,angle=90]{7018-r0}
+  \includegraphics[scale=0.15,angle=90]{7018-r0}
   \caption{Internet-like topology: 344 client routers (red), 109 gateway routers (green), 109 backbone routers (blue)}
   \label{fig:large-scale-topo}
 \end{figure}
@@ -47,22 +47,22 @@ Similarly to the first set of small-scale evaluations, we fixed the number of ma
 % The results for all attack mitigation algorithms and all runs are aggregated in Fig.~\ref{fig:small-scale attack progress}, where Y-axis represents a minimum and maximum range for observed Interest satisfaction percentages among all nodes and all simulation runs.
 % A short and simplistic summary of the results is that the first two attack mitigation methods do not work at all, and the last two are working quite good.
 
-The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that for both physical limits algorithms and dynamic limits algorithm the performance is about the same as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
+The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
 
 \begin{figure}[tbh]
  \centering
- \includegraphics[scale=1]{topo-7018-gw-15mins-new/7018-r0-good-0-producer-gw}
+ \includegraphics[scale=0.8]{paper-topo-7018-gw/7018-r0-good-0-producer-gw}
  \caption{Satisfaction ratio dynamics during the attack (30\% attackers)}
  % producer on a gateway node
  \label{fig:large-scale}
 \end{figure}
 
-At the same time, the probabilistic method completely failed to provide an adequate protection against the Interest flooding attack, and in addition degraded service for the legitimate users after the attack finished.
+At the same time, the satisfaction-based Interest acceptance method completely failed to provide an adequate protection against the Interest flooding attack, and in addition degraded service for the legitimate users after the attack finished.
 The main reason for the failure was already explained in Section~\ref{sec:probabilistic}.
 That is, if the number of hops between legitimate users and the Data producer is large (15 on average in the simulated topology) uncoordinated probabilistic Interest drops result in minuscule probability for good Interests to reach the Data producer during an ongoing attack, resulting in negative Interests satisfaction ratio statistics.
 This also explains why until the statistics ages out, not all legitimate users can get satisfy all of their Interests.
 
-In summary, in all of the simulated topologies, the dynamic limits algorithm restricts malicious traffic from even entering the network.
+In summary, in all of the simulated topologies, the satisfaction-based pushback algorithm restricts malicious traffic from even entering the network.
 The only short periods of time when malicious Interests are getting admitted to the network is when routers have either no prior knowledge about per-interface satisfaction ratios (the initial period of the attack) or such knowledge becomes stale (statistics decaying during the attack).
 As soon as the knowledge is obtained or refreshed, the service for legitimate users returns to norm.
 
