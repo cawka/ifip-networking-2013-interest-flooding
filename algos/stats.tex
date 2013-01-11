@@ -5,8 +5,7 @@
 % Essentially, this recovery relies on statistics module to perform time-based invalidation of historical data (timely, but not too quickly\footnote{Otherwise, attackers may send short bursts of malicious Interests, successfully avoiding differential Interest treatment}).
 
 
-Pseudocode~\ref{algo:interest stats} formally defines per-incoming interface statistics generation.
-Please note that in order to ensure decaying of relative statistics (e.g., ratio between the number of unsatisfied and forwarded Interest), only unsatisfied statistics needs to be exponentially smoothed (lines 23--26).  
+Pseudocode~\ref{algo:interest stats} formally defines how statistics can be generated for  each incoming interface. Note that in order to ensure decaying of relative statistics (e.g., ratio between the number of unsatisfied and forwarded Interest), only unsatisfied statistics needs to be exponentially smoothed (lines 23--26).  
 
 \floatname{algorithm}{Pseudocode}
 
@@ -65,10 +64,9 @@ Please note that in order to ensure decaying of relative statistics (e.g., ratio
 \end{algorithm}
 
 
-Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistic during (10--70~seconds) and after the attack.
-Before the attack started, the percentage of unsatisfied Interests is zero.  
-The statistics starts to build up rapidly as soon as Interests start to time out, which happens approximately after one second since the start of the attack.\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
-For the following duration of the attack, statistics fluctuates near the 100\% mark: 
+Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistic during and after an Interest flooding attack. The attack duration is from 10 to 70~seconds. Prior to start of the attack, the percentage of unsatisfied Interests is zero.  
+The statistics build up rapidly as soon as Interests start to time out, which happens approximately one second after the start of the attack.\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
+For the duration of the attack (10--70~seconds), the percentage of unsatisfied Interests is close to 100\%: 
 when the ratio is close to 100\%, routers drop all incoming Interests, resulting in decaying of the statistics until a new Interest is admitted, which eventually brings statistics back near 100\% point.
 Finally, the ratio exponentially decays after the attack ceases.
 
