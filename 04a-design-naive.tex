@@ -10,7 +10,7 @@
 
 % Our definition of attack mitigation is that good clients are still able to access data on the producer.
 
-In this section we present several algorithms to mitigate Interest flooding attacks in NDN.  Our mitigation strategies feature varying degrees of implementation complexity and effectiveness -- the higher the implementation complexity, the more effective is the algorithm against Interest flooding attacks. We start by describing our simple strategies and use the insights and lessons learnt from the deployment of these techniques to inform and design more effective mitigation techniques that work well in a variety of attack scenarios.
+In this section we present several algorithms to mitigate Interest flooding attacks in NDN.  Our mitigation strategies feature varying degrees of implementation complexity and effectiveness---the higher the implementation complexity, the more effective is the algorithm against Interest flooding attacks. We start by describing our simple strategies and use the insights and lessons learnt from the deployment of these techniques to inform and design more effective mitigation techniques that can work well in a variety of attack scenarios.
 
 %   - Naive approach to Interest Limits (that is called physical limits everywhere else)
 %     Example how this can be implemented in a simple way
@@ -40,8 +40,8 @@ In this section we present several algorithms to mitigate Interest flooding atta
 
 % All communication in NDN network is host-to-host and receiver-driven.
 
-An obvious and naive solution to defend against Interest flooding attacks is to restrict the number of Interests that are forwarded in the network. To this end, we exploit a 
- fundamental principle of NDN architecture - flow balance between Interest and Data packets. The flow balance refers to the fact that one Interest can be satisfied by at most one Data packet. This principle allows intermediate routers that forward the Interest packets to control the number of outstanding Interests in the network. 
+An obvious and na\"ive solution to defend against Interest flooding attacks is to restrict the number of Interests that are forwarded in the network. To this end, we exploit a 
+ fundamental principle of NDN architecture---flow balance between Interest and Data packets. The flow balance refers to the fact that one Interest can be satisfied by at most one Data packet. This principle allows intermediate routers that forward the Interest packets to control the number of outstanding Interests in the network. 
 One simple and easy method to implement this strategy is for a NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding out interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers keep track of the amount of Data requested that can fully utilize the downstream link (estimated from the number of Interests it forwarded) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens {\it i.e.} the \emph{Pending Interests Limit} for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
 % With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
 
@@ -70,8 +70,7 @@ This {\it Token Bucket} approach might be exceptionally retrictive in forwarding
 
 
 
-\subsubsection{\textbf{Physical limits with per-interface fairness}}
-{\it Priya: Rename this algo to Token Bucket with per-interface fairness or something similar}
+\subsubsection{\textbf{Token bucket with per interface fairness}}
 \label{sec:queuing}
 
 
@@ -84,3 +83,8 @@ This {\it Token Bucket} approach might be exceptionally retrictive in forwarding
 The key drawback of the {\it Token Bucket} algorithm as well as its variation that ensures fair queuing on a per-interface basis is that these algorithms still admit Interests from malicious users. A sizeable percentage of these malicious Interests are forwarded all the way to content producers, thereby utilizing scarce network resources and reducing resources available to serve legitimate users.  These algorithms attempt to ensure that each interface does not forward more than its fair share of Interests, but in doing so, they drop both legitimate Interests as well as malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and effectively drop only malicious requests for content. `Good' Interests from legitimate users must be admited and forwarded appropriately. The key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
 
 Unlike in today's host-based Internet architecture where DDoS mitigation techniques that rely on blacklisting of dark IP prefixes or whitelisting of good IP prefixes are still reasonably effective, in NDN one cannot easily distinguish a `good' prefix from a `bad' one. Content producers must be able to support dynamic generation of Data packets to satisfy incoming Interest packets -- thus, an Interest that cannot be satisfied by matching Data from any intermediate router's cache is necessarily forwarded to the producer for possible dynamic Data packet generation. Thus intermediate routers cannot determine if the prefix is `good' or `bad' based on the name alone -- DDoS mitigation techniques that rely on whitelisting or blacklisting of certain namespaces  will be inefficient and likely ineffective. 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

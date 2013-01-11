@@ -25,10 +25,10 @@ At the same time, if only a small percentage of the expressed Interest are getti
 % Traffic pattern
 In our experiments we made a simplistic assumption that both legitimate users and adversaries express Interests with constant average rates with randomized (uniform distribution) time gaps between each two consecutive Interests.
 % Alex: not sure how to argue about the traffic pattern
-Although this pattern is not truly realistic, it gives us a good statistical mix of traffic from all network users without excessive network buffering.
+Although this pattern may seem not truly realistic, it approximates a good statistical mix of traffic from all network users without excessive network buffering.
 
 In addition to that, in each run of the simulation we ensure that all Interests expressed by the legitimate users during a no-attack period are satisfied.
-For simplicity and without losing any generality, we also equalized the average rates with which the legitimate users express Interests.
+For simplicity, we also equalized the average rates with which the legitimate users express Interests.
 At the same time, the attackers are sending junk Interests as much as they can get through (remember, that Interest limits will not allow real flooding of Intersests in all of the designed mitigation algorithms).
 
 % Fixed parameters

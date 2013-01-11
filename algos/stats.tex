@@ -20,9 +20,7 @@ Please note that in order to ensure decaying of relative statistics (e.g., ratio
 \label{algo:interest stats}
 \begin{algorithmic}[1]
 
-\vspace{0.2cm}
-
-\For{\textbf{each} interface \em{if}}
+\For{\textbf{each} interface \textbf{if}}
     \State $F_{if} \leftarrow 0$ \Comment{forwarded Interests from interface \textbf{if}}
     \State $\hat F_{if} \leftarrow 0$ \Comment{averaged value of $F_{if}$}
 
@@ -30,32 +28,32 @@ Please note that in order to ensure decaying of relative statistics (e.g., ratio
     \State $\hat U_{if} \leftarrow 0$ \Comment{averaged value of $U_{if}$}
 \EndFor
 
-\vspace{0.2cm}
-\Function{OutInterest}{Interest \textbf{i}, InInterface \textbf{if}}
-  \State $F_{if} \leftarrow F_{if} + 1$
-  \State record \textbf{\emph{if}} in the list of incoming interfaces for \textbf{\emph{i}}
+\vspace{0.1cm}
+\Function{OutInterest}{Interest \textbf{i}, InInterface \textbf{in}}
+  \State $F_{in} \leftarrow F_{in} + 1$
+  \State record \textbf{\emph{in}} in the list of incoming interfaces for \textbf{\emph{i}}
 \EndFunction
 
-\vspace{0.2cm}
+\vspace{0.1cm}
 \Function{InterestTimeout}{Interest \textbf{i}}
     \State lookup the list of incoming interfaces for \textbf{\emph{i}}
 
-    \For{\textbf{each} interface $if$ in the list}
+    \For{\textbf{each} interface \textbf{if} in the list}
         \State $U_{if} \leftarrow U_{if} + 1$
     \EndFor
 \EndFunction
 
-\vspace{0.2cm}
+\vspace{0.1cm}
 
 \State {} \Comment{\textit{Exponentially weighted moving average smoothing}}
 \Function{EWMA}{} \Comment{Every second}
 \State $\alpha \leftarrow e^{-1.0/30.0}$  %\Comment{$\approx$ 30~sec average}
 
-\For{\textbf{each} interface \em{if}}
+\For{\textbf{each} interface \textbf{if}}
     \State $\hat U_{if} \leftarrow \alpha \cdot \hat U_{if} + (1 - \alpha) \cdot U_{if}$ 
     \State $U_{if} \leftarrow 0$ 
 
-    \If{$F_{if} > 0$} \Comment{To ensure decaying of ratio $U_{if}/F_{if}$ when Interest flow stops}
+    \If{$F_{if} > 0$} \Comment{To ensure decaying of ratio $U_{if}/F_{if}$}
         \State $\hat F_{if} \leftarrow \alpha \cdot \hat F_{if} + (1 - \alpha) \cdot I_{if}$ 
         \State $F_{if} \leftarrow 0$ \Comment{Reset counters}
     \EndIf

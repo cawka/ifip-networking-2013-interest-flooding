@@ -3,7 +3,7 @@
 
 % However, this limitation approach does not attempt to utilize data plane performance knowledge (i.e., Interest satisfaction ratio statistics) to discriminate good and malicious Interests.
 
-To address the lack of fairness associated with the naive {\it Token Bucket} algorithm, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring interfaces. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
+To address the lack of fairness associated with the na\"ive {\it Token Bucket} algorithm, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring interfaces. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
 %Due to the expected small volume of Interests, we cannot merely rely on network buffers to perform statistical multiplexing of Interests, as they would almost never be %buffered.
 %At the same time, until bag of tokens is not empty, there is no reason to delay Interest forwarding, as we do not known how many and from which interfaces Interests %will arrive in the future.
 In order to achieve our goal of ensuring ``fair'' mixing of Interests from all neighboring interfaces, 
@@ -22,7 +22,7 @@ Thus, a PIT entry can be quickly updated when the Interest is actually forwarded
 \end{figure}
 
 We present a more formalized description of this algorithm in Pseudocode~\ref{alg:queuing}. We can control the amount of physical resources utilized at a router (such as memory and computation power) by setting appropriate queue sizes. It is also important to set apprpriate value for how long an Interest can be enqueued. If an Interest is enqueued for a long time, by the time it is dequeued and appropriately forwarded, the resulting Data packet might not be valid due to state expiration at previous downstream routers. We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
-{\it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
+{\color{red} \it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
 
 %It should be noted that enqueued Interests should not be kept in the queue for a prolonged period of time.
 %Otherwise, by the time the Interests reaches the Data, the state could have been long expired downstream, effectively making such an Interest useless.
@@ -40,40 +40,63 @@ We present a more formalized description of this algorithm in Pseudocode~\ref{al
 
 \begin{algorithm}[h]
 \footnotesize
-\caption{\small Physical limits with per-interface fairness}
+\caption{\small Token bucket with per interface fairness}
 \label{alg:queuing}
 \begin{algorithmic}[1]
-\State{} \Comment{Same initialization, InData and Timeout functions as in Physical Limits algorithm}
+\For{\textbf{each} interface \textbf{if}}
+    \State{$L_{if} \leftarrow$ Interest Limit according to (1)}
+    \State{$O_{if} \leftarrow 0$} \Comment{Outstanding Interests on interface \textbf{if}}
+\EndFor
 
-\vspace{0.2cm}
+\vspace{0.1cm}
 
-\Function{OutInterest}{Interest \textbf{i}, InInterface \textbf{if}, OutInterface \textbf{of}}
-    \If{$L_{of} - O_{of} > 0$} \Comment{\textbf{of} is under physical limits}
-        \State $O_{of} \leftarrow O_{of} + 1$  \Comment{``Borrow'' token}
-        \State add \textbf{of} to PIT entry and forward \textbf{i} to \textbf{of}
+\Function{OutInterest}{Interest \textbf{i}, InInterface \textbf{in}, OutInterface \textbf{out}}
+    \If{$L_{out} - O_{out} > 0$} \Comment{\textbf{out} is under limit cap}
+        \State $O_{out} \leftarrow O_{out} + 1$  \Comment{``borrow'' a token from the bucket}
+        \State add \textbf{out} to PIT entry and forward \textbf{i} to \textbf{out}
     \Else
-        \State Queue $q \leftarrow of$.GetSubQueue($if$)
-        \If{$Size(q) < L_{of}$}
+        \State Queue $q \leftarrow out$.GetSubQueue($in$)
+        \If{$Size(q) < L_{out}$}
            \State $q$.PushInterest($i$)
-           \State add \textbf{of} to PIT entry, and link PIT entry with the queue
+           \State add \textbf{out} to PIT entry, and link PIT entry with the queue
         \Else
            \State drop Interest
         \EndIf
     \EndIf
 \EndFunction
 
-\vspace{0.2cm}
-\State{} \Comment{\textit{Whenever $L_{of} - O_{of}$ becomes larger than zero}}
+\vspace{0.1cm}
+
+\State{} \Comment{\textit{Whenever $L_{out} - O_{out}$ becomes larger than zero}}
 \Function{TokenBecomesAvailable}{}
-    \State Queue $q \leftarrow$ $of$.GetRoundRobinSubQueue 
-    \State $i \leftarrow$ $q$.PopInterest
-    \State update PIT entry and Forward($i$, $of$)
+    \State Queue $q \leftarrow$ $out$.GetRoundRobinSubQueue 
+    \State Interest $i \leftarrow$ $q$.PopInterest
+    \State update PIT entry and Forward($i$, $out$)
 \EndFunction
+
+\vspace{0.1cm}
+
+\Function{InData}{Data \textbf{d}}
+   \State lookup PIT entry \textbf{p} for data \textbf{d}
+   \For{\textbf{each} outgoing interface \textbf{out} in \textbf{p}}
+        \State $O_{out} \leftarrow O_{out} - 1$ \Comment{``return'' token}
+   \EndFor
+\EndFunction
+
+\vspace{0.1cm}
+
+\Function{Timeout}{PIT entry $p$}
+   \For{\textbf{each} outgoing interface \textbf{out} in \textbf{p}}
+        \State $O_{out} \leftarrow O_{out} - 1$ \Comment{``return'' token}
+   \EndFor
+\EndFunction
+
+
 \end{algorithmic}
 \end{algorithm}
 
 
-As we show in Section~\ref{sec:evaluation}, fair queueing provides partial relief from the Interest flooding attack, allowing legitimate users to successfully fetch Data for 15--20\% of the expressed Interests (compared to 0-10\% without fair queueing). While this algorithm might be reasonable for ensuring fairness in an NDN network, it is completely ineffective in protecting legitimate users from malicious attackers. Malicious attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of Interests.
+As we show in Section~\ref{sec:evaluation}, fair queueing provides partial relief from the Interest flooding attack, allowing legitimate users to successfully fetch Data for 15--20\% of the expressed Interests (compared to 0--10\% without fair queueing). While this algorithm might be reasonable for ensuring fairness in an NDN network, it is completely ineffective in protecting legitimate users from malicious attackers. Malicious attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of Interests.
 
 
 %At the same time, the Physical limits with or without fair queueing allows attackers to send a relatively small volume of Interests in order to significantly impact service for the legitimate users.
