@@ -42,11 +42,11 @@ In this section we present several algorithms to mitigate Interest flooding atta
 
 An obvious and na\"ive solution to defend against Interest flooding attacks is to restrict the number of Interests that are forwarded in the network. To this end, we exploit a 
  fundamental principle of NDN architecture---flow balance between Interest and Data packets. The flow balance refers to the fact that one Interest can be satisfied by at most one Data packet. This principle allows intermediate routers that forward the Interest packets to control the number of outstanding Interests in the network. 
-One simple implementation technique  is for a NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding out interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers keep track of the amount of Data requested that can fully utilize the downstream link (estimated from the number of Interests it forwarded) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens {\it i.e.} the \emph{Pending Interests Limit} for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
+One simple implementation technique  is for an NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding out interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers keep track of the amount of Data requested that can fully utilize the downstream link (estimated from the number of Interests it forwarded) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens {\it i.e.} the pending \emph{Interests Limit} for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
 % With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
-
+%
 \begin{equation}
-\mathrm{Interest\ Limit} = Delay\ [s] \cdot \frac{\mathrm{Bandwidth\ [Bytes/s]}}{\mathrm{Data\ packet\ size\ [Bytes]}}
+\small \mathrm{Interest\ Limit} = Delay\ [s] \cdot \frac{\mathrm{Bandwidth\ [Bytes/s]}}{\mathrm{Data\ packet\ size\ [Bytes]}}
 \end{equation}
 
 In the above equation, \emph{Delay} is the expected time of Interest being satisfied and \emph{Data packet size} is the size of the returned Data packet.

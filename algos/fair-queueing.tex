@@ -24,7 +24,8 @@ Thus, a PIT entry can be quickly updated when the Interest is actually forwarded
 \end{figure}
 
 We present a formalized description of this algorithm in Pseudocode~\ref{alg:queuing}. We can control the amount of physical resources utilized at a router (such as memory and computation power) by setting appropriate queue sizes. It is also important to set apprpriate value for how long an Interest can be enqueued. If an Interest is enqueued for a long time, by the time it is dequeued and appropriately forwarded, the resulting Data packet might not be valid due to state expiration at previous downstream routers. We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
-{\color{red} \it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
+% Alex: I don't believe there is a need for separate discussion about "freshness", as we already introduced concept of lifetime
+% {\color{red} \it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
 
 %It should be noted that enqueued Interests should not be kept in the queue for a prolonged period of time.
 %Otherwise, by the time the Interests reaches the Data, the state could have been long expired downstream, effectively making such an Interest useless.

@@ -15,9 +15,9 @@
 
 % move disclaimer from section 3 to the intro.
 
-Various forms of distributed denial of services attack (DDoS) pose a significant and constant threat to the existing Internet infrastructure~\cite{arbor-report}.
+Various forms of distributed denial of services (DDoS) attacks pose a significant and constant threat to the existing Internet infrastructure~\cite{arbor-report}.
 The recently proposed Named Data Networking (NDN) architecture~\cite{ndn-conext, ndn-tr} completely changes the communication paradigm in the network by removing the notion of addresses and making data the first-class network entities.
-That is, instead of letting end hosts sending packets to a given IP address, NDN lets end hosts request desired data by sending Interest packets carrying application level data names.
+That is, instead of letting end hosts send packets to a given IP address, NDN lets end hosts request desired data by sending Interest packets carrying application level data names.
 Such a shift automatically eliminates several long standing DDoS attacks, including both direct flooding as well as reflector attack through source address spoofing~\cite{mirkovic2004taxonomy}.
 
 However, since NDN allows any host to request any data, malicious users can attack an NDN network by Interest flooding. As we explain in the next section, NDN routers perform stateful forwarding of Interests, uncontrolled floods of Interest packets can potentially exhaust router resources, disrupting services for legitimate users.  
