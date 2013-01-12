@@ -1,16 +1,16 @@
 
 % Differential treatment of Interests received from different interfaces can be achieved in a more elegant way, without reverting to probabilistic methods.
 
-The previous strategy---the satisfaction-based Interest acceptance---divides the available forwarding tokens among all interfaces in proportion to their Interest satisfaction ratios.
+The previous algorithm---the satisfaction-based Interest acceptance---divides the available forwarding tokens among all interfaces in proportion to their Interest satisfaction ratios.
 % Given the drawbacks of this algorithm, the same effect can be achieved without relying on probabilistic models. 
-An alternate strategy, which does not have the described drawbacks, is to enable and enforce explicit Interest limit for each incoming interface, where the value of the limit depends directly on the interface's Interest satisfaction ratio.
+An alternate algorithm for proportional token distribution without overreaction is to enable and enforce explicit Interest limit for each incoming interface, where the value of the limit depends directly on the interface's Interest satisfaction ratio.
 Routers need to announce these limits to their downstream neighbors, ensuring that any Interest forwarded from the downstream router is allowed to get through, resulting in genuine Interest satisfaction statistics.
 
-The formal definition of the satisfaction-based pushback algorithm is presented in Pseudocode~\ref{alg:dynamic limits}, while Fig.~\ref{fig:dynamic limits example} illustrates how the algorithm would work in our example in Fig.~\ref{fig:flooding example}.
-Assuming an initial token bucket limit $L=10$ and the current satisfaction ratio for router A is 50\% for \texttt{eth1} and 0\% for \texttt{eth0}, and for router B the ratio is 30\% for \texttt{eth0}, each node would set and announce the following  incoming interface limit $L'$: 
+The formal definition of the satisfaction-based pushback algorithm is presented in Pseudocode~\ref{alg:dynamic limits}, while Fig.~\ref{fig:dynamic limits example} illustrates how the algorithm will work in our example in Fig.~\ref{fig:flooding example}.
+Assuming an initial token bucket limit $L=10$ and the current satisfaction ratio for router A is 50\% for \texttt{eth1} and 0\% for \texttt{eth0}, and for router B the ratio is 30\% for \texttt{eth0}, each node will set and announce the following  incoming interface limit $L'$: 
 \begin{enumerate}
-\item router B would set and announce the incoming interface limit $L'=3$;
-\item router A, after receiving announcement from B would readjust its incoming interface limits to $L'_{eth1} = 1.5$ and $L'_{eth0} = 0$; and
+\item router B will set and announce the incoming interface limit $L'=3$;
+\item router A, after receiving announcement from B will readjust its incoming interface limits to $L'_{eth1} = 1.5$ and $L'_{eth0} = 0$; and
 \item both legitimate users and adversaries may either obey or ignore the announced limit, which will be in any case enforced by router A.
 \end{enumerate}
 
@@ -18,7 +18,9 @@ Assuming an initial token bucket limit $L=10$ and the current satisfaction ratio
 \begin{figure}[htbp]
   \centering
   \includegraphics[scale=0.3]{dynamic-limits}
-  \caption{Satisfaction-based pushback example: routers explicitly tell neighbors how many Interest packets they can deliver to the Data producer}
+  \caption{Satisfaction-based pushback example
+%: routers explicitly tell neighbors how many Interest packets they can deliver to the Data producer%
+}
   \label{fig:dynamic limits example}
 \end{figure}
 
@@ -69,11 +71,11 @@ At the next iteration of the satisfaction-based pushback algorithm, the legitima
 We note that while in the description of the satisfaction-based pushback algorithm we explicitly used ``outgoing'' and ``incoming'' interfaces,  all interfaces can be both incoming and outgoing.
 Thus, it may not be entirely clear which outgoing limit $L_{out}$ (line 10 in the algorithm) should be used to calculate the incoming limit $L_{in}$.
 To overcome this problem, in our actual implementation we enforced separate incoming/outgoing interface limits for each individual FIB entry.
-That is, for each FIB entry we set a separate Interest limit for each incoming interface ($L_{in}^{'FIB}$) based on a sum of FIB entry limits for each outgoing interface $L=\sum{L_{out}^{FIB}}$.
+That is, for each FIB entry we set a separate Interest limit for each incoming interface (${L'}_{in}^{fib}$) based on a sum of FIB entry limits for each outgoing interface $L=\sum{L_{out}^{fib}}$.
 
 
-% Alex: not sure if this paragraph belongs here
-Essentially, both satisfaction-based Interest acceptance and satisfaction-based pushback algorithms are forms of a well-known push-back mechanism~\cite{Pushback}, with several core differences. First, we are suppressing (pushing back) unwanted requests for Data, not actual Data itself.
+Both satisfaction-based Interest acceptance and satisfaction-based pushback algorithms are forms of a well-known push-back mechanism~\cite{Pushback}, but with several core differences. 
+First, we are suppressing (pushing back) unwanted requests for Data, not actual Data itself.
 Second, differentiating between good and bad Interests is based on the traffic symmetry principle of NDN.
 % Alex: I'm not entirely sure about this point... 
 Finally, both intelligent attack mitigation algorithms can be deployed at all times without degrading network performance even when there are no active attackers. 

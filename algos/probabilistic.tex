@@ -33,7 +33,7 @@ Having successfully implemented a technique to gather statistics on Interest sat
 \end{algorithmic}
 \end{algorithm}
 
-Parameter $\theta$ on line 5 of the Pseudocode~\ref{alg:probabilistic model} ensures that the probabilistic model is not enforced when the volume of Interests arriving at a particular interface is small. This step is critical---while we want to drop Interests from attackers, we also want to provide an opportunity for legitimate users to regain their share of resources after temporary Data delivery failures due to  congestion.
+Parameter $\theta$ on line 5 of the Pseudocode~\ref{alg:probabilistic model} ensures that the probabilistic model is not enforced when the volume of Interests arriving at a particular interface is small. This step is critical---while we want to drop Interests from attackers, we also want to provide an opportunity for legitimate users to regain their share of resources after temporary Data delivery failures.
 
 A drawback of the satisfaction-based Interest acceptance method is that each router on the path makes an independent decision on whether to forward or drop the Interest. 
 As a result of these independent decisions,  the probability of legitimate Interests being forwarded decreases rapidly as the number of hops between the content requester and producer grows; worsening the Interest satisfaction statistics and resulting in further drops.
