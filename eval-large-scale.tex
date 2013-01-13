@@ -3,10 +3,10 @@
 
 %To check validity of the small-scale experiment results, we performed a larger-scale evaluation based on a modified version of 
 
-Next, our goal is to understand the behavior of our mitigation strategies when deployed on a large-scale realistic topology. Our ISP topology is based on a modified version of Rocketfuel's AT\&T topology~\cite{rocketfuel}.
+Next, our goal is to understand the behavior of our mitigation strategies when deployed on a large-scale real network topology. Our ISP topology is based on a modified version of Rocketfuel's AT\&T topology~\cite{rocketfuel}.
 %In order to approximate the general structure of the Internet,
 % (scale-free structure, customer-provider, and peer-to-peer relations)
-We extract the largest connected component comprising of 562 nodes from the original topology and separate the nodes into three categories: clients, gateways, and backbones. Nodes with degrees less than four are classified as clients (344 red nodes as shown in Fig.~\ref{fig:large-scale}), nodes directly connected to clients are classified as gateways (109 green nodes), and the remaining nodes as classified as backbones (109 blue nodes). 
+We extract the largest connected component comprising of 562 nodes from this original topology and separate the nodes into three categories: clients, gateways, and backbones. Nodes having degree than four are classified as clients (344 red nodes as shown in Fig.~\ref{fig:large-scale}), nodes directly connected to clients are classified as gateways (109 green nodes), and the remaining nodes as classified as backbones (109 blue nodes). 
 %(To ensure that paths in the topology are ``valley-free,'' we augmented the topology with necessary backbone-to-backbone links.) 
 We assign bandwidth and  delay values to links based on their type --- both values are random numbers within the respective ranges as shown in Table~\ref{tab:large-scale}.
 
@@ -39,16 +39,16 @@ We assign bandwidth and  delay values to links based on their type --- both valu
 \end{tabular}
 \end{table}
 
-In an Internet-like topology, the location of the Data producer plays the key part in his ability to sustain flooding attack.
-That is, if the producer has limited network capacity (a personal blog located hosted on a client node), then he will be a really easy target for the attack.
-On the other extreme, when the producer is located at the backbone (Google or Amamzon), then the attack would have a hard time to degrade service, as a lot of legitimate users would not even share paths with attackers.
-To evaluate a balanced network scenario, we placed the Data producer at the gateway node, which randomly picked for each simulation run.
-Similarly to the first set of small-scale evaluations, we fixed the number of malicious nodes at approximately 40\% level (140 out of 344 client nodes in the topology), while randomly varied which locations of compromised nodes.
+{\color{red}Priya: Below para might have to be modified if we conducted expts for producer at backbone and producer at client node. Also need to recheck if attacker percentage was 30\% or 40\%}
+Topological location of the data producer plays a key role in its resilience to Interest flooding attacks. For a data producer that is connected to a client node via a low-bandwidth link, even a small number of junk Interests can impact services for legitimate users. For a producer located at the backbone with rich connectivity through many high-bandwidth links, an attack might not be as severe as a majority of legitimate users might not be on the attack path. Thus, in our experiments, to evaluate a balanced network scenario, we place the data producer at a gateway node, which randomly pick for each simulation run. Similar to the binary tree topology experiments, we fix the number of malicious nodes at approximately 40\% (140 out of 344 client nodes in the topology) and randomly picked these nodes for each simulation run. We conduct 10 simulation runs for each mitigation algorithm.
 
 % The results for all attack mitigation algorithms and all runs are aggregated in Fig.~\ref{fig:small-scale attack progress}, where Y-axis represents a minimum and maximum range for observed Interest satisfaction percentages among all nodes and all simulation runs.
 % A short and simplistic summary of the results is that the first two attack mitigation methods do not work at all, and the last two are working quite good.
 
-The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
+In Fig.~\ref{fig:large-scale}, we summarize our results averaged over 10 simulations runs for each mitigation algorithm. As in the case of the binary-tree topology, token bucket with per interface fairness is the most ineffective algorithm and satisfaction-based pushback algorithm is the most effective.   Interest satisfaction percentages for legitimate users are approximately 25\% and almost 100\% respectively for these two strategies.
+
+%
+%The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
 
 \begin{figure}[tbh]
  \centering
@@ -58,14 +58,10 @@ The evaluation results,\footnote{Note that for larger-scale experiments we reduc
  \label{fig:large-scale}
 \end{figure}
 
-At the same time, the satisfaction-based Interest acceptance method completely failed to provide an adequate protection against the Interest flooding attack, and in addition degraded service for the legitimate users after the attack finished.
-The main reason for the failure was already explained in Section~\ref{sec:probabilistic}.
-That is, if the number of hops between legitimate users and the Data producer is large (15 on average in the simulated topology) uncoordinated probabilistic Interest drops result in minuscule probability for good Interests to reach the Data producer during an ongoing attack, resulting in negative Interests satisfaction ratio statistics.
-This also explains why until the statistics ages out, not all legitimate users can get satisfy all of their Interests.
+Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger realistic topology. For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in  in Section~\ref{sec:probabilistic}, is due to the fact that each router in the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of the larger-topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics, which in turn leads to further penalization of new Interests from them.
 
-In summary, in all of the simulated topologies, the satisfaction-based pushback algorithm restricts malicious traffic from even entering the network.
-The only short periods of time when malicious Interests are getting admitted to the network is when routers have either no prior knowledge about per-interface satisfaction ratios (the initial period of the attack) or such knowledge becomes stale (statistics decaying during the attack).
-As soon as the knowledge is obtained or refreshed, the service for legitimate users returns to norm.
+To summarize, in all of our simulations, the satisfaction-based pushback algorithm is the most effective technique as it restricts malicious Interests from even entering the network. 
+%The only short periods of time when malicious Interests are getting admitted to the network is when routers have either no prior knowledge about per-interface satisfaction ratios (the initial period of the attack) or such knowledge becomes stale (statistics decaying during the attack). As soon as the knowledge is obtained or refreshed, the service for legitimate users returns to norm.
 
 
 % Alex: Anything else here?
