@@ -81,7 +81,13 @@ This {\it Token Bucket} approach might be exceptionally retrictive in forwarding
 %%%%%%%%%%%%%%%%%%%%%%%
 
 The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it admits Interests from malicious users. A sizeable percentage of these malicious Interests are forwarded all the way to content producers, thereby utilizing scarce network resources and reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate Interests as well as malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and effectively drop only malicious requests for content. `Good' Interests from legitimate users must be admited and forwarded appropriately. The key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
-One can try a black- or whitelisting approach. However, besides the fact that source black- and whitelisting cannot work in NDN as it does not feature source addresses, it requires extraneous knowledge to classify the incoming Interests.
+
+%One can try a black- or whitelisting approach. However, besides the fact that source black- and whitelisting cannot work in %NDN as it does not feature source addresses, it requires extraneous knowledge to classify the incoming Interests.
+
+%Priya: I have added the below point specifically to point out that a router cannot determine from the prefix name alone whether /parc is good  or bad...
+  
+In NDN one cannot easily distinguish a `good' prefix from a `bad' one. Content producers must be able to support dynamic generation of Data packets to satisfy incoming Interest packets---thus, an Interest that cannot be satisfied by matching Data from any intermediate router's cache is necessarily forwarded to the producer for possible dynamic Data packet generation. 
+Thus intermediate routers cannot determine if the prefix is `good' or `bad' based on the prefix name alone---DDoS mitigation techniques that rely on whitelisting or blacklisting of certain namespaces  will be inefficient and likely ineffective. 
 
 % Alex: I'm not sure that this part is relevant... The point I see is that blacklisting and whitelisting is not 100% effective, but it can be used in both worlds
 
