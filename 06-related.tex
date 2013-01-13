@@ -1,19 +1,23 @@
 \section{Related work}
 \label{sec:related-work}
 
-The Named Data Networking is a relatively new communication paradigm, but it already got a limited attention in the security community.
-Lauinger~\cite{Lauinger:2010:Security--scalability} showed several attack vectors that can be applied to NDN. However, the work is specifically limited to a particular design choices implemented in CCNx software (\url{http://www.ccnx.org/}), rather than NDN architecture itself.  
+As a new Internet architecture proposal, the Named Data Networking has attracted attention from the security community. 
+Lauinger~\cite{Lauinger:2010:Security--scalability} showed several possible attacks against some specific design choices implemented in CCNx software (\url{http://www.ccnx.org/}); in particular~\cite{Lauinger:2010:Security--scalability} explored the issue of user privacy, assuming users are concentrated on the same edge router only and one can obtain complete knowledge of cached content.  
 W\"ahlisch et al.~\cite{Wahlisch:2012:Backscatter-from} explore security and stability threats in the general area of information-centric networks (ICN), using CCNx software as an example.  
-While this work attempts to generalize findings for all ICNs, it largely does not go beyond the current design choices of CCNx.
+While this work aims to generalize findings for all ICNs, it largely does not go beyond the current design choices of CCNx.
 % (which is an example, but not the final word in NDN) 
 % Gasti et al.~\cite{gasti2012ddos} identified several NDN architecture-specific attacks (Interest flooding and content/cache poisoning) and proposed potential solutions, without devising particular algorithms.
-In this paper we follow some suggestions by Gasti et al.~\cite{gasti2012ddos} and explore intrinsic potential of NDN architecture to sustain DDoS attacks, using the Interest flooding attack as a first step in this direction.
-Our design for the attack mitigation relies in part on limiting number of outstanding Interests.  
-Similar techniques were explored by Yi et al.~\cite{adaptive-forwarding,adaptive-tr} and Rozhnova and Fdida~\cite{rozhnova2012effective}, but applied only to facilitate performance in the NDN network.
+In this paper we follow the suggestions by Gasti et al.~\cite{gasti2012ddos} and utilize the properties provided by the NDN architecture to mitigate DDoS attacks, and tackle the Interest flooding problem as a first step in this direction.
+More specifically our attack mitigation design relies on NDN's stateful forwarding plane 
+which provides statistics on unsatisfied Interests.  
+Similar approaches are also explored by Yi et al.~\cite{adaptive-forwarding,adaptive-tr} and Rozhnova et al.~\cite{rozhnova2012effective} to facilitate NDN network performance.
 
-The general area of denial of service attacks and their mitigation methods is one of the hottest topics of the past decade.
+The general area of denial of service attacks and their mitigation methods is among the hottest topics in recent years.
 % Among all the body of work, 
-The most related area to this paper is solutions to network-level flooding attacks, which include DDoS detection techniques~\cite{Chen:2007:Collaborative-detection, Jun:2011:DDoS-flooding}, methods to pushback of malicious traffic to the edged using various filtering techniques~\cite{Pushback, Tupakula:2003:A-practical-method, Argyraki:2005:Active-internet, Oikonomou:2006:A-framework-for-a-collaborative, Liu:2008:To-filter-or-to-authorize:, Chou:2009:Proactive-surge, Liu:2010:NetFence:-preventing}, various ticketing systems with conditional admission of traffic to the network~\cite{Yaar:2004:SIFF:-A-stateless, Yang:2005:A-DoS-limiting-network, Wendlandt:2006:Fastpass:-Providing, Natu:2007:Fine-grained-capabilities, Portcullis, Capabilities}, overlay-based filtering~\cite{Stone:2000:CenterTrack:-An-IP-overlay, Keromytis:2004:SOS:-An-architecture, Kline:2011:Shield:-DoS-filtering}, systems that attempt to use approximate IP traffic symmetry to estimate and filter out malicious traffic~\cite{Wang:2002:Detecting-SYN-flooding, Kreibich:2005:Using-packet, Mahimkar:2007:dFence:-Transparent}.
+The efforts that are most relevant works to this paper are solutions to brute force IP packet flooding, such as DDoS detection techniques~\cite{Chen:2007:Collaborative-detection, Jun:2011:DDoS-flooding}, methods of pushbacking malicious traffic to edges using various filtering techniques~\cite{Pushback, Tupakula:2003:A-practical-method, Argyraki:2005:Active-internet, Oikonomou:2006:A-framework-for-a-collaborative, Liu:2008:To-filter-or-to-authorize:, Chou:2009:Proactive-surge, Liu:2010:NetFence:-preventing}, 
+overlay-based filtering~\cite{Stone:2000:CenterTrack:-An-IP-overlay, Keromytis:2004:SOS:-An-architecture, Kline:2011:Shield:-DoS-filtering}, 
+various ticketing systems with conditional admission of traffic to the network~\cite{Yaar:2004:SIFF:-A-stateless, Yang:2005:A-DoS-limiting-network, Wendlandt:2006:Fastpass:-Providing, Natu:2007:Fine-grained-capabilities, Portcullis, Capabilities},
+and systems that attempt to use approximate IP traffic symmetry to estimate and filter out malicious traffic~\cite{Wang:2002:Detecting-SYN-flooding, Kreibich:2005:Using-packet, Mahimkar:2007:dFence:-Transparent}. Identifying malicious traffic requires state at routers, all these solutions differ in the specifics on what state to use and how to establish it.  By design NDN's forwarding plane keeps per packet state, one can simply take full advantage of this state to develop effective mitigations.
 
 % Our design for the Interest flooding attack mitigation borrows 
 
