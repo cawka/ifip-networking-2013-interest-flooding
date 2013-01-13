@@ -8,7 +8,7 @@ Next, our goal is to understand the behavior of our mitigation strategies when d
 % (scale-free structure, customer-provider, and peer-to-peer relations)
 We extract the largest connected component comprising of 562 nodes from this original topology and separate the nodes into three categories: clients, gateways, and backbones. Nodes having degree than four are classified as clients (344 red nodes as shown in Fig.~\ref{fig:large-scale}), nodes directly connected to clients are classified as gateways (109 green nodes), and the remaining nodes as classified as backbones (109 blue nodes). 
 %(To ensure that paths in the topology are ``valley-free,'' we augmented the topology with necessary backbone-to-backbone links.) 
-We assign bandwidth and  delay values to links based on their type --- both values are random numbers within the respective ranges as shown in Table~\ref{tab:large-scale}.
+We assign bandwidth and  delay values to links based on their type---both values are random numbers within the respective ranges as shown in Table~\ref{tab:large-scale}. We experiment with placing the data producer at both a gateway node as well as backbone node, which we randomly pick for each simulation run. Similar to the binary tree topology experiments, we fix the number of malicious nodes at approximately 40\% (140 out of 344 client nodes in the topology) and randomly pick these nodes for each simulation run. We conduct 10 simulation runs for each mitigation algorithm, with the attack duration spanning a 5 minute interval.
 
 \begin{figure}[htbp]
   \centering
@@ -39,13 +39,14 @@ We assign bandwidth and  delay values to links based on their type --- both valu
 \end{tabular}
 \end{table}
 
-{\color{red}Priya: Below para might have to be modified if we conducted expts for producer at backbone and producer at client node. Also need to recheck if attacker percentage was 30\% or 40\%}
-Topological location of the data producer plays a key role in its resilience to Interest flooding attacks. For a data producer that is connected to a client node via a low-bandwidth link, even a small number of junk Interests can impact services for legitimate users. For a producer located at the backbone with rich connectivity through many high-bandwidth links, an attack might not be as severe as a majority of legitimate users might not be on the attack path. Thus, in our experiments, to evaluate a balanced network scenario, we place the data producer at a gateway node, which randomly pick for each simulation run. Similar to the binary tree topology experiments, we fix the number of malicious nodes at approximately 40\% (140 out of 344 client nodes in the topology) and randomly picked these nodes for each simulation run. We conduct 10 simulation runs for each mitigation algorithm.
+%Priya: Leaving out this in the interest of space...
+%Topological location of the data producer plays a key role in its resilience to Interest flooding attacks. For a data producer that %is connected to a client node via a low-bandwidth link, even a small number of junk Interests can impact services for legitimate %users. For a producer located at the backbone with rich connectivity through many high-bandwidth links, an attack might not %be as severe as a majority of legitimate users might not be on the attack path. 
+
 
 % The results for all attack mitigation algorithms and all runs are aggregated in Fig.~\ref{fig:small-scale attack progress}, where Y-axis represents a minimum and maximum range for observed Interest satisfaction percentages among all nodes and all simulation runs.
 % A short and simplistic summary of the results is that the first two attack mitigation methods do not work at all, and the last two are working quite good.
 
-In Fig.~\ref{fig:large-scale}, we summarize our results averaged over 10 simulations runs for each mitigation algorithm. As in the case of the binary-tree topology, token bucket with per interface fairness is the most ineffective algorithm and satisfaction-based pushback algorithm is the most effective.   Interest satisfaction percentages for legitimate users are approximately 25\% and almost 100\% respectively for these two strategies.
+In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over 10 simulations runs for each mitigation algorithm for the scenario where the data producer is placed at a gateway node. We observe similar results for the data producer placed at the backbone node as well. As in the case of the binary-tree topology experiments, token bucket with per interface fairness is the most ineffective algorithm and satisfaction-based pushback is the most effective one.   Interest satisfaction percentage for legitimate users are approximately 25\% and almost 100\% respectively for these two mitigation methodologies.
 
 %
 %The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
@@ -53,7 +54,7 @@ In Fig.~\ref{fig:large-scale}, we summarize our results averaged over 10 simulat
 \begin{figure}[tbh]
  \centering
  \includegraphics[scale=0.8]{paper-topo-7018-gw/7018-r0-good-0-producer-gw}
- \caption{Satisfaction ratio dynamics during the attack (30\% attackers)}
+ \caption{Satisfaction ratio dynamics during the attack for large-scale topology with 40\% attackers)}
  % producer on a gateway node
  \label{fig:large-scale}
 \end{figure}

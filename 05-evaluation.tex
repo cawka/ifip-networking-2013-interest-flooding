@@ -9,7 +9,7 @@
 % Latency for good clients, good versus bad interests as a function of time
 
 In this section, we present an in-depth evaluation study, aiming to quantify the effectiveness of all our Interest flooding attack mitigation methods.
-We use the open-source ndnSIM~\cite{ndnsim} package, which implements NDN protocol stack for NS-3 network simulator\footnote{\url{http://www.nsnam.org/}}, to run simulations for a variety of network topologies and scenarios. We implement our three mitigation algorithms --- token bucket with per interface fairness, satisfaction-based Interest acceptance, or satisfaction-based pushback --- in ndnSIM. For evaluating the effectiveness of each mitigation algorithm, every router in the simulated topology runs the mitigation algorithm under study.
+We use the open-source ndnSIM~\cite{ndnsim} package, which implements NDN protocol stack for NS-3 network simulator\footnote{\url{http://www.nsnam.org/}}, to run simulations for a variety of network topologies and scenarios. We implement our three mitigation algorithms---token bucket with per interface fairness, satisfaction-based Interest acceptance, or satisfaction-based pushback---in ndnSIM. For evaluating the effectiveness of each mitigation algorithm, every router in the simulated topology runs the mitigation algorithm under study.
 
 % why we chose small scale topology
 % what point we wanted to show we small scale
@@ -36,7 +36,7 @@ In our experiments, we assume that legitimate users express Interests at constan
 %For simplicity, we also equalized the average rates with which the legitimate users express Interests.
 %At the same time, the attackers are sending junk Interests as much as they can get through (remember, that Interest limits will not allow real f%looding of Intersests in all of the designed mitigation algorithms).
 
-We ran our simulations on two different network topologies --- a smaller binary tree topology and a much larger ISP topology. We use a binary tree topology as it represents one of the worst cases to defend against Interest flooding DDoS attacks. The larger ISP topology reflects how our mitigation methods would perform when deployed on the real Internet.
+We ran our simulations on two different network topologies---a smaller binary tree topology and a much larger ISP topology. We use a binary tree topology as it represents one of the worst cases to defend against Interest flooding DDoS attacks. The larger ISP topology reflects how our mitigation methods would perform when deployed on the real Internet.
 Again, to study the performance of our mitigation strategies under a range of conditions, we also varied the percentage of attackers in the network - the values ranged from 6\% attackers to over 50\% attackers in the network.
 
 % Fixed parameters
