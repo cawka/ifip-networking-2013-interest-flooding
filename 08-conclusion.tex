@@ -10,8 +10,8 @@
 % However, one should not forget that the same stateful data delivery provides effective mechanisms to fight back against such attacks.
 
 In this paper we demonstrated that NDN architecture can be quite resilient against Interest flooding attacks, which aim to overwhelm network capacity as well as memory resources on NDN routers.
-The most effective of the designed algorithms---satisfaction-based pushback---almost completely eliminates the attack (or at least mitigates it to an acceptable ``fair'' level), leveraging two key aspects: Interest/Data pah symmetry and full receiver-based traffic control.
-In particular, it measures how well Interests are getting satisfied (path symmetry) and uses these measurements to adjust how many Intersets can be accepted from each individual interface (receiver-based control), effectively pushing the attack to the edges.
+The most effective of the designed algorithms---satisfaction-based pushback---almost completely eliminates the attack (or at least mitigates it to an acceptable ``fair'' level), leveraging two key aspects: Interest/Data path symmetry and full receiver-based traffic control.
+In particular, it measures how well Interests are getting satisfied (path symmetry) and uses these measurements to adjust how many Interests can be accepted from each individual interface (receiver-based control), effectively pushing the attack to the edges.
 
 Other forms of attack may require different mitigation mechanisms.  
 However, the granularity of the NDN state---per each Interest packet---is what giving NDN an opportunity to stand against existing and new forms of attacks.
