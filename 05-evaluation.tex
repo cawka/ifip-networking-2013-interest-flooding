@@ -250,6 +250,29 @@ To summarize, in all of our simulations, the satisfaction-based pushback algorit
 
 %This section should roughly say: Our results show that the two features, namely the symmetric traffic and stateful routing, give NDN routers the ability to observe and characterize traffic in real time. Through our evaluations, we demonstrated that a mitigation algorithm that leverages such ability has great potential in mitigating various DDoS attacks that could otherwise have grave effect on the network. However, as the first step in exploring the problem and the solution space, this paper has obvious limitations: (1) We assume a simple attacker model that would be most effective in vanilla NDN and keep it static during our evaluations. Although it is a valid and important step in showing the effectiveness of a particular mitigation approach, the next natural step is evaluating the above described solutions with more sophisticated and adaptive attackers. (2)   Although most (such as single-path routing, no-caches in the network, single homed victim, etc) are aimed to test the proposed solutions under worst-case scenario, we made many assumptions in simulations/evaluations about the configurations, topology and the traffic that maybe poor-representative of realistic conditions. (3) As NDN being an ongoing research effort itself, our evaluations fully depend on simulations and done over a snapshot of its codebase.       
 
-This paper is a first step in understanding the impact of Interest flooding attacks in NDN and exploring the solution space. While designing our mitigation algorithms, we exploit two key features of NDN architecture, namely routers maintaining state about the Interests they have forwarded and Data traffic taking the reverse path of the Interest traffic. We test the efficacy of our algorithms by simulating them on both a binary-tree topology designed to test the worst-case effectiveness of our algorithms as well as on a real ISP topology designed to provide insights our algorithms' behavior when deployed on a real network. While our results are promising and show great potential in mitigating Interest flooding DDoS attacks that can cause grave service degradation for legitimate users, we discuss some of the limitations of our evaluations and directions for future research. 
+% The main contribution of the paper and this section in particular is a proof that two inherent properties of NDN architecture, namely the symmetric traffic and stateful forwarding, give NDN routers the ability to characterize traffic and react in real time. 
+% We demonstrated that satisfaction-based pushback algorithm, leveraging this ability, has great potential in mitigating various DDoS attacks that could otherwise have a grave effect on the network. 
+% However, as the first step in exploring the problem and the solution space, our paper has obvious limitations.
+% First, we assumed a simple attacker model that would be most effective in vanilla NDN and keep it static during our evaluations. 
+% Although it is a valid and important step in showing the effectiveness of a particular mitigation approach, the next natural step that we are leaving out for future work is evaluating the above described solutions with more sophisticated and adaptive attackers. 
+% Second, while aiming to test the designed algorithms under worst-case conditions, the future work needs to address behavior in more realistic scenarios, including investigation of multi-path routing, in network caches, as well as multi-homed victims.
 
-The attacker model that we used for our evaluations is simple and static - attackers send junk Interests as fast as possible. In future work, we plan to explore the impact of models where the attackers are more sophisticated and dynamically adapt their behavior and junk Interest sending patterns based on the network reaction. Further, in our evaluations, we assumed Interests are not satisfied by an intermediate router's cache and forwarded all the way to the producer.  We also ignored NDN's strategy layer that routes around failure and congestion in the network. In future work, we plan to study the impact of turning on these features. Finally, we also plan to perform extensive simulations on other real Internet topologies and realistic traffic patterns from legitimate users.
+This paper is a first step in understanding the impact of Interest flooding attacks in NDN and exploring the solution space. 
+While designing our mitigation algorithms, we exploit two key features of NDN architecture, namely routers maintaining state about the Interests they have forwarded and Data traffic taking the reverse path of the Interest traffic. 
+We test the efficacy of our algorithms by simulating them on both a binary-tree topology designed to test the worst-case effectiveness of our algorithms as well as on a realizing ISP-based topology designed to provide insights of our algorithms' behavior when deployed on a real network. 
+While our results are promising and show a great potential in mitigating Interest flooding DDoS attacks, there are certain limitations which should be addressed in future research. 
+
+First, in our evaluations we used a simple and static attacker model---attackers send junk Interests as fast as possible. 
+In the future work, we plan to explore the impact of models where the attackers are more sophisticated and dynamically adapt their behavior and junk Interest sending patterns based on the network reaction. 
+Second, we made an assumption that Interests are not satisfied by an intermediate router's cache and always forwarded all the way to the producer.  
+The future work needs to study impact of Interest flooding attack in more realistic scenarios, including investigation effects of multi-path routing and presence of in network caches.
+% We also ignored NDN's strategy layer that routes around failure and congestion in the network. 
+% In future work, we plan to study the impact of turning on these features. 
+Finally, we also plan to perform more extensive simulations on other realistic Internet-like topologies and traffic patterns.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
