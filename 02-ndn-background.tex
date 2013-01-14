@@ -3,24 +3,26 @@
 
 In this section we briefly introduce NDN with a focus on its stateful forwarding plane (for more details refer to \cite{ndn-conext, ndn-tr, adaptive-forwarding}).
 NDN is a receiver-driven, data-centric communication protocol.
-All communication in NDN is performed using two distinct types of packets: \textit{Interest} and \textit{Data}. Both types of packets carry a \textit{name}, which uniquely identifies a piece of data that can be carried in one Data packet. Somewhat similar to domain names, data names in NDN are hierarchically structured and an example name of a youtube video would look like: \ndnName{/youtube/videos/www/1234.flv}.
+All communication in NDN is performed using two distinct types of packets: \textit{Interest} and \textit{Data}. Both types of packets carry a \textit{name}, which uniquely identifies a piece of data that can be carried in one Data packet. 
+% Somewhat similar to domain names, 
+Data names in NDN are hierarchically structured and an example name for the first segment of a youtube video would look like: \ndnName{/youtube/videos/0F8YdlkKO9A/0}.
 
-To retrieve Data, a consumer requests it by sending an Interest packet with the name of the desired content in it.
+To retrieve data, a consumer requests it by sending an Interest packet with the name of the desired content in it.
 Routers use this name to route the Interest towards likely sources, and a Data packet, if any, whose name matches the name in the Interest is returned to the consumer by following the reverse path of the Interest. Similar to IP, routing in NDN is based on longest prefix match, but, unlike IP,  communication path is always symmetric. An Interest is ``satisfied'' when it is matched with a Data packet.
 
 Each NDN router maintains three major data structures:
 \begin{itemize}
-\item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards data producers. Each entry in PIT contains a list of incoming, and outgoing, physical interfaces; the former enables multicast Data delivery, and the latter is needed when the same Interest is forwarded along multiple paths.
+\item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards data producers. Each entry in PIT contains a list of incoming, and outgoing physical interfaces; the former enables multicast Data delivery, and the latter is needed when the same Interest is forwarded along multiple paths.
 \item \textit{Forwarding Interest Base (FIB)} maps name prefixes to one or multiple physical network interfaces, defining allowed %(multipath)
- directions where Interests can be forwarded. 
+ directions to where Interests can be forwarded. 
 % Having one-to-many relationship in this table allows multipath forwarding of Interests.}
-\item \textit{Content Store (CS)} temporarily buffers Data packets that pass through this node, allowing fast Data retrieval by different consumers.
+\item \textit{Content Store (CS)} temporarily buffers Data packets that pass through this node, allowing efficient data retrieval by different consumers.
 \end{itemize}
 
-When a router receives an Interest packet, it first checks whether there is a matching Data in its CS.
-If a match is found, the Data is sent back to the incoming interface of the Interest packet.
+When a router receives an Interest packet, it first checks whether there is a matching data in its CS.
+If a match is found, the Data packet is sent back to the incoming interface of the Interest packet.
 If not, the Interest name is checked against the entries in the PIT. 
-If the name already exists in the PIT, then it can either be a duplicate Interest (identified by a long random number each Interest carries) that should be dropped,
+If the name already exists in the PIT, then it can be a duplicate Interest (identified by a random number each Interest carries) that should be dropped,
 or an Interest from another consumer asking for the same Data which requires the incoming interface of this Interest to be added to the existing PIT entry (i.e., ``collapsing'' multiple Interests for the same content into one PIT entry).
 If the name does not exist in the PIT, the Interest is added into the PIT and forwarded to the interface chosen by the strategy module, which uses FIB as input for its decision.
 
