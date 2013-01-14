@@ -7,7 +7,7 @@
 %Thus, the primary task in bringing intelligence to the Interest flooding attack mitigation is to proactively distinguish between legitimate and malicious Interests.
 
 In order to distinguish between legitimate and malicious Interests, we leverage another unique feature of  NDN architecture---guaranteed symmetric flow of Interest and Data packets. Since a Data packet takes the reverse path of the corresponding Interest packet, a router is guarateed to see if an Interest it forwarded resulted in a matching Data packet. The only exception being if Interest/Data packets were lost along the way due to congestion in the network.
-Therefore, intermediate routers can classify all Interests that result in matching Data as legitimate, while the ones that timed out can be marked as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest flooding}).}  
+Therefore, intermediate routers can classify all Interests that result in matching Data as legitimate, while the ones that timed out can be marked as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest-flooding}).}  
 %Implications of other types of attacks are discussed in Section~\ref{sec:discussion}.}
 
 This timeout-based differentiation method is reactive in nature: one cannot determine in advance if an Interest will result in a timeout or Data being retrieved. However, routers can proactively maintain up-to-date statistics of Interest satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistic to determine whether an incoming Interest must be forwarded or dropped. For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface is sufficient to estimate whether an Interest received from a neighbor connected to this interface will result in a Data packet or a timeout. Statistics can also be kept at finer granularities such as per outgoing interface, per name prefix, etc. that can further improve the estimates. A router's goal should be to penalize malicious Interests as soon as possible---negative statistics should be allowed to build up fast, while positive statistics should not be allowed to deteriorate too quickly. We use the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window to achieve the above goal.
@@ -88,7 +88,7 @@ Pseudocode~\ref{algo:interest stats} formally defines how statistics can be gene
 
 
 Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistic during and after an Interest flooding attack. The attack duration is from 10 to 70~seconds. Prior to start of the attack, the percentage of unsatisfied Interests is zero.  
-The statistics build up rapidly as soon as Interests start to time out, which happens approximately one second after the start of the attack.\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
+The statistics build up rapidly as soon as Interests start to time out, which happens approximately one second after the start of the attack.%\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
 For the duration of the attack (10--70~seconds), the percentage of unsatisfied Interests is close to 100\%: 
 when the ratio is close to 100\%, routers drop all incoming Interests, resulting in decaying of the statistics until a new Interest is admitted, which eventually brings statistics back near 100\% point.
 Finally, the ratio exponentially decays after the attack ceases.
@@ -148,7 +148,7 @@ A drawback of the satisfaction-based Interest acceptance method is that each rou
 As a result of these independent decisions,  the probability of legitimate Interests being forwarded decreases rapidly as the number of hops between the content requester and producer grows; worsening the Interest satisfaction statistics and resulting in further drops.
 In example on Fig.~\ref{fig:flooding example}, the router A observes 50\% satisfaction rate for \texttt{eth1} and 0\% rate for \texttt{eth0}. 
 At the same time, router B observes a 30\% satisfaction rate for its \texttt{eth0} interface.
-Next time a legitimate Interest arrives at router A, it has a 50\% chance of being forwarded further, and if forwarded, it has only a $50\% \times 30\% = 15\%$ probability of being forwarded further towards the Data producer. With each increasing hop in the network, the probability of being forwarded to the next hop decreases significantly. 
+Next time a legitimate Interest arrives at router A, it has a 50\% chance of being forwarded further, and if forwarded, it has only a $50\% \times 30\% = 15\%$ probability of being forwarded further towards the data producer. With each increasing hop in the network, the probability of being forwarded to the next hop decreases significantly. 
 One way to prevent this overreaction and unfair penalization is to ensure that the decision taken at each router on whether to forward or drop the Interest is not independent of the decision taken at preceding routers. An explicit notification such as a gossip protocol between neighboring NDN routers that specifies the volume of Interests each router is willing to forward will likely address this issue. We leave the implementation and evaluation of a gossip protocol to future work.
 %{\color{red}Alex: we should state that it is out of scope of the paper to evaluate this issue}
 
@@ -236,7 +236,7 @@ That is, for each FIB entry we set a separate Interest limit for each incoming i
 
 
 Both satisfaction-based Interest acceptance and satisfaction-based pushback algorithms are forms of a well-known push-back mechanism~\cite{Pushback}, but with several core differences. 
-First, we are suppressing (pushing back) unwanted requests for Data, not actual Data itself.
+First, we are suppressing (pushing back) unwanted requests for data, not actual data itself.
 Second, differentiating between good and bad Interests is based on the traffic symmetry principle of NDN.
 % Alex: I'm not entirely sure about this point... 
 Finally, both intelligent attack mitigation algorithms can be deployed at all times without degrading network performance even when there are no active attackers. 

@@ -41,8 +41,8 @@ In this section we present several algorithms to mitigate Interest flooding atta
 % All communication in NDN network is host-to-host and receiver-driven.
 
 An obvious and na\"ive solution to defend against Interest flooding attacks is to restrict the number of Interests that are forwarded in the network. To this end, we exploit a 
- fundamental principle of NDN architecture---flow balance between Interest and Data packets. The flow balance refers to the fact that one Interest can be satisfied by at most one Data packet. This principle allows intermediate routers to control the inbound Data traffic by controlling the number of outstanding Interests in the network. 
-One simple implementation technique  is for an NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding out interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers keep track of the amount of Data requested that can fully utilize the downstream link (estimated from the number of Interests it forwarded) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens (the pending \emph{Interests Limit}) for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
+ fundamental principle of NDN architecture---flow balance between Interest and Data packets. The flow balance refers to the fact that one Interest can be satisfied by at most one Data packet. This principle allows intermediate routers to control the inbound data traffic by controlling the number of outstanding Interests in the network. 
+One simple implementation technique  is for an NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers keep track of the amount of data requested that can fully utilize the downstream link (estimated from the number of forwarded Interests) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens (the pending \emph{Interests Limit}) for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
 % With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
 %
 \begin{equation}
@@ -53,7 +53,7 @@ In the above equation, \emph{Delay} is the expected time of Interest being satis
 Although both these values are not known a priori, it is not really necessary to use their exact values.
 One can simply set the pending Interest limit based on the average values of round trip time and observed Data packet size, as the network buffers can smooth out most of the network fluctuations.
 
-This {\it Token Bucket} approach might be exceptionally retrictive in forwarding Interests---not all Interests will result in a Data packet---thus underutilizing the network. However, the biggest drawback of the algorithm is that it can be used as an effective mechanism to carry out denial of service attacks. If a router has utilized all its tokens to forward malicious Interests, it can no longer forward incoming Interests from legitimate users till the pending malicious Interests start to expire. One way to get around this issue is to impose a per interface limit, so that malicious Interests are not allowed to entirely consume the limits of a specific interface. We describe this technique in greater detail below.
+This {\it Token Bucket} approach might be exceptionally retrictive in forwarding Interests---not all Interests will result in a Data packet---thus, the network can be underutilized. However, the biggest drawback of the algorithm is that it itself can be used as an effective mechanism to carry out DDoS attacks. If a router has utilized all its tokens to forward malicious Interests, it can no longer forward incoming Interests from legitimate users till the pending malicious Interests start to expire. One way to get around this issue is to impose a per interface limit, so that malicious Interests are not allowed to entirely consume the limits of a specific interface. We describe this technique in greater detail below.
 
 %That is, if it is known that the amount of already requested data ($=$~amount of forwarded Interests) can fully utilize the downstream link, an NDN node---either an end-user or an NDN router---has absolutely no point in forwarding new incoming Interests and creating corresponding PIT entries.
 %For example, if a router A on Fig.~\ref{fig:flooding example} already forwarded 125 Interests requesting 1000-byte Data packets, any new incoming Interests can be almost safely dropped, provided the link capacity between A--B is 100~Mbps and delay is 10~ms.
@@ -71,13 +71,13 @@ This {\it Token Bucket} approach might be exceptionally retrictive in forwarding
 \subsubsection{\textbf{Token bucket with per interface fairness}}
 \label{sec:queuing}
 
-To address the lack of fairness associated with the na\"ive {\it Token Bucket} algorithm, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring interfaces. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
+To address the lack of fairness associated with the na\"ive {\it Token Bucket} algorithm, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring nodes. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
 %Due to the expected small volume of Interests, we cannot merely rely on network buffers to perform statistical multiplexing of Interests, as they would almost never be %buffered.
 %At the same time, until bag of tokens is not empty, there is no reason to delay Interest forwarding, as we do not known how many and from which interfaces Interests %will arrive in the future.
-In order to achieve our goal of ensuring ``fair'' mixing of Interests from all neighboring interfaces, 
+In order to achieve our goal of ensuring ``fair'' mixing of Interests from all neighboring nodes, 
 %, we implement an additional features to support buffering of Interests, if they cannot be immediately forwarded. 
 we extend the Pending Interest Table to support flagging of Interests that cannot be immediately forwarded and implement hierarchical queues for each interface (see Fig.~\ref{fig:queueing}). 
-This mechanism is essentially a class based queuing~\cite{floyd1995link}, with classes for each outgoing/incoming interface.
+This mechanism is essentially a class based queuing~\cite{floyd1995link}, with classes for each outgoing and incoming interface.
 %As an alternative to hierarchical queues, one can also use an approach based on virtual time. For details, please see ~\cite{zhang1990virtual}.
 We note that unlike normal queuing, Interest queues do not actually store a packet, but merely a bi-directional pointer to the existing PIT entry.
 Thus, a PIT entry can be quickly updated when the Interest is actually forwarded; further the element can be quickly removed from the queue when the Interest expires.
@@ -94,9 +94,10 @@ Thus, a PIT entry can be quickly updated when the Interest is actually forwarded
 \end{figure}
 
 We present a formalized description of this algorithm in Pseudocode~\ref{alg:queuing}. 
-By setting appropriate queue sizes we can control the amount of physical resources utilized at a router (such as memory and computation power). 
-It is also important to set apprpriate value for how long an Interest can be enqueued. 
-If an Interest is enqueued for a long time, by the time it is dequeued and appropriately forwarded, the resulting Data packet might not be valid due to state expiration at the downstream routers. 
+By setting appropriate queue sizes we can control the amount of physical resources utilized at a router.
+ % (such as memory and computation power). 
+It is also important to set appropriate value for how long an Interest can be enqueued. 
+If an Interest is enqueued for a long time, by the time it is dequeued and forwarded, the retrieved Data packet could be dropped later due to state expiration at the downstream routers. 
 For our evaluations we chose to enqueue Interests up to 10\% of their original lifetime.
 % We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
 % Alex: I don't believe there is a need for separate discussion about "freshness", as we already introduced concept of lifetime
@@ -175,7 +176,7 @@ For our evaluations we chose to enqueue Interests up to 10\% of their original l
 
 
 As we show in Section~\ref{sec:evaluation}, this algorithm provides partial relief from the Interest flooding attacks, allowing legitimate users to successfully fetch Data for 15--20\% of their expressed Interests. 
-We note that while this algorithm might be reasonable for ensuring fairness in an NDN network, it is ineffective in protecting legitimate users from malicious attackers. 
+We note that while this algorithm might be reasonable for ensuring limited fairness in an NDN network, it is ineffective in protecting legitimate users from malicious attackers. 
 Malicious attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of Interests.
 
 
@@ -187,14 +188,16 @@ Malicious attackers are able to successfully thwart access to content for legiti
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it admits Interests from malicious users. A sizeable percentage of these malicious Interests are forwarded all the way to content producers, thereby utilizing scarce network resources and reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate Interests as well as malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and effectively drop only malicious requests for content. `Good' Interests from legitimate users must be admited and forwarded appropriately. The key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
+The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it admits Interests from malicious users. A sizeable percentage of these malicious Interests are forwarded all the way to content producers, thereby utilizing scarce network resources and reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate Interests as well as malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and effectively drop only malicious requests for content. 
+% `Good' Interests from legitimate users must be admited and forwarded appropriately. 
+The key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
 
 %One can try a black- or whitelisting approach. However, besides the fact that source black- and whitelisting cannot work in %NDN as it does not feature source addresses, it requires extraneous knowledge to classify the incoming Interests.
 
 %Priya: I have added the below point specifically to point out that a router cannot determine from the prefix name alone whether /parc is good  or bad...
   
-In NDN one cannot easily distinguish a `good' prefix from a `bad' one. Content producers must be able to support dynamic generation of Data packets to satisfy incoming Interest packets---thus, an Interest that cannot be satisfied by matching Data from any intermediate router's cache is necessarily forwarded to the producer for possible dynamic Data packet generation. 
-Thus intermediate routers cannot determine if the prefix is `good' or `bad' based on the prefix name alone---DDoS mitigation techniques that rely on whitelisting or blacklisting of certain namespaces  will be inefficient and likely ineffective. 
+{\color{red} \textbf{Alex: This paragraph is confusing to me. I would remove it.} In NDN one cannot easily distinguish a `good' prefix from a `bad' one. Content producers must be able to support dynamic generation of Data packets to satisfy incoming Interest packets---thus, an Interest that cannot be satisfied by matching Data from any intermediate router's cache is necessarily forwarded to the producer for possible dynamic Data packet generation. 
+Thus intermediate routers cannot determine if the prefix is `good' or `bad' based on the prefix name alone---DDoS mitigation techniques that rely on whitelisting or blacklisting of certain namespaces  will be inefficient and likely ineffective. }
 
 % Alex: I'm not sure that this part is relevant... The point I see is that blacklisting and whitelisting is not 100% effective, but it can be used in both worlds
 
