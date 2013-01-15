@@ -29,7 +29,7 @@ The metric we choose to quantify the effectiveness of our algorithms is the {\it
 %At the same time, if only a small percentage of the expressed Interest are getting satisfied during the attack, the method $X$ can be called ineffective. 
 
 % Traffic pattern
-In our experiments, we assume that legitimate users express Interests at constant average rates with randomized time gap between two consecutive Interests, where the random number for the gap follows a uniform distribution. We believe that this traffic pattern provides a reasonable approximation of traffic mix from all network users without excessive buffering. To quantify the behavior of our mitigation strategies under a worse case attack scenario, we assume all the attackers send junk Interests as fast as they can, no Interest --including legitimate ones-- can be satisfied from caches, routers are configured for single-path routing and there is only one, single-homed producer for the prefix under attack.
+In our experiments, we assumed that legitimate users express Interests at constant average rates with randomized time gap between two consecutive Interests, where the random number for the gap follows a uniform distribution. We believe that this traffic pattern provides a reasonable approximation of traffic mix from all network users without excessive buffering. To quantify the behavior of our mitigation strategies under a worse case attack scenario, we assumed that all the attackers send junk Interests as fast as they can, no Interest---including legitimate ones---can be satisfied from caches.  Also, we configured routers for single-path Interest forwarding and there is only one single-homed producer for the prefix under attack.
 %(remember, that Interest limits will not allow real flooding of Intersests in all of the designed mitigation algorithms).
 
 % Alex: not sure how to argue about the traffic pattern
@@ -46,6 +46,7 @@ Again, to study the performance of our mitigation strategies under a range of co
 We set the \emph{delay} and \emph{data size} parameters for the Interest limit calculation to an initial %fixed 
 value for every node in the simulated topology. In particular, for the small-scale binary tree topology, we set delay to 80~ms, while for the large-scale ISP topology we set it to 330~ms (the order of the largest RTT). The data size is 1100~bytes for all simulation runs and topologies.
 % THIS IS BULLSHIT! There is absolutely no logic to set the delay to the same value on all nodes in the network. We discussed multiple times that you should fix it so that the delays are realistic and gets smaller as the nodes gets closer to the producer...
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,7 +146,7 @@ We observe a  sharp dip in the satisfaction ratio curve at the start of the atta
 \subsubsection{Network reaction to varying number of attackers}
 
 Our next goal is to study the effectiveness of our mitigation algorithms as a function of increasing adversaries in the network.
-To this end, we vary the percentage of attackers in the topology from 6\% to over 50\%. Since the total number of end users in the topology is constant, as the number of attackers increases, the number of legitimate users decreases. All other parameters and experimental set-up is the same with the previous experiment. As before, for each mitigation algorithm, we perform 10 independent simulation runs.
+To this end, we vary the percentage of attackers in the topology from 6\% to over 50\%. Since the total number of end users in the topology is constant, as the number of attackers increases, the number of legitimate users decreases. All other parameters and experimental setup is the same with the previous experiment. As before, for each mitigation algorithm, we perform 10 independent simulation runs.
 %The second set of conducted experiments was aimed to answer the question of the effect and quality of the Interest flooding attack mitigation algorithm under different attack volume.
 %To do this, for each algorithm we varied the number of adversary nodes in the topology, keeping the total number of client nodes constant: 1 attacker and 15 legitimate users, 3 attackers and 13 legitimate users, etc.
 
@@ -190,6 +191,7 @@ We assign bandwidth and  delay values to links based on their type---both values
 \begin{figure}[htbp]
   \centering
   \vspace{-.1cm}\includegraphics[scale=0.15,angle=90,height=3.5cm,width=8cm]{7018-r0}
+  \vspace{-0.3cm}
   \caption{Internet-like topology: 344 client routers (red), 109 gateway routers (green), 109 backbone routers (blue)}\vspace{-.2cm}
   \label{fig:large-scale-topo}
 \end{figure}
@@ -197,6 +199,7 @@ We assign bandwidth and  delay values to links based on their type---both values
 \begin{table}[htbp]
 \centering
 \caption{Large-scale topology link bandwidth and delay ranges}
+\vspace{-0.3cm}
 \label{tab:large-scale}
 \begin{tabular}{|l||c|c||c|c|}
   \hline
@@ -212,8 +215,8 @@ We assign bandwidth and  delay values to links based on their type---both values
   \hline
   Client--Gateway       & 10~ms & 70~ms   & 1~Mbps  & 3~Mbps \\
   \hline
-
 \end{tabular}
+\vspace{-0.3cm}
 \end{table}
 
 %Priya: Leaving out this in the interest of space...
@@ -231,14 +234,14 @@ In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over 10 simul
 \begin{figure}[tbh]
  \centering
  \includegraphics[scale=0.8]{paper-topo-7018-gw/7018-r0-good-0-producer-gw}
- \vspace{-.3cm}\caption{Satisfaction ratio dynamics during the attack for large-scale topology with 40\% attackers)}\vspace{-.4cm}
+ \vspace{-.3cm}\caption{Satisfaction ratio dynamics during the attack for large-scale topology with 40\% attackers)}\vspace{-.3cm}
  % producer on a gateway node
  \label{fig:large-scale}
 \end{figure}
 
 Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger and more realistic topology. For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in Section~\ref{sec:probabilistic}, is due to the fact that each router in the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of the larger-topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics, which in turn leads to further penalization of new Interests from them.
 
-All our evaluations leaves us with the conclusion that, among the three techniques we tested under various topology and attacker concentrations, the satisfaction-based pushback is the most effective one in mitigating interest flooding attacks.% and it restricts malicious Interests from even entering the network. 
+All our evaluations leaves us with the conclusion that, among the three techniques we tested under various topology and attacker concentrations, the satisfaction-based pushback is the most effective one in mitigating Interest flooding attacks.% and it restricts malicious Interests from even entering the network. 
 %The only short periods of time when malicious Interests are getting admitted to the network is when routers have either no prior knowledge about per-interface satisfaction ratios (the initial period of the attack) or such knowledge becomes stale (statistics decaying during the attack). As soon as the knowledge is obtained or refreshed, the service for legitimate users returns to norm.
 
 
@@ -262,7 +265,7 @@ All our evaluations leaves us with the conclusion that, among the three techniqu
 
 This paper is a first step in understanding the impact of Interest flooding attacks in NDN and exploring the solution space. 
 While designing our mitigation algorithms, we exploit two key features of NDN architecture, namely routers maintaining state about the Interests they have forwarded and Data traffic taking the reverse path of the Interest traffic. 
-We test the efficacy of our algorithms by simulating them on both a simple binary-tree topology % designed to test the worst-case effectiveness of our algorithms as well as on a realizing 
+We test the efficacy of our algorithms by simulating them on both a simple binary-tree topology, % designed to test the worst-case effectiveness of our algorithms as well as on a realizing 
 as well as a more realistic ISP-based topology designed to provide insights of our algorithms' behavior when deployed on a real network. 
 While our results are promising and show a great potential in mitigating Interest flooding DDoS attacks, there are certain limitations which should be addressed in future research. 
 
