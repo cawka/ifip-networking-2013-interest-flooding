@@ -46,6 +46,7 @@ One simple implementation technique  is for an NDN router to limit the number of
 % With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
 %
 \begin{equation}
+\label{eq:interest limit}
 \small \mathrm{Interest\ Limit} = Delay\ [s] \cdot \frac{\mathrm{Bandwidth\ [Bytes/s]}}{\mathrm{Data\ packet\ size\ [Bytes]}}
 \end{equation}
 
@@ -296,7 +297,8 @@ Pseudocode~\ref{algo:interest stats} formally defines how statistics can be gene
 
 
 Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistic during and after an Interest flooding attack. The attack duration is from 10 to 70~seconds. Prior to start of the attack, the percentage of unsatisfied Interests is zero.  
-The statistics build up rapidly as soon as Interests start to time out, which happens approximately one second after the start of the attack.%\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
+The statistics build up rapidly as soon as Interests start to time out, which happens approximately one second after the start of the attack.
+%\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
 For the duration of the attack (10--70~seconds), the percentage of unsatisfied Interests is close to 100\%: 
 when the ratio is close to 100\%, routers drop all incoming Interests, resulting in decaying of the statistics until a new Interest is admitted, which eventually brings statistics back near 100\% point.
 Finally, the ratio exponentially decays after the attack ceases.
@@ -316,7 +318,7 @@ Finally, the ratio exponentially decays after the attack ceases.
 \subsubsection{\textbf{Satisfaction-based Interest acceptance}}
 \label{sec:probabilistic}
 
-Having successfully implemented a technique to gather statistics on Interest satisfaction ratios, our next challenge is in using this ratio to penalize malicious Interests. A straightforward method to achieve this enforcement is to use the Interest satisfaction ratio as the direct probability for accepting (forwarding) or rejecting an incoming Interest (see Pseudocode~\ref{alg:probabilistic model}).
+Having successfully implemented a technique to gather statistics on Interest satisfaction ratios, our next challenge is in using these ratios to penalize malicious Interests. A straightforward method to achieve this enforcement is to use the Interest satisfaction ratio as the direct probability for accepting (forwarding) or rejecting an incoming Interest (see Pseudocode~\ref{alg:probabilistic model}).
 %Apart from the Interest satisfaction statistics generation, there is a question how this statistics can be used to actually enforce prioritization and penalizing of Interests.
 
 

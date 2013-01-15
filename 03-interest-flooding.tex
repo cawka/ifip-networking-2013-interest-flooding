@@ -29,8 +29,8 @@ As we explained earlier, Interest packets in NDN are routed through the network 
 Since an NDN network fetches data by its name, an adversary cannot target specific routers or end-hosts.
 %% as neither is required to have a globally routable network identity/address.
 However, an adversary can target a specific namespace.
-For example in Fig.~\ref{fig:flooding example}, if the Data producer is the exclusive owner of \ndnName{/foo/bar} namespace, both router B and the Data producer would receive all Interests for \ndnName{/foo/bar/\ldots} that cannot be otherwise satisfied from in-network caches.%
-\footnote {This example assumes that the adversary floods the network with unique data names carrying \ndnName{/foo/bar} prefix to make them effective. It also assumes the producer is single-homed and the data is not replicated elsewhere. With multi-homed producers or replicated data, NDN would likely to cope better with DDoS attacks due its native multipath and adaptive forwarding~\cite{adaptive-forwarding}.}
+For example in Fig.~\ref{fig:flooding example}, if the data producer is the exclusive owner of \ndnName{/foo/bar} namespace, both router B and the data producer would receive all Interests for \ndnName{/foo/bar/\ldots} that cannot be otherwise satisfied from in-network caches.%
+\footnote {This example assumes that the adversary floods the network with unique data names carrying \ndnName{\small /foo/bar} prefix to make them effective. It also assumes the producer is single-homed and the data is not replicated elsewhere. With multi-homed producers or replicated data, NDN would likely to cope better with DDoS attacks due its native multipath and adaptive forwarding~\cite{adaptive-forwarding}.}
 A large volume of such malicious Interests can disrupt service quality in NDN network in two ways: \emph{create network congestion} and \emph{exhaust resources on routers}.
 
 Similar to packets in traditional networks, Interest packets in NDN consume a portion of network capacity. A large number of Interest packets might cause congestion and lead to legitimate packets being dropped in the network. In particular a coordinated DDoS attack could target one specific namespace to concentrate attack traffic in certain segments of the network, typically closest to the publisher serving that namespace.
@@ -49,7 +49,7 @@ As NDN routers maintain per-packet states for each forwarded Interest (i.e., an 
 %\paragraph{Effectiveness}
 
 An effective Interest flooding attack is non-trivial to create.
-To target a specific namespace (e.g., \ndnName{/newyorktimes/}), an adversary needs to make sure that (1) the expressed Interests are routed as close to the Data producer as possible, and (2) the corresponding PIT entries are stored at intermediate NDN routers for as long as possible.
+To target a specific namespace (e.g., \ndnName{/newyorktimes/}), an adversary needs to make sure that (1) the expressed Interests are routed as close to the data producer as possible, and (2) the corresponding PIT entries are stored at intermediate NDN routers for as long as possible.
 %In order to achieve both requirements effectively, malicious Interests should avoid Interest collapsing and 
 To avoid an Interest being served from caches of intermediate routers, every single malicious Interest has to request an unpopular or non-existing content, e.g., content with a unique name (\emph{unique junk Interests}). In this paper, we exclusively focus on this particular attack strategy as it maximizes the damage from each malicious Interest in the network. However, other less effective strains of Interest flooding attacks can also be mitigated by applying the same or similar countermeasures described in the next section.  
 

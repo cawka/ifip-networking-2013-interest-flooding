@@ -18,7 +18,7 @@ The most relevant works to this paper are the solutions to brute force IP packet
 overlay-based filtering~\cite{Stone:2000:CenterTrack:-An-IP-overlay, Keromytis:2004:SOS:-An-architecture, Kline:2011:Shield:-DoS-filtering}, 
 various ticketing systems with conditional admission of traffic to the network~\cite{Yaar:2004:SIFF:-A-stateless, Yang:2005:A-DoS-limiting-network, Wendlandt:2006:Fastpass:-Providing, Natu:2007:Fine-grained-capabilities, Portcullis, Capabilities},
 and systems that attempt to use approximate IP traffic symmetry to estimate and filter out malicious traffic~\cite{Wang:2002:Detecting-SYN-flooding, Kreibich:2005:Using-packet, Mahimkar:2007:dFence:-Transparent}. 
-Identifying malicious traffic requires establishing certain state at routers, and the above mentioned solutions differ in the specifics on what state to use and how to establish it.  By design NDN's forwarding plane keeps per packet state at every router, the finest granularity state to support any and all mitigation solutions. Therefore one can simply take full advantage of this state to develop desired solutions.
+Identifying malicious traffic requires establishing certain state at routers, and the above mentioned solutions differ in the specifics on what state to use and how to establish it.  By design NDN's forwarding plane keeps per packet state at every router, the finest granularity state to support any and all mitigation solutions. Therefore, one can simply take full advantage of this state to develop desired solutions.
 
 % Our design for the Interest flooding attack mitigation borrows 
 

@@ -29,7 +29,7 @@ The metric we choose to quantify the effectiveness of our algorithms is the {\it
 %At the same time, if only a small percentage of the expressed Interest are getting satisfied during the attack, the method $X$ can be called ineffective. 
 
 % Traffic pattern
-In our experiments, we assumed that legitimate users express Interests at constant average rates with randomized time gap between two consecutive Interests, where the random number for the gap follows a uniform distribution. We believe that this traffic pattern provides a reasonable approximation of traffic mix from all network users without excessive buffering. To quantify the behavior of our mitigation strategies under a worse case attack scenario, we assumed that all the attackers send junk Interests as fast as they can, no Interest---including legitimate ones---can be satisfied from caches.  Also, we configured routers for single-path Interest forwarding and there is only one single-homed producer for the prefix under attack.
+In our experiments, we assumed that legitimate users express Interests at constant average rates with randomized time gap between two consecutive Interests, where the random number for the gap follows a uniform distribution. We believe that this traffic pattern provides a reasonable approximation of traffic mix from all network users without excessive buffering. To quantify the behavior of our mitigation strategies under a worst-case attack scenario, we assumed that all the attackers send junk Interests as fast as they can, no Interest---including legitimate ones---can be satisfied from caches.  Also, we configured routers for the single-path Interest forwarding and there is only one single-homed producer for the prefix under attack.
 %(remember, that Interest limits will not allow real flooding of Intersests in all of the designed mitigation algorithms).
 
 % Alex: not sure how to argue about the traffic pattern
@@ -43,7 +43,7 @@ We ran our simulations on two different network topologies---a smaller binary tr
 Again, to study the performance of our mitigation strategies under a range of conditions, we also varied the percentage of attackers in the network---the values ranged from 6\% attackers to over 50\% attackers in the network.
 
 % Fixed parameters
-We set the \emph{delay} and \emph{data size} parameters for the Interest limit calculation to an initial %fixed 
+We set the \emph{delay} and \emph{data size} parameters for the Interest limit calculation (\ref{eq:interest limit}) to a fixed 
 value for every node in the simulated topology. In particular, for the small-scale binary tree topology, we set delay to 80~ms, while for the large-scale ISP topology we set it to 330~ms (the order of the largest RTT). The data size is 1100~bytes for all simulation runs and topologies.
 % THIS IS BULLSHIT! There is absolutely no logic to set the delay to the same value on all nodes in the network. We discussed multiple times that you should fix it so that the delays are realistic and gets smaller as the nodes gets closer to the producer...
 
@@ -57,7 +57,7 @@ value for every node in the simulated topology. In particular, for the small-sca
 % Topology description
 %To assess baseline quality of the designed Interest flooding attack mitigation methods, we evaluated them first using a %simplistic small-scale binary tree topology 
 In Fig.~\ref{fig:small-scale}, we depict the binary-tree topology that we used for our initial experiments.
-Legitimate users as well as attackers were placed on leaf nodes (red nodes) as show in the figure. There are 16 end users (both legitimate and attackers) in this topology, each expressing Interests that are routed towards a single data producer placed at the root of the tree.  Each link in this topology is assigned a bandwidth of 10~Mbps and a randomized propagation delay ranging from 1 to 10 ms. 
+Legitimate users as well as attackers were placed on leaf nodes (top row of red nodes) as shown in the figure. There are 16 end users (both legitimate and attackers) in this topology, each expressing Interests that are routed towards a single data producer, placed at the root of the tree.  Each link in this topology is assigned a bandwidth of 10~Mbps and a randomized propagation delay ranging from 1 to 10 ms. 
 
 % Alex: should we mention that?
 %The main reason to chose a binary tree topology was that it represents one of the worst cases to defend against flooding DDoS %attacks.
@@ -130,9 +130,10 @@ We observe a successful DDoS attack, where 40\% attackers succeed in significant
 \paragraph{\textbf{Satisfaction-based Interest acceptance}}
 
 The effectiveness of this algorithm stems from the fact that routers can differentiate and limit malicious Interests into the network%, thereby ensuring availability of network resources for serving legitimate users
-. The observed periodic dips in the Interest satisfaction ratios of legitimate users in Fig.~\ref{fig:small-scale attack progress} is a direct result of Interest satisfaction rate statistics decaying with time. The 50-second period approximately corresponds to the selected exponential decaying parameter $\alpha=e^{−1.0/30.0}$, which decays statistics to $1/e$ of the initial value that ranges from 30~seconds to 50~seconds. 
+. The observed periodic dips in the Interest satisfaction ratios of legitimate users in Fig.~\ref{fig:small-scale attack progress} is a direct result of Interest satisfaction rate statistics decaying with time. The 50-second period approximately corresponds to the selected exponential decaying parameter $\alpha=e^{−1.0/30.0}$, which decays statistics to $1/e$ of the initial value within 30~seconds and to $\approx$20\% within 50~seconds.
+ % that ranges from 30~seconds to 50~seconds. 
 %The primary reason that such minimum peaks exist is the fact that 
-When Interests from attackers start to get readmitted, they cause degradation of statistics on routers close to the producer (i.e., routers that observe mixed traffic from legitimate and malicious users). Consequently, this degradation reduces the probability of legitimate Interests getting through (see Section~\ref{sec:probabilistic}) until malicious Interests are ``pushed back'' to the edge.
+When Interests from attackers start to get readmitted, they cause degradation of statistics on routers close to the producer (i.e., routers that observe mixed traffic from legitimate and malicious users). Consequently, this degradation reduces the probability of legitimate Interests getting through (see Section~\ref{sec:probabilistic}) until malicious Interests are ``pushed back'' again to the edge.
 
 %When routers more intelligently process incoming Interests (i.e., based on the incoming interface statistics), the Interest flooding attack becomes virtually ineffective.
 %That is, malicious Interests are simply not getting admitted to the network, not being able to create much service disturbance for the legitimate users.
@@ -146,7 +147,7 @@ We observe a  sharp dip in the satisfaction ratio curve at the start of the atta
 \subsubsection{Network reaction to varying number of attackers}
 
 Our next goal is to study the effectiveness of our mitigation algorithms as a function of increasing adversaries in the network.
-To this end, we vary the percentage of attackers in the topology from 6\% to over 50\%. Since the total number of end users in the topology is constant, as the number of attackers increases, the number of legitimate users decreases. All other parameters and experimental setup is the same with the previous experiment. As before, for each mitigation algorithm, we perform 10 independent simulation runs.
+To this end, we vary the percentage of attackers in the topology from 6\% to over 50\%. Since the total number of end users in the topology is constant, as the number of attackers increases, the number of legitimate users decreases. All other parameters and experimental setup are consistent with the previous experiment. As before, for each mitigation algorithm, we perform 10 independent simulation runs.
 %The second set of conducted experiments was aimed to answer the question of the effect and quality of the Interest flooding attack mitigation algorithm under different attack volume.
 %To do this, for each algorithm we varied the number of adversary nodes in the topology, keeping the total number of client nodes constant: 1 attacker and 15 legitimate users, 3 attackers and 13 legitimate users, etc.
 
@@ -162,7 +163,7 @@ To this end, we vary the percentage of attackers in the topology from 6\% to ove
 \end{figure}
 
 In Fig.\ref{fig:small-scale-topo boxplot} we present  the Interest satisfaction ratio for legitimate users aggregated over the 10 simulation runs for the first minute of the attack. The results are as expected---for all three mitigation algorithms, as the percentage of attackers in the network increases, the lower is the Interest satisfaction ratio for legitimate users.
-In the case of token bucket with per-interface fairness algorithm, just 3 attackers can halve the quality of service for the remaining 13 legitimate users. While the two intelligent attack mitigation algorithms also show a decline in service quality as the percentage of attackers increases, this decline is much more gradual and marginal. In the case of satisfaction-based pushback algorithm, over 90\% of Interests from legitimate users are satisfied even if the 50\% of end nodes are malicious.  
+In the case of token bucket with per-interface fairness algorithm, just 3 attackers can halve the quality of service for the remaining 13 legitimate users. While the two intelligent attack mitigation algorithms also show a decline in service quality as the percentage of attackers increases, this decline is much more gradual and marginal. In the case of satisfaction-based pushback algorithm, during the first minute of the attack over 90\% of Interests from legitimate users are satisfied even if the 50\% of end nodes are malicious.  
  
 
 
@@ -226,7 +227,7 @@ We assign bandwidth and  delay values to links based on their type---both values
 % The results for all attack mitigation algorithms and all runs are aggregated in Fig.~\ref{fig:small-scale attack progress}, where Y-axis represents a minimum and maximum range for observed Interest satisfaction percentages among all nodes and all simulation runs.
 % A short and simplistic summary of the results is that the first two attack mitigation methods do not work at all, and the last two are working quite good.
 
-In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over 10 simulations runs for each mitigation algorithm for the scenario, where the data producer is placed at a gateway node. We observe similar results for the data producer placed at the backbone node as well. As in the case of the binary-tree topology experiments, we observe that the token bucket with per interface fairness is the most ineffective algorithm and satisfaction-based pushback is the most effective one.  Interest satisfaction percentage for legitimate users are approximately 25\% and close to 100\% respectively for these two mitigation methodologies.
+In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over all simulations runs for each mitigation algorithm for the scenario, where the data producer is placed at a gateway node. We observe similar results for the data producer placed at the backbone node as well. Unlike the binary-tree topology experiments, we observe that the satisfaction-based pushback is the most effective algorithm, while both the token bucket with per interface fairness and satisfaction-based Interest accept have poor performance.  Interest satisfaction percentage for legitimate users are close to 100\% and approximately 30\% and 25\% respectively for these mitigation methodologies.
 
 %
 %The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
@@ -239,9 +240,9 @@ In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over 10 simul
  \label{fig:large-scale}
 \end{figure}
 
-Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger and more realistic topology. For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in Section~\ref{sec:probabilistic}, is due to the fact that each router in the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of the larger-topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics, which in turn leads to further penalization of new Interests from them.
+Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger and more realistic topology.  For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in Section~\ref{sec:probabilistic}, is due to the fact that each router on the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of the larger-topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics, which in turn leads to further penalization of new Interests from them.
 
-All our evaluations leaves us with the conclusion that, among the three techniques we tested under various topology and attacker concentrations, the satisfaction-based pushback is the most effective one in mitigating Interest flooding attacks.% and it restricts malicious Interests from even entering the network. 
+All our evaluations leaves us with the conclusion that, among the three techniques we tested under various topology and attacker concentrations, the satisfaction-based pushback is the most promising one in mitigating Interest flooding attacks.% and it restricts malicious Interests from even entering the network. 
 %The only short periods of time when malicious Interests are getting admitted to the network is when routers have either no prior knowledge about per-interface satisfaction ratios (the initial period of the attack) or such knowledge becomes stale (statistics decaying during the attack). As soon as the knowledge is obtained or refreshed, the service for legitimate users returns to norm.
 
 
