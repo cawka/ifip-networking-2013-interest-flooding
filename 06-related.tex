@@ -12,12 +12,13 @@ More specifically our attack mitigation design relies on NDN's stateful forwardi
 which provides statistics on unsatisfied Interests.  
 Similar approaches are also explored by Yi et al.~\cite{adaptive-forwarding,adaptive-tr} and Rozhnova et al.~\cite{rozhnova2012effective} to facilitate NDN network performance.
 
-The general area of denial of service attacks and their mitigation methods is among the hottest topics in recent years.
+The general area of mitigating denial of service attacks is among the hottest topics in recent years.
 % Among all the body of work, 
-The efforts that are most relevant works to this paper are solutions to brute force IP packet flooding, such as DDoS detection techniques~\cite{Chen:2007:Collaborative-detection, Jun:2011:DDoS-flooding}, methods of pushbacking malicious traffic to edges using various filtering techniques~\cite{Pushback, Tupakula:2003:A-practical-method, Argyraki:2005:Active-internet, Oikonomou:2006:A-framework-for-a-collaborative, Liu:2008:To-filter-or-to-authorize:, Chou:2009:Proactive-surge, Liu:2010:NetFence:-preventing}, 
+The most relevant works to this paper are the solutions to brute force IP packet flooding, such as DDoS detection techniques~\cite{Chen:2007:Collaborative-detection, Jun:2011:DDoS-flooding}, methods of pushbacking malicious traffic to edges using various filtering techniques~\cite{Pushback, Tupakula:2003:A-practical-method, Argyraki:2005:Active-internet, Oikonomou:2006:A-framework-for-a-collaborative, Liu:2008:To-filter-or-to-authorize:, Chou:2009:Proactive-surge, Liu:2010:NetFence:-preventing}, 
 overlay-based filtering~\cite{Stone:2000:CenterTrack:-An-IP-overlay, Keromytis:2004:SOS:-An-architecture, Kline:2011:Shield:-DoS-filtering}, 
 various ticketing systems with conditional admission of traffic to the network~\cite{Yaar:2004:SIFF:-A-stateless, Yang:2005:A-DoS-limiting-network, Wendlandt:2006:Fastpass:-Providing, Natu:2007:Fine-grained-capabilities, Portcullis, Capabilities},
-and systems that attempt to use approximate IP traffic symmetry to estimate and filter out malicious traffic~\cite{Wang:2002:Detecting-SYN-flooding, Kreibich:2005:Using-packet, Mahimkar:2007:dFence:-Transparent}. Identifying malicious traffic requires state at routers, all these solutions differ in the specifics on what state to use and how to establish it.  By design NDN's forwarding plane keeps per packet state, one can simply take full advantage of this state to develop effective mitigations.
+and systems that attempt to use approximate IP traffic symmetry to estimate and filter out malicious traffic~\cite{Wang:2002:Detecting-SYN-flooding, Kreibich:2005:Using-packet, Mahimkar:2007:dFence:-Transparent}. 
+Identifying malicious traffic requires establishing certain state at routers, and the above mentioned solutions differ in the specifics on what state to use and how to establish it.  By design NDN's forwarding plane keeps per packet state at every router, the finest granularity state to support any and all mitigation solutions. Therefore one can simply take full advantage of this state to develop desired solutions.
 
 % Our design for the Interest flooding attack mitigation borrows 
 
