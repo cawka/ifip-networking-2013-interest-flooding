@@ -79,8 +79,8 @@ In order to achieve our goal of ensuring ``fair'' mixing of Interests from all n
 we extend the Pending Interest Table to support flagging of Interests that cannot be immediately forwarded and implement hierarchical queues for each interface (see Fig.~\ref{fig:queueing}). 
 This mechanism is essentially a class based queuing~\cite{floyd1995link}, with classes for each outgoing and incoming interface.
 %As an alternative to hierarchical queues, one can also use an approach based on virtual time. For details, please see ~\cite{zhang1990virtual}.
-We note that, unlike normal queuing, Interest queues do not actually store a packet, but merely a bi-directional pointer to the existing PIT entry.
-Thus, a PIT entry can be quickly updated when the Interest is actually forwarded and the element can be easily removed from the queue when the Interest expires.
+We note that unlike normal queuing, Interest queues do not actually store a packet, but merely a bi-directional pointer to the existing PIT entry.
+Thus, a PIT entry can be quickly updated when the Interest is actually forwarded, and the element can be easily removed from the queue when the Interest expires.
 
 %For the buffering part, we can reuse Pending Interest Table, with a small extension to support flagging of the Interests that cannot be forwarded immediately (see example on Fig.~\ref{fig:queueing}). 
 %As for the mixing part, we need an additional fair queuing mechanism, which can be implemented in a form of hierarchical queues (on Fig.~\ref{fig:queueing})\footnote{This essentially is a class based queuing, with classes for each outgoing/incoming interface.} or using virtual time approach~\cite{zhang1990virtual}. 
@@ -188,7 +188,7 @@ Attackers are able to successfully thwart access to content for legitimate users
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it still admits relatively large number of Interests from malicious users. A considerable percentage of these malicious Interests are forwarded all the way to content producers, thereby reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate and malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and differentiate malicious requests from legitimate ones. 
+The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it still admits a relatively large number of Interests from malicious users. A considerable percentage of these malicious Interests are forwarded all the way to content producers, thereby reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate and malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and differentiate malicious requests from legitimate ones. 
 % `Good' Interests from legitimate users must be admited and forwarded appropriately. 
 Thus, the key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
 
