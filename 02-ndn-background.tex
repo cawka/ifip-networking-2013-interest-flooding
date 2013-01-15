@@ -8,12 +8,12 @@ All communication in NDN is performed using two distinct types of packets: \text
 Data names in NDN are hierarchically structured and an example name for the first segment of a youtube video would look like: \ndnName{/youtube/videos/0F8YdlkKO9A/0}.
 
 To retrieve data, a consumer requests it by sending an Interest packet with the name of the desired content in it.
-Routers use this name to route the Interest towards data sources, and a Data packet whose name matches the name in the Interest is returned to the consumer by following the reverse path of the Interest. Similar to IP, Interest forwarding is based on longest name prefix match, but, unlike IP, an Interest packet and its matching Data packet always take symmetric path.
+Routers use this name to route the Interest towards data sources, and a Data packet whose name matches the name in the Interest is returned to the consumer by following the reverse path of the Interest. Similar to IP, Interest forwarding is based on longest name prefix match, but, unlike IP, an Interest packet and its matching Data packet always take symmetric paths.
 %% An Interest is ``satisfied'' when it is matched with a Data packet.
 
 Each NDN router maintains three major data structures:
 \begin{itemize}
-\item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards data producers. Each PIT entry contains one or multiple incoming and outgoing physical interfaces; multiple incoming interfaces indicate the same data is requested from multiple downstream users; multiple outgoing interfaces indicates the same Interest is forwarded along multiple paths.
+\item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards data sources. Each PIT entry contains one or multiple incoming and outgoing physical interfaces; multiple incoming interfaces indicate the same data is requested from multiple downstream users; multiple outgoing interfaces indicates the same Interest is forwarded along multiple paths.
 \item \textit{Forwarding Interest Base (FIB)} maps name prefixes to one or multiple physical network interfaces, defining allowed %(multipath)
  directions to where Interests can be forwarded. 
 % Having one-to-many relationship in this table allows multipath forwarding of Interests.}
@@ -25,7 +25,7 @@ If a match is found, the Data packet is sent back to the incoming interface of t
 If not, the Interest name is checked against the entries in the PIT. 
 If the name already exists in the PIT, then it can be a duplicate Interest (identified by a random number each Interest carries) that should be dropped,
 or an Interest from another consumer asking for the same Data, which requires the incoming interface of this Interest to be added to the existing PIT entry.
-If the name does not exist in the PIT, the Interest is added into the PIT and forwarded to the interface chosen by the strategy module, which uses FIB as input for its decision.
+If the name does not exist in the PIT, the Interest is added into the PIT and forwarded to the interface chosen by the strategy module, which uses FIB as input for its decisions.
 
 When a Data packet is received, its name is used to look up the PIT.
 If a matching PIT entry is found,

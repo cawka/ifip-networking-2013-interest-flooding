@@ -27,7 +27,6 @@ Such a shift automatically eliminates several long-standing DDoS attacks, includ
 However, malicious users can attack the network by sending an excessive number of Interests. 
 Because each Interest consumes resources at intermediate routers as it is routed through the network, an excessive number of Interests can potentially congest the network and exhaust routers' memory. 
 We coin the term {\it Interest flooding} to refer to such attack and
-%One can also attack an NDN network by hijacking Interest packets and then injecting false data replies into the network.
 this paper exclusively investigates the problem and the solution space for it. 
 
 Our effort is an important first step towards a complete investigation of DDoS attacks in NDN. We experiment with three algorithms that allow routers to exploit their state information to thwart these attacks. Through extensive simulations, we show how one of our mitigation methodologies effectively shuts down malicious users while preventing legitimate users from service degradation. 
@@ -40,7 +39,7 @@ Our effort is an important first step towards a complete investigation of DDoS a
 
 % Alex: I generally don't like this section as it is does not bring anything valuable. 
 % My first candidate to be cut
-The rest of the paper is organized as follows. We give an overview of NDN architecture in Section~\ref{sec:ccn-intro} and explain interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work} and finalize the paper with conclusions and future work in Section~\ref{sec:conclusion}.
+The rest of the paper is organized as follows. We give an overview of NDN architecture in Section~\ref{sec:ccn-intro} and explain interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work} and finalize the paper with conclusions and future work in Section~\ref{sec:conclusion}. 
 
 %We conduct simulation-based evaluations to quantify the effectiveness of our proposed attack mitigation algorithms %(Section~\ref{sec:evaluation}).
 %% based on trivial small-scale and Internet-like larger-scale topologies.
