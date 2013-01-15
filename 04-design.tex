@@ -10,7 +10,7 @@
 
 % Our definition of attack mitigation is that good clients are still able to access data on the producer.
 
-In this section we present several algorithms to mitigate Interest flooding attacks in NDN.  Our mitigation strategies feature varying degrees of implementation complexity and effectiveness---the higher the implementation complexity, the more effective is the algorithm against Interest flooding attacks. We start by describing our simple strategies and use the insights and lessons learned from the deployment of these techniques to inform and design more effective mitigation techniques that can work well in a variety of attack scenarios.
+In this section we present several algorithms to mitigate Interest flooding attacks in NDN.  Our mitigation strategies feature varying degrees of implementation complexity and effectiveness---the higher the implementation complexity, the more effective is the algorithm against Interest flooding attacks. We start by describing our simple strategies and use the insights and lessons learned from the deployment of these to inform and design more effective mitigation techniques that works well in various topologies.
 
 %   - Naive approach to Interest Limits (that is called physical limits everywhere else)
 %     Example how this can be implemented in a simple way
@@ -53,7 +53,7 @@ In the above equation, \emph{Delay} is the expected time of Interest being satis
 Although both these values are not known a priori, it is not really necessary to use their exact values.
 One can simply set the pending Interest limit based on the average values of round trip time and observed Data packet size, as the network buffers can smooth out most of the network fluctuations.
 
-This {\it Token Bucket} approach might be exceptionally retrictive in forwarding Interests---not all Interests will result in a Data packet---thus, the network can be underutilized. However, the biggest drawback of the algorithm is that it itself can be used as an effective mechanism to carry out DDoS attacks. If a router has utilized all its tokens to forward malicious Interests, it can no longer forward incoming Interests from legitimate users till the pending malicious Interests start to expire. One way to get around this issue is to impose a per interface limit, so that malicious Interests are not allowed to entirely consume the limits of a specific interface. We describe this technique in greater detail below.
+This {\it Token Bucket} approach might be exceptionally restrictive in forwarding Interests---not all Interests will result in a Data packet---and might result in underutilization of the network. However, the biggest drawback of this algorithm is the fact that it can nourish DDoS attacks. If a router has utilized all its tokens to forward malicious Interests, it can no longer forward incoming Interests from legitimate users till the pending malicious Interests start to expire. One way to get around the issue is to impose a per interface limit, so that malicious Interests are not allowed to entirely consume the limits of a specific interface. We describe this technique in greater detail below.
 
 %That is, if it is known that the amount of already requested data ($=$~amount of forwarded Interests) can fully utilize the downstream link, an NDN node---either an end-user or an NDN router---has absolutely no point in forwarding new incoming Interests and creating corresponding PIT entries.
 %For example, if a router A on Fig.~\ref{fig:flooding example} already forwarded 125 Interests requesting 1000-byte Data packets, any new incoming Interests can be almost safely dropped, provided the link capacity between A--B is 100~Mbps and delay is 10~ms.
@@ -71,7 +71,7 @@ This {\it Token Bucket} approach might be exceptionally retrictive in forwarding
 \subsubsection{\textbf{Token bucket with per interface fairness}}
 \label{sec:queuing}
 
-To address the lack of fairness associated with the na\"ive {\it Token Bucket} algorithm, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring nodes. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
+To address the lack of fairness associated with the na\"ive {\it Token Bucket} approach, we modify it to ensure that the Interests forwarded by a router on each interface represent a fair mix of Interests received from neighboring nodes. For example, in Fig.~\ref{fig:flooding example} router A can ensure that the tokens associated with Interests sent out on interface {\texttt eth2}  are fairly distributed across incoming interfaces \texttt{eth0} and \texttt{eth1}. 
 %Due to the expected small volume of Interests, we cannot merely rely on network buffers to perform statistical multiplexing of Interests, as they would almost never be %buffered.
 %At the same time, until bag of tokens is not empty, there is no reason to delay Interest forwarding, as we do not known how many and from which interfaces Interests %will arrive in the future.
 In order to achieve our goal of ensuring ``fair'' mixing of Interests from all neighboring nodes, 
@@ -79,8 +79,8 @@ In order to achieve our goal of ensuring ``fair'' mixing of Interests from all n
 we extend the Pending Interest Table to support flagging of Interests that cannot be immediately forwarded and implement hierarchical queues for each interface (see Fig.~\ref{fig:queueing}). 
 This mechanism is essentially a class based queuing~\cite{floyd1995link}, with classes for each outgoing and incoming interface.
 %As an alternative to hierarchical queues, one can also use an approach based on virtual time. For details, please see ~\cite{zhang1990virtual}.
-We note that unlike normal queuing, Interest queues do not actually store a packet, but merely a bi-directional pointer to the existing PIT entry.
-Thus, a PIT entry can be quickly updated when the Interest is actually forwarded; further the element can be quickly removed from the queue when the Interest expires.
+We note that, unlike normal queuing, Interest queues do not actually store a packet, but merely a bi-directional pointer to the existing PIT entry.
+Thus, a PIT entry can be quickly updated when the Interest is actually forwarded and the element can be easily removed from the queue when the Interest expires.
 
 %For the buffering part, we can reuse Pending Interest Table, with a small extension to support flagging of the Interests that cannot be forwarded immediately (see example on Fig.~\ref{fig:queueing}). 
 %As for the mixing part, we need an additional fair queuing mechanism, which can be implemented in a form of hierarchical queues (on Fig.~\ref{fig:queueing})\footnote{This essentially is a class based queuing, with classes for each outgoing/incoming interface.} or using virtual time approach~\cite{zhang1990virtual}. 
@@ -94,11 +94,11 @@ Thus, a PIT entry can be quickly updated when the Interest is actually forwarded
 \end{figure}
 
 We present a formalized description of this algorithm in Pseudocode~\ref{alg:queuing}. 
-By setting appropriate queue sizes we can control the amount of physical resources utilized at a router.
+By setting appropriate queue sizes, we can control the amount of physical resources utilized at a router.
  % (such as memory and computation power). 
-It is also important to set appropriate value for how long an Interest can be enqueued. 
-If an Interest is enqueued for a long time, by the time it is dequeued and forwarded, the retrieved Data packet could be dropped later due to state expiration at the downstream routers. 
-For our evaluations we chose to enqueue Interests up to 10\% of their original lifetime.
+It is also important to set a sensible value for how long an Interest can be enqueued. 
+If an Interest is enqueued for a long time, by the time it is dequeued and forwarded, the retrieved Data packet might be dropped at the downstream routers if their corresponding state expired. 
+For our evaluations, we empirically chose to enqueue Interests up to 10\% of their original lifetime.
 % We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
 % Alex: I don't believe there is a need for separate discussion about "freshness", as we already introduced concept of lifetime
 % {\color{red} \it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
@@ -176,8 +176,8 @@ For our evaluations we chose to enqueue Interests up to 10\% of their original l
 
 
 As we show in Section~\ref{sec:evaluation}, this algorithm provides partial relief from the Interest flooding attacks, allowing legitimate users to successfully fetch Data for 15--20\% of their expressed Interests. 
-We note that while this algorithm might be reasonable for ensuring limited fairness in an NDN network, it is ineffective in protecting legitimate users from malicious attackers. 
-Malicious attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of Interests.
+We note that while this algorithm might be reasonable for ensuring limited fairness in an NDN network, it is ineffective in protecting legitimate users from malicious ones. 
+Attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of malicious Interests.
 
 
 %At the same time, the Physical limits with or without fair queueing allows attackers to send a relatively small volume of Interests in order to significantly impact service for the legitimate users.
@@ -188,9 +188,9 @@ Malicious attackers are able to successfully thwart access to content for legiti
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it admits Interests from malicious users. A sizeable percentage of these malicious Interests are forwarded all the way to content producers, thereby utilizing scarce network resources and reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate Interests as well as malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and effectively drop only malicious requests for content. 
+The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it still admits relatively large number of Interests from malicious users. A considerable percentage of these malicious Interests are forwarded all the way to content producers, thereby reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate and malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and differentiate malicious requests from legitimate ones. 
 % `Good' Interests from legitimate users must be admited and forwarded appropriately. 
-The key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
+Thus, the key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
 
 %One can try a black- or whitelisting approach. However, besides the fact that source black- and whitelisting cannot work in %NDN as it does not feature source addresses, it requires extraneous knowledge to classify the incoming Interests.
 
@@ -214,11 +214,11 @@ The key question is how can we devise mitigation algorithms that allow a router 
 %That is, instead of processing Interests always based on the first-in-first-serve rule, NDN routers need some basis to treat the incoming Interests differently.
 %Thus, the primary task in bringing intelligence to the Interest flooding attack mitigation is to proactively distinguish between legitimate and malicious Interests.
 
-In order to distinguish between legitimate and malicious Interests, we leverage another unique feature of  NDN architecture---guaranteed symmetric flow of Interest and Data packets. Since a Data packet takes the reverse path of the corresponding Interest packet, a router is guaranteed to see if an Interest it forwarded resulted in a matching Data packet or times out. %The only exception being if Interest/Data packets were lost along the way due to congestion in the network.
+In order to distinguish between legitimate and malicious Interests, we leverage another unique feature of  NDN architecture---guaranteed symmetric flow of Interest and Data packets. Since a Data packet takes the reverse path of the corresponding Interest packet, a router is guaranteed to see if an Interest it forwarded resulted in a matching Data packet or timed out. %The only exception being if Interest/Data packets were lost along the way due to congestion in the network.
 Since malicious Interests are not likely to bring data back (as discussed in Section~\ref{sec:interest-flooding}), this information can be utilized by routers in differentiating attack and legitimate traffic.  %Therefore, intermediate routers can classify the ones that brings data back as legitimate, while the ones that timed out can be marked as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest-flooding}).}  
 %Implications of other types of attacks are discussed in Section~\ref{sec:discussion}.}
 
-This timeout-based differentiation method is reactive in nature: one cannot determine in advance if an Interest will result in a timeout or Data being retrieved. However, routers can proactively maintain up-to-date statistics of Interest satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistic to determine whether an incoming Interest should be forwarded or dropped. For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface is sufficient to estimate whether an Interest received from a neighbor connected to this interface will result in a Data packet or a timeout. Statistics can also be kept at finer granularities such as per outgoing interface, per name prefix, etc. that can further improve the estimates. A router's goal should be to prioritize Interests that bring Data back while quickly penalizing those that occupy resources but don't generate a Data stream in return. In order to allow negative statistics to build up fast and positive statistics deteriorate quickly, we use the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window.
+This timeout-based differentiation method is reactive in nature: one cannot determine in advance if an Interest will result in a timeout or Data being retrieved. However, routers can proactively maintain up-to-date statistics of Interest satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistic to determine whether an incoming Interest should be forwarded or dropped. For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface is sufficient to reasonably predict whether an Interest received from a neighbor connected to this interface will result in a Data packet or a timeout if forwarded. Statistics can also be kept at finer granularities such as per outgoing interface, per name prefix, etc. that can further improve the estimates. A router's goal should be to prioritize Interests that bring Data back while quickly penalizing those that occupy resources but don't generate a Data stream in return. In order to allow negative statistics to build up fast and positive statistics deteriorate quickly, we use the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window.
 
 %Choosing the right balance between these contradictory requirements is a challenge and we explore this topic further  in the evaluation section.  %{\color{red} \it Priya: we should address the one that works best such as exponentially weighted moving average in eval section - it doesn't belong %here.} 
 
@@ -316,7 +316,7 @@ Finally, the ratio exponentially decays after the attack ceases.
 \subsubsection{\textbf{Satisfaction-based Interest acceptance}}
 \label{sec:probabilistic}
 
-Having successfully implemented a technique to gather statistics on Interest satisfaction ratios, our next challenge is in using this ratio to penalize malicious Interests. A straightforward method to achieve this enforcement is to use the Interest satisfaction ratio as a direct probability for accepting (forwarding) or rejecting an incoming Interest (see Pseudocode~\ref{alg:probabilistic model}).
+Having successfully implemented a technique to gather statistics on Interest satisfaction ratios, our next challenge is in using this ratio to penalize malicious Interests. A straightforward method to achieve this enforcement is to use the Interest satisfaction ratio as the direct probability for accepting (forwarding) or rejecting an incoming Interest (see Pseudocode~\ref{alg:probabilistic model}).
 %Apart from the Interest satisfaction statistics generation, there is a question how this statistics can be used to actually enforce prioritization and penalizing of Interests.
 
 
@@ -350,14 +350,14 @@ Having successfully implemented a technique to gather statistics on Interest sat
 \end{algorithmic}
 \end{algorithm}
 
-Parameter $\theta$ on line 5 of the Pseudocode~\ref{alg:probabilistic model} ensures that the probabilistic model is not enforced when the volume of Interests arriving at a particular interface is small. This step is critical---while we want to drop Interests from attackers, we also want to provide an opportunity for legitimate users to regain their share of resources after temporary Data delivery failures.
+Parameter $\theta$ on line 5 of the Pseudocode~\ref{alg:probabilistic model} ensures that the probabilistic model is not enforced when the volume of Interests arriving at a particular interface is small. This step is critical to provide an opportunity for legitimate users to regain their share of resources after temporary Data delivery failures.
 
-A drawback of the satisfaction-based Interest acceptance method is that each router on the path makes an independent decision on whether to forward or drop the Interest. 
+A drawback of the satisfaction-based Interest acceptance method is that each router on the path makes an independent decision on whether to forward or drop an Interest. 
 As a result of these independent decisions,  the probability of legitimate Interests being forwarded decreases rapidly as the number of hops between the content requester and producer grows; worsening the Interest satisfaction statistics and resulting in further drops.
 In example on Fig.~\ref{fig:flooding example}, the router A observes 50\% satisfaction rate for \texttt{eth1} and 0\% rate for \texttt{eth0}. 
 At the same time, router B observes a 30\% satisfaction rate for its \texttt{eth0} interface.
 Next time a legitimate Interest arrives at router A, it has a 50\% chance of being forwarded further, and if forwarded, it has only a $50\% \times 30\% = 15\%$ probability of being forwarded further towards the data producer. With each increasing hop in the network, the probability of being forwarded to the next hop decreases significantly. 
-One way to prevent this overreaction and unfair penalization is to ensure that the decision taken at each router on whether to forward or drop the Interest is not independent of the decision taken at preceding routers. An explicit notification such as a gossip protocol between neighboring NDN routers that specifies the volume of Interests each router is willing to forward will likely address this issue. We leave the implementation and evaluation of a gossip protocol to future work.
+One way to prevent this overreaction and unfair penalization is to ensure that the decision taken at each router on whether to forward or drop the Interest is not independent of the decision taken at preceding routers. An explicit notification such as a gossip protocol between neighboring NDN routers might alleviate the problem, but we leave the design and evaluation of it to future work.
 %{\color{red}Alex: we should state that it is out of scope of the paper to evaluate this issue}
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -435,7 +435,7 @@ Assuming an initial token bucket limit $L=10$ and the current satisfaction ratio
 
 
 The zero limit for the adversary's link implies that  router A is temporarily not willing to accept any Interests from this interface until the statistics decay to the appropriate level (recall Fig.~\ref{fig:ratio example}).
-At the next iteration of the satisfaction-based pushback algorithm, the legitimate user will be able to gradually improve the statistics on both routers A and B as all Interests from the user will get through and will return Data, eventually resulting in a full allowance ($L'=L=10$) in the links between the routers A and B, and the user and router A.
+At the next iteration of the satisfaction-based pushback algorithm, the legitimate user will be able to gradually improve the statistics on both routers A and B as all Interests from the user will get through and return Data, eventually resulting in a full allowance ($L'=L=10$) in the links between the routers A and B, and the user and router A.
 
 We note that while in the description of the satisfaction-based pushback algorithm we explicitly used ``outgoing'' and ``incoming'' interfaces,  all interfaces can be both incoming and outgoing.
 Thus, it may not be entirely clear which outgoing limit $L_{out}$ (line 10 in the algorithm) should be used to calculate the incoming limit $L_{in}$.
