@@ -56,11 +56,11 @@
 \maketitle
 
 \begin{abstract}
-Distributed Denial of Service attack is an ongoing problem in today's Internet, where packets from large numbers of compromised hosts thwart the paths to the victim site and/or overload the victim machines. 
+Distributed Denial of Service (DDoS) attacks are an ongoing problem in today's Internet, where packets from a large number of compromised hosts thwart the paths to the victim site and/or overload the victim machines. 
 In a newly proposed future Internet architecture, Named Data Networking (NDN), end users request desired data by sending Interest packets, and the network delivers Data packets upon request only, effectively eliminating many existing DDoS attacks. 
 However, an NDN network can be subject to a new type of DDoS attack, namely Interest packet flooding.  
 In this paper we investigate effective solutions to mitigate Interest flooding.
-We show that NDN's inherent properties to keep per packet state on each router and flow balance (i.e., one Interest packet retrieves at most one Data packet) provides the  basis for effective DDoS mitigation algorithms.
+We show that NDN's inherent properties of storing per packet state on each router and maintaining flow balance (i.e., one Interest packet retrieves at most one Data packet) provides the  basis for effective DDoS mitigation algorithms.
 Our evaluation through simulations shows that the solution can quickly and effectively respond and mitigate Interest flooding.
 \end{abstract}
 
@@ -71,24 +71,24 @@ Information-centric networks, named-data networking, denial-of-service
 \section{Introduction}
 \label{sec:intro}
 
-Named Data Networking (NDN)~\cite{ndn-conext, ndn-tr} is an ongoing research effort that aims to move the Internet into the future with a content-centric design that is capable of efficient content distribution and seamless mobility support. In contrast to today's Internet, a key goal of the NDN project is ``security by design." In fact, it goes a long way by guaranteeing the integrity and provenance of every Data packet with digital signatures and protecting user-privacy with no source addresses carried in packets. However, one big question that is yet to be answered is: how does the NDN architecture fare in terms of its resilience against distributed denial of service (DDoS) attacks? Especially since various forms of DDoS attacks pose a significant threat to the existing Internet infrastructure~\cite{arbor-report}, it is crucial to ensure that the new design is free of similar vulnerabilities.
+Named Data Networking (NDN)~\cite{ndn-conext, ndn-tr} is an ongoing research effort that aims to move the Internet into the future with a content-centric design that is capable of efficient content distribution and seamless mobility support. In contrast to today's Internet, a key goal of the NDN project is ``security by design." In fact, it goes a long way by guaranteeing the integrity and provenance of every Data packet with digital signatures and protecting user-privacy with no source addresses carried in the packets. However, one big question that is yet to be answered is: how does the NDN architecture fare in terms of its resilience against DDoS attacks? Especially since various forms of DDoS attacks pose a significant threat to the existing Internet infrastructure~\cite{arbor-report}, it is crucial to ensure that the new design is free of similar vulnerabilities.
 
 NDN eliminates host-based addressing and makes data the first-class network entity. Instead of sending packets to a given IP address, NDN nodes request desired data by sending Interest packets carrying application-level data names, and the network returns the requested Data packets following the path of Interests. 
 Such a shift automatically eliminates several long-standing DDoS attacks, including direct flooding and reflector attacks through source address spoofing~\cite{mirkovic2004taxonomy}.
 %
 However, malicious users can attack the network by sending an excessive number of Interests. 
-Because each Interest consumes resources at intermediate routers as it is routed through the network, an excessive number of Interests can congest the network and exhaust routers' memory resources. 
+Since each Interest consumes resources at intermediate routers as it is routed through the network, an excessive number of Interests can congest the network and exhaust a router's memory. 
 We coin the term {\it Interest flooding} to refer to such attack and
 this paper exclusively investigates the problem and the solution space for it. 
 
 Our effort is an important first step towards a complete investigation of DDoS attacks in NDN. We experiment with three algorithms that allow routers to exploit their state information to thwart these attacks. Through extensive simulations, we show how one of our mitigation methodologies effectively shuts down malicious users while preventing legitimate users from service degradation. 
-The rest of the paper is organized as follows. We give an overview of NDN architecture in Section~\ref{sec:ccn-intro} and explain interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work} and finalize the paper with conclusions and future work in Section~\ref{sec:conclusion}. 
+The rest of the paper is organized as follows. We provide an overview of NDN architecture in Section~\ref{sec:ccn-intro} and describe Interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work} . We discuss future work and conclude in Section~\ref{sec:conclusion}. 
 
 \section{NDN Overview\label{sec:ccn-intro}}
 
 In this section we briefly introduce NDN with a focus on its stateful forwarding plane (refer to \cite{ndn-conext, ndn-tr, adaptive-forwarding} for more details).
 NDN is a receiver-driven, data-centric communication protocol.
-All communication in NDN is performed using two distinct types of packets: \textit{Interest} and \textit{Data}. Both types of packets carry a \textit{name}, which uniquely identifies a piece of data that can be carried in one Data packet. Data names in NDN are hierarchically structured and an example name for the first segment of a youtube video would look like: \ndnName{/youtube/videos/0F8YdlkKO9A/0}.
+All communications in NDN are performed using two distinct types of packets: \textit{Interest} and \textit{Data}. Both types of packets carry a \textit{name}, which uniquely identifies a piece of content that can be carried in one Data packet. Data names in NDN are hierarchically structured and an example name for the first segment of a youtube video would look like: \ndnName{/youtube/videos/0F8YdlkKO9A/0}.
 
 To retrieve data, a consumer requests it by sending an Interest packet with the name of the desired content in it.
 Routers use this name to route the Interest towards data sources, and a Data packet whose name matches the name in the Interest is returned to the consumer by following the reverse path of the Interest. Similar to IP, Interest forwarding is based on longest name prefix match, but, unlike IP, an Interest packet and its matching Data packet always take symmetric paths.
@@ -97,7 +97,7 @@ Routers use this name to route the Interest towards data sources, and a Data pac
 Each NDN router maintains three major data structures:
 \begin{itemize}
 \item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards potential data sources. Each PIT entry contains one or multiple incoming and outgoing physical interfaces; multiple incoming interfaces indicate the same data is requested from multiple downstream users; multiple outgoing interfaces indicates the same Interest is forwarded along multiple paths.
-\item \textit{Forwarding Interest Base (FIB)} maps name prefixes to one or multiple physical network interfaces, defining allowed directions to where Interests can be forwarded. 
+\item \textit{Forwarding Interest Base (FIB)} maps name prefixes to one or multiple physical network interfaces, specifying directions where Interests can be forwarded. 
 % Having one-to-many relationship in this table allows multipath forwarding of Interests.}
 \item \textit{Content Store (CS)} temporarily buffers Data packets that pass through this node, allowing efficient data retrieval by different consumers.
 \end{itemize}
@@ -107,7 +107,7 @@ If a match is found, the Data packet is sent back to the incoming interface of t
 If not, the Interest name is checked against the entries in the PIT. 
 If the name already exists in the PIT, then it can be a duplicate Interest (identified by a random number each Interest carries) that should be dropped,
 or an Interest from another consumer asking for the same Data, which requires the incoming interface of this Interest to be added to the existing PIT entry.
-If the name does not exist in the PIT, the Interest is added into the PIT and forwarded to the interface chosen by the strategy module, which uses FIB as input for its decisions.
+If the name does not exist in the PIT, the Interest is added into the PIT and forwarded along the interface chosen by the strategy module, which uses FIB as input for its decisions.
 
 When a Data packet is received, its name is used to look up the PIT.
 If a matching PIT entry is found,
@@ -121,7 +121,7 @@ For simplicity, we assume routers keep Interests in PIT for one second in our si
 
 
 
-As we explained earlier, Interest packets in NDN are routed through the network based on content name prefixes and consume memory resources at intermediate routers. This makes them a potential tool to launch DDoS attacks in NDN. An attacker or a set of distributed attackers can inject excessive amounts of Interests in an attempt to overload the network and cause service disruptions for legitimate users (Fig.~\ref{fig:flooding example}). 
+As we explained earlier, Interest packets in NDN are routed through the network based on content name prefixes and consume memory resources at intermediate routers. This makes them a potential tool to launch DDoS attacks in NDN. An attacker or a set of distributed attackers can inject excessive number of Interests in an attempt to overload the network and cause service disruptions for legitimate users (Fig.~\ref{fig:flooding example}). 
 
 \begin{figure}[htbp]
   \centering
@@ -144,9 +144,9 @@ Similar to packets in traditional networks, Interest packets in NDN consume a po
 As NDN routers maintain per-packet states for each forwarded Interest (i.e., an entry in its PIT), an excessive amount of malicious Interests can lead to exhaustion of a router's memory, making the router unable to create new PIT entries for incoming Interests and disrupting service for legitimate users.
 
 Nevertheless, creating an effective Interest flooding attack in NDN is non-trivial.
-To efficaciously target a specific namespace (e.g., \ndnName{/newyorktimes/}), an adversary needs to make sure that (1) the expressed Interests are routed towards and as close to the data producer/provider as possible, and (2) new corresponding PIT entries are created for those interests and are stored at intermediate NDN routers for as long as possible. The former is achieved when interests share the same name prefix (e.g., \ndnName{/newyorktimes/}) and as long as they are not served from caches of intermediate routers --an interest is not forwarded upstream if a router can satisfy it from its content store. The latter requires every single malicious Interest to ask for a unique content --all Interests requesting the same content are collapsed to one PIT entry in routers. Thus, an adversary has to request either an unpopular (i.e., not cached in routers) or non-existing unique content at each interest. Among the two options of an adversary, the first one is quite problematic due to the difficulties around indexing content names in a particular namespace, coordinating large number of bots to send unique interests and sustaining the attack while the network is continuously caching the requested content objects. However, the second option, requesting unique non-existing content at each interest, is easy to achieve and sustain. An adversary can construct such interests by concatenating a random name component to the victim namespace (e.g.,\ndnName{/newyorktimes/fgb...3rf3}) and can increase the memory usage at each router by lengthening the random component. In this paper, we exclusively focus on this particular attack strategy as it not only maximizes the damage from each malicious Interest but also is the one that is easy to launch and widely applicable to all namespaces (small or large). % other less effective strains of Interest flooding attacks can also be mitigated by applying the same or similar countermeasures described in the next section.  
+To efficaciously target a specific namespace (e.g., \ndnName{/newyorktimes/}), an adversary needs to make sure that (1) the expressed Interests are routed towards and as close to the data producer/provider as possible, and (2) new corresponding PIT entries are created for those interests and are stored at intermediate NDN routers for as long as possible. The former is achieved when interests share the same name prefix (e.g., \ndnName{/newyorktimes/}) and as long as they are not served from caches of intermediate routers -- an interest is not forwarded upstream if a router can satisfy it from its content store. The latter requires every single malicious Interest to ask for a unique content -- all Interests requesting the same content are collapsed to one PIT entry in routers. Thus, an adversary has to request either an unpopular (i.e., not cached in routers) or non-existing unique content with each Interest. Of the two options available to an adversary, the first one is challenging due to the difficulties around indexing content names in a particular namespace, coordinating a large number of bots to send unique Interests and sustaining the attack while the network is continuously caching the requested content objects. However, the second option {\it i.e.} requesting unique non-existing content with each Interest, is easy to achieve and sustain. An adversary can construct such Interests by concatenating a random name component to the victim namespace (e.g.,\ndnName{/newyorktimes/fgb...3rf3}) and can increase the memory usage at each router by lengthening the random component. In this paper, we exclusively focus on this particular attack strategy as it not only maximizes the damage from each malicious Interest but also is the one that is easy to launch and widely applicable to all namespaces (small or large). % other less effective strains of Interest flooding attacks can also be mitigated by applying the same or similar countermeasures described in the next section.  
 
-In the rest of this paper, we use the general term \emph{Interest flooding attack} to refer to the above described attack and assume an attacker that is limited to controlling a botnet of end-hosts only, i.e., we assume the routers in the network and the computers in the victim domain are not compromised.
+In the rest of this paper, we use the general term \emph{Interest flooding attack} to refer to the above described attack and assume an attacker is limited to controlling a botnet of end-hosts only, i.e., we assume the routers in the network and the computers in the victim domain are not compromised.
 
 %\paragraph{Assumptions} 
 %E: These are assumptions for the simulations on hand and particulary to test for the worst case scenario in many aspects. They are not the paper's assumption and in fact the paper first should be more general on describing all possibilities. Then it should explain the assumptions for the simulations and discuss why they make sense and do NOT favor positive results in some way. 
