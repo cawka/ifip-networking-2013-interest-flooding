@@ -11,12 +11,15 @@
 \makeatother
 
 \hyphenation{incoming}
+\hyphenation{na-me-spa-ce}
+\hyphenation{sa-tis-fac-tion}
+\hyphenation{sa-tis-fied}
 
 \pagestyle{headings}
 
 % \usepackage[top=.75in, bottom=1in, left=.625in, right=.625in]{geometry}
 \usepackage{graphicx}
-\usepackage[]{hyperref}
+% \usepackage[]{hyperref}
 \usepackage{breakurl}
 \usepackage{url}
 \usepackage[nocompress]{cite}
@@ -80,7 +83,7 @@ The rest of the paper is organized as follows. We provide an overview of NDN arc
 
 \section{NDN Overview\label{sec:ccn-intro}}
 
-In this section we briefly introduce NDN with a focus on its stateful forwarding plane (refer to \cite{ndn-conext, ndn-tr, adaptive-forwarding} for more details).
+In this section we briefly introduce NDN with a focus on its stateful forwarding plane (refer to \cite{ndn-conext, ndn-tr, adaptive-forwarding, Yi:2013:A-Case-for-Stateful} for more details).
 NDN is a receiver-driven, data-centric communication protocol.
 All communications in NDN are performed using two distinct types of packets: \textit{Interest} and \textit{Data}. Both types of packets carry a \textit{name}, which uniquely identifies a piece of content that can be carried in one Data packet. Data names in NDN are hierarchically structured and an example name for the first segment of a youtube video would look like: \ndnName{/youtube/videos/0F8YdlkKO9A/0}.
 
@@ -90,10 +93,10 @@ Routers use this name to route the Interest towards data sources, and a Data pac
 
 Each NDN router maintains three major data structures:
 \begin{itemize}
-\item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards potential data sources. Each PIT entry contains one or multiple incoming and outgoing physical interfaces; multiple incoming interfaces indicate the same data is requested from multiple downstream users; multiple outgoing interfaces indicates the same Interest is forwarded along multiple paths.
+\item \textit{Pending Interest Table (PIT)} holds all ``not yet satisfied'' Interests that have been sent upstream towards potential data sources. Each PIT entry contains one or multiple incoming and outgoing physical interfaces; multiple incoming interfaces indicate the same data is requested from multiple downstream users; multiple outgoing interfaces indicate the same Interest is forwarded along multiple paths.
 \item \textit{Forwarding Interest Base (FIB)} maps name prefixes to one or multiple physical network interfaces, specifying directions where Interests can be forwarded. 
 % Having one-to-many relationship in this table allows multipath forwarding of Interests.}
-\item \textit{Content Store (CS)} temporarily buffers Data packets that pass through this node, allowing efficient data retrieval by different consumers.
+\item \textit{Content Store (CS)} temporarily buffers Data packets that pass through this router, allowing efficient data retrieval by different consumers.
 \end{itemize}
 
 When a router receives an Interest packet, it first checks whether there is a matching data in its CS.
@@ -129,16 +132,16 @@ As we explained earlier, Interest packets in NDN are routed through the network 
 Since an NDN network fetches data by its name, an adversary cannot easily target specific routers or end-hosts.
 However, an adversary can target a specific namespace.
 For example in Fig.~\ref{fig:flooding example}, if the data producer is the exclusive owner of \ndnName{/foo/bar} namespace, both router B and the data producer would receive all Interests for \ndnName{/foo/bar/\ldots} that cannot be otherwise satisfied from in-network caches.%
-\footnote {This example assumes that the adversary floods the network with unique data names carrying \ndnName{\small /foo/bar} prefix to make them effective. It also assumes the producer is single-homed and the data is not replicated elsewhere. With multi-homed producers or replicated data, NDN would likely to cope better with DDoS attacks due its native multipath and adaptive forwarding~\cite{adaptive-forwarding} support.}
+\footnote {This example assumes that the adversary floods the network with unique data names carrying \ndnName{\small /foo/bar} prefix to make them effective. It also assumes the producer is single-homed and the data is not replicated elsewhere. With multi-homed producers or replicated data, NDN would likely to cope better with DDoS attacks due its native multipath and adaptive forwarding~\cite{adaptive-forwarding, Yi:2013:A-Case-for-Stateful} support.}
 A large volume of such malicious Interests can disrupt service quality in NDN network in two ways: \emph{create network congestion} and \emph{exhaust resources on routers}.
 
-Similar to packets in traditional networks, Interest packets in NDN consume a portion of network capacity. A large number of Interest packets might cause congestion and lead to legitimate packets being dropped in the network. In particular, a coordinated DDoS attack could target one specific namespace and concentrate attack traffic in certain segments of the network as routing in NDN is based on name prefixes. 
+Similar to packets in traditional networks, Interest packets in NDN consume a portion of network capacity. A large number of Interest packets might cause congestion and lead to legitimate packets being dropped in the network. In particular, a coordinated DDoS attack could target one specific namespace and concentrate attack traffic in certain segments of the network, as routing in NDN is based on name prefixes. 
 
 
 As NDN routers maintain per-packet states for each forwarded Interest (i.e., an entry in its PIT), an excessive amount of malicious Interests can lead to exhaustion of a router's memory, making the router unable to create new PIT entries for incoming Interests and disrupting service for legitimate users.
 
 Nevertheless, creating an effective Interest flooding attack in NDN is non-trivial.
-To efficaciously target a specific namespace (e.g., \ndnName{/newyorktimes/}), an adversary needs to make sure that (1) the expressed Interests are routed towards and as close to the data producer/provider as possible, and (2) new corresponding PIT entries are created for those interests and are stored at intermediate NDN routers for as long as possible. The former is achieved when interests share the same name prefix (e.g., \ndnName{/newyorktimes/}) and as long as they are not served from caches of intermediate routers---an interest is not forwarded upstream if a router can satisfy it from its content store. The latter requires every single malicious Interest to ask for a unique content---all Interests requesting the same content are collapsed to one PIT entry in routers. Thus, an adversary has to request either an unpopular (i.e., not cached in routers) or non-existing unique content with each Interest. Of the two options available to an adversary, the first one is challenging due to the difficulties around indexing content names in a particular namespace, coordinating a large number of bots to send unique Interests and sustaining the attack while the network is continuously caching the requested content objects. However, the second option {\it i.e.} requesting unique non-existing content with each Interest, is easy to achieve and sustain. An adversary can construct such Interests by concatenating a random name component to the victim namespace (e.g.,\ndnName{/newyorktimes/fgb...3rf3}) and can increase the memory usage at each router by lengthening the random component. In this paper, we exclusively focus on this particular attack strategy as it not only maximizes the damage from each malicious Interest but also is the one that is easy to launch and widely applicable to all namespaces (small or large). % other less effective strains of Interest flooding attacks can also be mitigated by applying the same or similar countermeasures described in the next section.  
+To efficaciously target a specific namespace (e.g., \ndnName{/newyorktimes/}), an adversary needs to make sure that (1)~the expressed Interests are routed towards and as close to the data producer/provider as possible, and (2)~new corresponding PIT entries are created for those interests and are stored at intermediate NDN routers for as long as possible. The former is achieved when Interests share the same name prefix (e.g., \ndnName{/newyorktimes/}) and as long as they are not served from caches of intermediate routers---an Interest is not forwarded upstream if a router can satisfy it from its content store. The latter requires every single malicious Interest to ask for unique content---all Interests requesting the same content are combined into one PIT entry in routers. Thus, an adversary has to request either an unpopular (i.e., not cached in routers) or non-existing unique content with each Interest. Of the two options available to an adversary, the first one is challenging due to the difficulties around indexing content names in a particular namespace, coordinating a large number of bots to send unique Interests, and sustaining the attack while the network is continuously caching the requested content objects. However, the second option---requesting a unique non-existing content with each Interest---is easy to achieve and sustain. For example, an adversary can construct such Interests by concatenating a variable-length random name component to the victim namespace (e.g., \ndnName{/newyorktimes/3rf3...}). In this paper, we exclusively focus on this particular attack strategy as it not only maximizes the damage from each malicious Interest, but also is the one that is easy to launch and widely applicable to all namespaces (small or large). % other less effective strains of Interest flooding attacks can also be mitigated by applying the same or similar countermeasures described in the next section.  
 
 In the rest of this paper, we use the general term \emph{Interest flooding attack} to refer to the above described attack and assume an attacker is limited to controlling a botnet of end-hosts only, i.e., we assume the routers in the network and the computers in the victim domain are not compromised.
 
@@ -206,7 +209,7 @@ In this section we present several algorithms to mitigate Interest flooding atta
 
 An obvious and na\"ive solution to defend against Interest flooding attacks is to restrict the number of Interests forwarded through the network. To this end, we exploit a 
  fundamental principle of NDN architecture---flow balance between Interest and Data packets. Flow balance refers to the fact that one Interest can be satisfied by at most one Data packet. This principle allows intermediate routers to control the inbound data traffic by controlling the number of outstanding Interests in the network. 
-One simple implementation technique  is for an NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet-switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers keep track of the amount of data requested that can fully utilize the downstream link (estimated from the number of forwarded Interests) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens (the pending \emph{Interest Limit}) for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
+One simple implementation technique  is for an NDN router to limit the number of forwarded Interests out of each interface based on the physical capacity of the corresponding interface. This technique is a slight modification of the well-known {\it Token Bucket} algorithm that is currently widely used in packet-switched networks. Analogous to the {\it Token Bucket} algorithm, NDN routers can keep track of the amount of data requested that can fully utilize the downstream link (estimated from the number of forwarded Interests) and once the link capacity limit has been reached, they no longer forward new incoming Interests. Ideally, the number of tokens (the pending \emph{Interest Limit}) for each link will be proportional to the link's bandwidth-delay product (BDP)~\cite{tcp-survey}. We can formalize this value as follows:
 % With the objective to request as many Data packets, as downstream link can pump through, we are getting the following equation for Interest limit:
 %
 \begin{equation}
@@ -218,7 +221,7 @@ In the above equation, \emph{Delay} is the expected time for the Interest to be 
 Although both these values are not known a priori, it is not really necessary to use their exact values.
 One can simply set the pending Interest limit based on the average values of round trip time and observed Data packet size, as network buffers can smooth out most of the network fluctuations.
 
-This {\it Token Bucket} approach might be exceptionally restrictive in forwarding Interests---not all Interests will result in a Data packet---and might result in underutilization of the network. However, the biggest drawback of this algorithm is the fact that it can nourish DDoS attacks. If a router has utilized all its tokens to forward malicious Interests, it can no longer forward incoming Interests from legitimate users till the pending malicious Interests start to expire. One way to get around this issue is to impose a per interface limit, so that malicious Interests are not allowed to entirely consume the limits of a specific interface. We describe this technique in greater detail below.
+This {\it Token Bucket} approach might be exceptionally restrictive in forwarding Interests---not all Interests will result in a Data packet---and might result in underutilization of the network. However, the biggest drawback of this algorithm is the fact that it can nourish DDoS attacks. If a router has utilized all its tokens to forward malicious Interests, it can no longer forward incoming Interests from legitimate users till the pending malicious Interests start to expire. One way to get around this issue is to impose a per interface fairness, so that malicious Interests are not allowed to entirely consume the limits of a specific interface. We describe this technique in greater detail below.
 
 %That is, if it is known that the amount of already requested data ($=$~amount of forwarded Interests) can fully utilize the downstream link, an NDN node---either an end-user or an NDN router---has absolutely no point in forwarding new incoming Interests and creating corresponding PIT entries.
 %For example, if a router A on Fig.~\ref{fig:flooding example} already forwarded 125 Interests requesting 1000-byte Data packets, any new incoming Interests can be almost safely dropped, provided the link capacity between A--B is 100~Mbps and delay is 10~ms.
@@ -263,7 +266,7 @@ By setting appropriate queue sizes, we can control the amount of physical resour
  % (such as memory and computation power). 
 It is also important to set a sensible value for how long an Interest can be enqueued. 
 If an Interest is enqueued for a long time, by the time it is dequeued and forwarded, the retrieved Data packet might be dropped at the downstream routers if their corresponding state expired. 
-For our evaluations, we empirically chose to enqueue Interests up to 10\% of their original lifetime.
+For our evaluations, we empirically chose to enqueue Interests up to 10\% of their original lifetime (100~ms).
 % We believe that implementing additional mechanisms on each pair of communicating routers to keep the Interests from getting stale would mitigate this issue, though the details are beyond the scope of this paper.
 % Alex: I don't believe there is a need for separate discussion about "freshness", as we already introduced concept of lifetime
 % {\color{red} \it Priya:  We need to  touch upon the Interest freshness issue in the NDN overview section; else we should get rid of this bit.}
@@ -340,8 +343,8 @@ For our evaluations, we empirically chose to enqueue Interests up to 10\% of the
 \end{algorithm}
 
 
-As we show in Section~\ref{sec:evaluation}, this algorithm provides partial relief from Interest flooding attacks, allowing legitimate users to successfully fetch Data for 15--20\% of their expressed Interests. 
-We note that while this algorithm might be reasonable for ensuring limited fairness in an NDN network, it is ineffective in protecting legitimate users from malicious ones. 
+As we show in Section~\ref{sec:evaluation}, this algorithm provides a partial relief from Interest flooding attacks, allowing legitimate users to successfully fetch Data for 15--20\% of their expressed Interests. 
+We note that while this algorithm might be reasonable for ensuring limited fairness in an NDN network, it is largely ineffective in protecting legitimate users from malicious ones. 
 Attackers are able to successfully thwart access to content for legitimate users by sending a relatively modest volume of malicious Interests.
 
 
@@ -353,7 +356,7 @@ Attackers are able to successfully thwart access to content for legitimate users
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it still admits a relatively large number of Interests from malicious users. A considerable percentage of these malicious Interests are forwarded all the way to content producers, thereby reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate and malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and differentiate malicious requests from legitimate ones. 
+The key drawback of the {\it Token bucket with per interface fairness} algorithm is that it still admits a relatively large number of Interests from malicious users. A considerable percentage of these malicious Interests are forwarded all the way to content producers, thereby reducing resources available to serve legitimate users.  This algorithm attempts to ensure that each interface does not forward more than its fair share of Interests, but in doing so, it drops both legitimate and malicious Interests. For any strategy to be effective in defending against Interest flooding attacks, it must be able to detect and differentiate to some extent malicious requests from legitimate ones. 
 % `Good' Interests from legitimate users must be admited and forwarded appropriately. 
 Thus, the key question is how can we devise mitigation algorithms that allow a router to distinguish between `good' and `bad' Interests? 
 
@@ -383,7 +386,7 @@ In order to distinguish between legitimate and malicious Interests, we leverage 
 Since malicious Interests are not likely to bring data back (as discussed in Section~\ref{sec:interest-flooding}), this information can be utilized by routers in differentiating attack and legitimate traffic.  %Therefore, intermediate routers can classify the ones that brings data back as legitimate, while the ones that timed out can be marked as malicious.\footnote{Recall that in order to maximize effect of the Interest flooding attack, an adversary expresses a large volume of junk Interests (see Section~\ref{sec:interest-flooding}).}  
 %Implications of other types of attacks are discussed in Section~\ref{sec:discussion}.}
 
-This timeout-based differentiation method is reactive in nature: one cannot determine in advance if an Interest will result in a timeout or Data being retrieved. However, routers can proactively maintain up-to-date statistics of Interest satisfaction ratios (number of forwarded versus number of satisfied Interests), and use this statistic to determine whether an incoming Interest should be forwarded or dropped. For example, maintaining independent Interest satisfaction ratio statistics for each incoming interface is sufficient to reasonably predict whether an Interest received from a neighbor connected to this interface will result in a Data packet or a timeout if forwarded. Statistics can also be kept at finer granularities such as per outgoing interface, per name prefix, etc. that can further improve the estimates. A router's goal should be to prioritize Interests that bring Data back while quickly penalizing those that occupy resources but don't result in a returning Data packet. In order to allow negative statistics to build up fast and positive statistics to  deteriorate quickly, we use the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window.
+This timeout-based differentiation method is reactive in nature: one cannot determine in advance if an Interest will result in a timeout or Data being retrieved. However, routers can proactively maintain up-to-date statistics of Interest satisfaction ratios (number of forwarded versus number of satisfied Interests), and use these statistics to determine whether an incoming Interest should be forwarded or dropped. For example, maintaining Interest satisfaction ratio statistics for each incoming interface is sufficient to reasonably predict whether an Interest received from a neighbor connected to this interface will result in a Data packet or a timeout if forwarded. Statistics can also be kept at finer granularities such as per outgoing interface, per name prefix, etc. that can further improve the estimates. A router's goal should be to prioritize Interests that bring Data back while quickly penalizing those that occupy resources but do not result in a returning Data packet. In order to allow negative statistics to build up fast and positive statistics to  deteriorate quickly, we use the standard exponentially weighted moving average, performed once a second with $\alpha$ coefficient $e^{-1/30}$, approximately corresponding to a 30-second averaging window.
 
 %Choosing the right balance between these contradictory requirements is a challenge and we explore this topic further  in the evaluation section.  %{\color{red} \it Priya: we should address the one that works best such as exponentially weighted moving average in eval section - it doesn't belong %here.} 
 
@@ -401,7 +404,7 @@ This timeout-based differentiation method is reactive in nature: one cannot dete
 % Essentially, this recovery relies on statistics module to perform time-based invalidation of historical data (timely, but not too quickly\footnote{Otherwise, attackers may send short bursts of malicious Interests, successfully avoiding differential Interest treatment}).
 
 
-Pseudocode~\ref{algo:interest stats} formally defines how statistics can be generated for  each incoming interface. Note that in order to ensure decaying of relative statistics (e.g., ratio between the number of unsatisfied and forwarded Interests), only unsatisfied statistics needs to be exponentially smoothed (lines 23--26).  
+Pseudocode~\ref{algo:interest stats} formally defines how statistics can be generated for  each incoming interface. Note that in order to ensure decaying of relative statistics (e.g., ratio between the number of unsatisfied and forwarded Interests), only unsatisfied statistics needs to be exponentially smoothed (lines 19--21).  
 
 \floatname{algorithm}{\small Pseudocode}
 
@@ -460,7 +463,7 @@ Pseudocode~\ref{algo:interest stats} formally defines how statistics can be gene
 \end{algorithm}
 
 
-Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistic during and after an Interest flooding attack. The attack duration is from 10 to 70~seconds. Prior to start of the attack, the percentage of unsatisfied Interests is zero.  
+Fig.~\ref{fig:ratio example} illustrates the resulting dynamics of the statistics during and after an Interest flooding attack. The attack duration is from 10 to 70~seconds. Prior to start of the attack, the percentage of unsatisfied Interests is zero.  
 The statistics build up rapidly as soon as Interests start to time out, which happens approximately one second after the start of the attack.
 %\footnote{Again, we are assuming that Interests are admitted for a maximum period one second.}
 For the duration of the attack (10--70~seconds), the percentage of unsatisfied Interests is close to 100\%: 
@@ -603,7 +606,7 @@ The zero limit for the adversary's link implies that  router A is temporarily no
 At the next iteration of the satisfaction-based pushback algorithm, a legitimate user will be able to gradually improve the statistics on both routers A and B as all Interests from the user will get through and return Data, eventually resulting in a full allowance ($L'=L=10$) in the links between the routers A and B, and the user and router A.
 
 We note that while in the description of the satisfaction-based pushback algorithm we explicitly used ``outgoing'' and ``incoming'' interfaces,  all interfaces can be both incoming and outgoing.
-Thus, it may not be entirely clear which outgoing limit $L_{out}$ (line 10 in the algorithm) should be used to calculate the incoming limit $L_{in}$.
+Thus, it may not be entirely clear which outgoing limit $L_{out}$ (line 9 in the algorithm) should be used to calculate the incoming limit $L_{in}$.
 To overcome this problem, in our actual implementation we enforced separate incoming/outgoing interface limits for each individual FIB entry.
 That is, for each FIB entry we set a separate Interest limit for each incoming interface (${L'}_{in}^{fib}$) based on the sum of FIB entry limits for each outgoing interface $L=\sum{L_{out}^{fib}}$.
 
@@ -757,7 +760,7 @@ When Interests from attackers start to get readmitted, they cause degradation of
 
 \paragraph{\textbf{Satisfaction-based pushback}}
 
-In our simulations, this mitigation algorithm was able to effectively shut down attackers and ensure almost all the Interests from legitimate users are satisfied. 
+In our simulations, this mitigation algorithm was able to effectively shut down attackers and ensure that almost all the Interests from legitimate users are satisfied. 
 %The only potential problem with the satisfaction-based pushback algorithm is that it features 
 We observe a  sharp dip in the satisfaction ratio curve at the start of the attack as it takes a few seconds for all routers to be fully aware of the attack. However, recovery is quick as malicious Interests start to time out and explicit Interest limit announcements start to succeed in containing malicious Interests close to the attacker. Till then, the network, for a short period of time (under 10~seconds for all simulation runs), fails to provide 100\% service for legitimate users. Once the malicious Interests are effectively shut down, all Interests from legitimate users are satisfied. Unlike the satisfaction-based Interest acceptance scenario, we do not observe any periodic dips in the satisfaction curve, as the pushback algorithm effectively guarantees that once an Interest is admitted, it will likely be routed all the way to the data producer.
 
@@ -780,7 +783,7 @@ To this end, we vary the percentage of attackers in the topology from 6\% to ove
   % \vspace{-0.5cm}
 \end{figure}
 
-In Fig.\ref{fig:small-scale-topo boxplot} we present  the Interest satisfaction ratio for legitimate users aggregated over the 10 simulation runs for the first minute of the attack. The results are as expected---for all three mitigation algorithms, as the percentage of attackers in the network increases, the lower is the Interest satisfaction ratio for legitimate users.
+In Fig.~\ref{fig:small-scale-topo boxplot} we present  the Interest satisfaction ratio for legitimate users aggregated over the 10 simulation runs for the first minute of the attack. The results are as expected---for all three mitigation algorithms, as the percentage of attackers in the network increases, the lower is the Interest satisfaction ratio for legitimate users.
 In the case of token bucket with per-interface fairness algorithm, just 3 attackers can halve the quality of service for the remaining 13 legitimate users. While the two intelligent attack mitigation algorithms also show a decline in service quality as the percentage of attackers increases, this decline is much more gradual and marginal. In the case of satisfaction-based pushback algorithm, during the first minute of the attack over 90\% of Interests from legitimate users are satisfied even if 50\% of end nodes are malicious.  
  
 
@@ -800,12 +803,12 @@ In the case of token bucket with per-interface fairness algorithm, just 3 attack
 
 %To check validity of the small-scale experiment results, we performed a larger-scale evaluation based on a modified version of 
 
-In this section, we investigate the behavior of our mitigation strategies under a more realistic, large-scale network topology. The ISP topology we used is based on a modified version of Rocketfuel's AT\&T topology~\cite{rocketfuel}.
+In this section, we investigate the behavior of our mitigation strategies under a more realistic, large-scale network topology. The ISP-like topology we used is based on a modified version of Rocketfuel's AT\&T topology~\cite{rocketfuel}.
 %In order to approximate the general structure of the Internet,
 % (scale-free structure, customer-provider, and peer-to-peer relations)
-We extract the largest connected component comprising of 562 nodes from this original topology and separate the nodes into three categories: clients, gateways, and backbones. Nodes having degree less than four are classified as clients (344 red nodes as shown in Fig.~\ref{fig:large-scale}), nodes directly connected to clients are classified as gateways (109 green nodes), and the remaining nodes are classified as backbones (109 blue nodes). 
+We extracted the largest connected component comprising of 562 nodes from this original topology and separated the nodes into three categories: clients, gateways, and backbones. Nodes having degree less than four were classified as clients (344 red nodes as shown in Fig.~\ref{fig:large-scale}), nodes directly connected to clients were classified as gateways (109 green nodes), and the remaining nodes were classified as backbones (109 blue nodes). 
 %(To ensure that paths in the topology are ``valley-free,'' we augmented the topology with necessary backbone-to-backbone links.) 
-We assign bandwidth and  delay values to links based on their type---both values are random numbers within the respective ranges as shown in Table~\ref{tab:large-scale}. We experiment with placing the data producer at both a gateway node as well as backbone node, which we randomly pick for each simulation run. Similar to the binary tree topology experiments, we fix the number of malicious nodes at approximately 40\% (140 out of 344 client nodes in the topology) and randomly pick these nodes for each simulation run. We conduct 10 simulation runs for each mitigation algorithm, with the attack duration spanning a 5-minute interval.
+We assigned bandwidth and delay values to links based on their type---both values are random numbers within the respective ranges as shown in Table~\ref{tab:large-scale}. We experimented with placing the data producer at both a gateway node as well as backbone node, which we randomly picked for each simulation run. Similar to the binary tree topology experiments, we fixed the number of malicious nodes at approximately 40\% (140 out of 344 client nodes in the topology) and randomly picked these nodes for each simulation run. We conducted 10 simulation runs for each mitigation algorithm, with the attack duration spanning a 5-minute interval.
 
 \begin{figure}[t]
   \centering
@@ -846,7 +849,8 @@ We assign bandwidth and  delay values to links based on their type---both values
 % The results for all attack mitigation algorithms and all runs are aggregated in Fig.~\ref{fig:small-scale attack progress}, where Y-axis represents a minimum and maximum range for observed Interest satisfaction percentages among all nodes and all simulation runs.
 % A short and simplistic summary of the results is that the first two attack mitigation methods do not work at all, and the last two are working quite good.
 
-In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over all simulations runs for each mitigation algorithm for the scenario where the data producer is placed at a gateway node. We observe similar results for the data producer placed at a backbone node as well. Unlike the binary-tree topology experiments, we observe that the satisfaction-based pushback is the most effective algorithm, while both the token bucket with per interface fairness and satisfaction-based Interest acceptance have poor performance.  Interest satisfaction percentage for legitimate users are close to 100\% and approximately 30\% and 25\% respectively for these mitigation methodologies.
+In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over all simulations runs for each mitigation algorithm for the scenario where the data producer is placed at a gateway node. We observe similar results for the data producer placed at a backbone node as well. Unlike the binary-tree topology experiments, we observe that 
+both the token bucket with per interface fairness and satisfaction-based Interest acceptance have poor performance, while the satisfaction-based pushback is still the most effective algorithm.  Interest satisfaction percentage for legitimate users are close to 30\%, 25\%, and 100\% respectively for these mitigation methodologies.
 
 %
 %The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
@@ -861,7 +865,7 @@ In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over all simu
  % \vspace{-.7cm}
 \end{figure}
 
-Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger and more realistic topology.  For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in Section~\ref{sec:probabilistic}, is due to the fact that each router on the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of the larger-topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics and further penalization of new Interests from them.
+Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger and more realistic topology.  For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in Section~\ref{sec:probabilistic}, is due to the fact that each router on the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of a large topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics and further penalization of new Interests from them.
 
 All our evaluations leave us to conclude that among the three techniques we tested under various topology and attacker concentrations, the satisfaction-based pushback is the most promising one in mitigating Interest flooding attacks.% and it restricts malicious Interests from even entering the network. 
 %The only short periods of time when malicious Interests are getting admitted to the network is when routers have either no prior knowledge about per-interface satisfaction ratios (the initial period of the attack) or such knowledge becomes stale (statistics decaying during the attack). As soon as the knowledge is obtained or refreshed, the service for legitimate users returns to norm.
@@ -886,7 +890,7 @@ All our evaluations leave us to conclude that among the three techniques we test
 % Second, while aiming to test the designed algorithms under worst-case conditions, the future work needs to address behavior in more realistic scenarios, including investigation of multi-path routing, in network caches, as well as multi-homed victims.
 
 This paper is a first step in understanding the impact of Interest flooding attacks in NDN and exploring the solution space. 
-While designing our mitigation algorithms, we exploit two key features of NDN architecture, namely routers maintaining state about the Interests they have forwarded and Data traffic taking the reverse path of the Interest traffic. 
+To design our mitigation algorithms we exploit two key features of NDN architecture, namely routers maintaining state about the Interests they have forwarded and Data traffic taking the reverse path of the Interest traffic. 
 We test the efficacy of our algorithms by simulating them on both a simple binary-tree topology, % designed to test the worst-case effectiveness of our algorithms as well as on a realizing 
 as well as a more realistic ISP-based topology designed to provide insights of our algorithms' behavior when deployed on a real network. 
 While our results are promising and show a great potential in mitigating Interest flooding DDoS attacks, there are certain limitations which should be addressed in future research. 
@@ -904,7 +908,7 @@ In future, we plan to study the impact of Interest flooding attacks in more real
 \section{Related work}
 \label{sec:related-work}
 
-As a new Internet architecture proposal, Named Data Networking has attracted attention from the security community. 
+As a new Internet architecture proposal, Named Data Networking has attracted a limited attention from the security community. 
 Lauinger~\cite{Lauinger:2010:Security--scalability} showed several possible attacks against some specific design choices implemented in CCNx software (\url{http://www.ccnx.org/}); in particular~\cite{Lauinger:2010:Security--scalability} explored the issue of user privacy, assuming users are concentrated on the same edge router only and one can obtain complete knowledge of cached content.  
 W\"ahlisch et al.~\cite{Wahlisch:2012:Backscatter-from} explore security and stability threats in the general area of information-centric networks (ICN), using CCNx software as an example.  
 While this work aims to generalize findings for all ICNs, it largely does not go beyond the current design choices of CCNx.
@@ -913,7 +917,7 @@ While this work aims to generalize findings for all ICNs, it largely does not go
 In this paper we follow the suggestions by Gasti et al.~\cite{gasti2012ddos} and utilize the properties provided by the NDN architecture to mitigate DDoS attacks, and tackle the Interest flooding problem as a first step in this direction.
 More specifically our attack mitigation design relies on NDN's stateful forwarding plane that allows us to
 maintain statistics on unsatisfied Interests.  
-Similar approaches are also explored by Yi et al.~\cite{adaptive-forwarding,adaptive-tr} and Rozhnova et al.~\cite{rozhnova2012effective} to facilitate NDN network performance.
+Similar approaches are also explored by Yi et al.~\cite{adaptive-forwarding,adaptive-tr,Yi:2013:A-Case-for-Stateful} and Rozhnova et al.~\cite{rozhnova2012effective} to facilitate NDN network performance.
 
 The general area of mitigating denial of service attacks is amongst the hottest topics in recent years.
 % Among all the body of work, 
@@ -1009,11 +1013,11 @@ Identifying malicious traffic requires establishing certain state at routers, an
 %
 %NDN is a new networking paradigm that shifts the emphasis from endpoints to addressing content directly, thereby enabling secure and efficient content distribution. 
 
-NDN being a newly proposed future Internet architecture, it is important to address its resilience in face of DDoS attacks. As an initial step in understanding the DDoS threats in NDN, we first examined a specific instance of DDoS attacks namely Interest flooding and the severe service degradation such an attack may cause to legitimate users. We then leveraged the key features of the NDN architecture to design, develop, and evaluate three mitigation strategies.
+NDN being a newly proposed future Internet architecture, it is important to address its resilience in face of DDoS attacks. As an initial step in understanding the DDoS threats in NDN, we first examined a specific instance of DDoS attacks---namely, Interest flooding---and the severe service degradation such an attack may cause to legitimate users. We then leveraged the key features of the NDN architecture to design, develop, and evaluate three mitigation strategies.
 We performed detailed simulations on a range of topologies to quantify the effectiveness of our algorithms.   
 The most effective algorithm---satisfaction-based pushback---was successful in almost completely shutting down the attackers, so that they cause little or no service impact to legitimate users.
 
-NDN's stateful forwarding plane enables a number of desired functions, such as loop-free, multipath data delivery, built-in multicast, scalable content delivery, effective flow balance (i.e., congestion avoidance), and robust recovery from network failures, that people have attempted to install in IP networks~\cite{adaptive-forwarding}. Although this useful per-packet state can be abused to launch attacks, the demonstrated success of satisfaction-based pushback algorithm serves as evidence that one can indeed utilize the per packet state built into each NDN router to enable effective DDoS mitigation as well.  
+NDN's stateful forwarding plane enables a number of desired functions, such as loop-free, multipath data delivery, built-in multicast, scalable content delivery, effective flow balance (i.e., congestion avoidance), and robust recovery from network failures, that people have attempted to install in IP networks~\cite{adaptive-forwarding,Yi:2013:A-Case-for-Stateful}. Although this useful per-packet state can be abused to launch attacks, the demonstrated success of satisfaction-based pushback algorithm serves as evidence that one can indeed utilize the per packet state built into each NDN router to enable effective DDoS mitigation as well.  
 
 
 \bibliographystyle{IEEEtran}
