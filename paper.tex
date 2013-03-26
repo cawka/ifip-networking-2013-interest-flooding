@@ -19,7 +19,7 @@
 
 % \usepackage[top=.75in, bottom=1in, left=.625in, right=.625in]{geometry}
 \usepackage{graphicx}
-% \usepackage[]{hyperref}
+\usepackage[]{hyperref}
 \usepackage{breakurl}
 \usepackage{url}
 \usepackage[nocompress]{cite}
@@ -37,6 +37,23 @@
 \renewcommand{\texttt}[1]{{\nicettfont #1}}
 
 \graphicspath{{figures/}}
+
+
+\usepackage{eso-pic,xcolor}
+\makeatletter
+\AddToShipoutPicture*{%
+\setlength{\@tempdimb}{20pt}%
+\setlength{\@tempdimc}{\paperheight}%
+\setlength{\unitlength}{1pt}%
+\put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){%
+    \put(10,-10){\parbox[t]{\textwidth}{\color{blue}%
+\copyright\ IFIP, 2013. This is author's version of this work. It is posted here by permission of IFIP for you personal use. Not for redistribution. The definitive version was published in the proceedings of IFIP Networking 2013.}}
+  }%
+\put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){%
+  }%
+}
+\makeatother
+
 
 \begin{document}
 
