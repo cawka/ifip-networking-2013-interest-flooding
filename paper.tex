@@ -14,37 +14,31 @@
 
 \pagestyle{headings}
 
-\usepackage[top=.75in, bottom=1in, left=.625in, right=.625in]{geometry}
+% \usepackage[top=.75in, bottom=1in, left=.625in, right=.625in]{geometry}
 \usepackage{graphicx}
-%\usepackage[]{hyperref} %IEEE does not like hyperrefs...
+\usepackage[]{hyperref}
 \usepackage{breakurl}
 \usepackage{url}
 \usepackage[nocompress]{cite}
 % \usepackage{verbatim}
 % \usepackage{algpseudocode}
-\usepackage{algpseudocode,algorithm}
+\usepackage[noend]{algpseudocode,algorithm}
 % More customizeable version. Probably it would be better to convert pseudocode to 2e format
 % \usepackage{algorithm2e} 
 \usepackage{multirow}
 \usepackage{times}
 \usepackage{color}
 
-
-
-\newfont{\nicettfont}{cmtt10}
+\newfont{\nicettfont}{cmtt9}
 \newcommand{\ndnName}[1]{``{\nicettfont #1}''}
 \renewcommand{\texttt}[1]{{\nicettfont #1}}
 
-\newcommand{\todo}[1]{\vspace{2 mm}\par \noindent \marginpar{\textsc{ToDo}}
-\framebox{\begin{minipage}[c]{0.95 \columnwidth}
-\tt #1 \end{minipage}}\vspace{5 mm}\par}
 \graphicspath{{figures/}}
 
 \begin{document}
 
 \title{Interest Flooding Attack and Countermeasures in Named Data Networking}
 
-% I PUT AUTHOR NAMES IN ALPHEBETICAL ORDER. It is the common practice in security and I always list authors alphebetically in my publications. -Ersin 
 \author{
     \IEEEauthorblockN{Alexander Afanasyev\IEEEauthorrefmark{1}, Priya Mahadevan\IEEEauthorrefmark{2}, Ilya Moiseenko\IEEEauthorrefmark{1}, Ersin Uzun\IEEEauthorrefmark{2}, Lixia Zhang\IEEEauthorrefmark{1}}
     \IEEEauthorblockA{\IEEEauthorrefmark{1}University of California, Los Angeles
@@ -82,7 +76,7 @@ We coin the term {\it Interest flooding} to refer to such attack and
 this paper exclusively investigates the problem and the solution space for it. 
 
 Our effort is an important first step towards a complete investigation of DDoS attacks in NDN. We experiment with three algorithms that allow routers to exploit their state information to thwart these attacks. Through extensive simulations, we show how one of our mitigation methodologies effectively shuts down malicious users while preventing legitimate users from service degradation. 
-The rest of the paper is organized as follows. We provide an overview of NDN architecture in Section~\ref{sec:ccn-intro} and describe Interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work} . We discuss future work and conclude in Section~\ref{sec:conclusion}. 
+The rest of the paper is organized as follows. We provide an overview of NDN architecture in Section~\ref{sec:ccn-intro} and describe Interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work}. We discuss future work and conclude in Section~\ref{sec:conclusion}. 
 
 \section{NDN Overview\label{sec:ccn-intro}}
 
@@ -123,18 +117,18 @@ For simplicity, we assume routers keep Interests in PIT for one second in our si
 
 As we explained earlier, Interest packets in NDN are routed through the network based on content name prefixes and consume memory resources at intermediate routers. This makes them a potential tool to launch DDoS attacks in NDN. An attacker or a set of distributed attackers can inject excessive number of Interests in an attempt to overload the network and cause service disruptions for legitimate users (Fig.~\ref{fig:flooding example}). 
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
-  \includegraphics[scale=0.39]{attack-definition}
-  \vspace{-0.6cm}
+  \includegraphics[scale=0.3]{attack-definition}
   \caption{Example of Interest flooding attack}
   \label{fig:flooding example}
+  \vspace{-0.3cm}
 \end{figure}
 
 
 Since an NDN network fetches data by its name, an adversary cannot easily target specific routers or end-hosts.
 However, an adversary can target a specific namespace.
-For example in Fig.~\ref{fig:flooding example}, if the data producer is the exclusive owner of \ndnName{/foo/bar} namespace, both router B and the data producer would receive all Interests for \ndnName{/foo/bar/\ldots} that cannot be otherwise satisfied from in-network caches.
+For example in Fig.~\ref{fig:flooding example}, if the data producer is the exclusive owner of \ndnName{/foo/bar} namespace, both router B and the data producer would receive all Interests for \ndnName{/foo/bar/\ldots} that cannot be otherwise satisfied from in-network caches.%
 \footnote {This example assumes that the adversary floods the network with unique data names carrying \ndnName{\small /foo/bar} prefix to make them effective. It also assumes the producer is single-homed and the data is not replicated elsewhere. With multi-homed producers or replicated data, NDN would likely to cope better with DDoS attacks due its native multipath and adaptive forwarding~\cite{adaptive-forwarding} support.}
 A large volume of such malicious Interests can disrupt service quality in NDN network in two ways: \emph{create network congestion} and \emph{exhaust resources on routers}.
 
@@ -256,12 +250,12 @@ Thus, a PIT entry can be quickly updated when the Interest is actually forwarded
 %For the buffering part, we can reuse Pending Interest Table, with a small extension to support flagging of the Interests that cannot be forwarded immediately (see example on Fig.~\ref{fig:queueing}). 
 %As for the mixing part, we need an additional fair queuing mechanism, which can be implemented in a form of hierarchical queues (on Fig.~\ref{fig:queueing})\footnote{This essentially is a class based queuing, with classes for each outgoing/incoming interface.} or using virtual time approach~\cite{zhang1990virtual}. 
 
-\begin{figure}[thb]
+\begin{figure}[t]
   \centering
   \includegraphics[scale=0.6]{queue}
-  \vspace{-0.4cm}
   \caption{Interest queuing: if tokens are unavailable, the router creates a PIT entry, but instead of forwarding, it enqueues the Interest}
   \label{fig:queueing}
+  \vspace{-0.3cm}
 \end{figure}
 
 We present a formalized description of this algorithm in Pseudocode~\ref{alg:queuing}. 
@@ -341,8 +335,8 @@ For our evaluations, we empirically chose to enqueue Interests up to 10\% of the
    \EndFor
 \EndFunction
 
-
 \end{algorithmic}
+
 \end{algorithm}
 
 
@@ -415,7 +409,7 @@ Pseudocode~\ref{algo:interest stats} formally defines how statistics can be gene
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{algorithm}[h]
+\begin{algorithm}[t]
 \footnotesize
 \caption{\small Interest satisfaction statistics}
 \label{algo:interest stats}
@@ -473,10 +467,10 @@ For the duration of the attack (10--70~seconds), the percentage of unsatisfied I
 when the ratio is close to 100\%, routers drop all incoming Interests, resulting in decaying of the statistics until a new Interest is admitted, which eventually brings statistics back near 100\% point.
 Finally, the ratio exponentially decays after the attack ceases.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
   \includegraphics[scale=0.8]{limits}
-  \vspace{-0.3cm}
+  % \vspace{-0.3cm}
   \caption{Dynamics of  unsatisfied Interests statistics on a gateway's interface towards the attacker}
   \label{fig:ratio example}
 \end{figure}
@@ -498,7 +492,7 @@ Having successfully implemented a technique to gather statistics on Interest sat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{algorithm}[h]
+\begin{algorithm}[t]
 \footnotesize
 \caption{\small Satisfaction-based Interest acceptance}
 \label{alg:probabilistic model}
@@ -555,10 +549,9 @@ Assuming an initial token bucket limit $L=10$ and the current satisfaction ratio
 \end{enumerate}
 
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
   \includegraphics[scale=0.3]{dynamic-limits}
-  \vspace{-0.3cm}
   \caption{Satisfaction-based pushback example
 %: routers explicitly tell neighbors how many Interest packets they can deliver to the Data producer%
 }
@@ -572,7 +565,7 @@ Assuming an initial token bucket limit $L=10$ and the current satisfaction ratio
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 { 
-\begin{algorithm}[h]
+\begin{algorithm}[t]
 \footnotesize
 \caption{\small Satisfaction-based pushback}
 \label{alg:dynamic limits}
@@ -686,11 +679,12 @@ Legitimate users as well as attackers were placed on leaf nodes (top row of red 
 %The main reason to chose a binary tree topology was that it represents one of the worst cases to defend against flooding DDoS %attacks.
 %That is, sharing of the network links exponentially increases as decreasing level of the binary tree.
 
-\begin{figure}[]
+\begin{figure}[t]
   \centering
   \includegraphics[scale=0.2]{topo-tree-evil-5-good-0-producer-gw}
   \caption{Small-scale binary tree topology}
   \label{fig:small-scale}
+  \vspace{-0.3cm}
 \end{figure}
 
 % in 10 independent runs of each simulation, where we randomized position of the adversaries along the legitimate users.   In all runs, the total number of legitimate and malicious uses were fixed, meaning that when we increase number of attackers, we decrease the number of legitimate users.   
@@ -707,10 +701,10 @@ Our goal is to compare the effectiveness of each mitigation method and quantify 
 \begin{figure}[]
   \centering
   \hspace{-0.8cm}\includegraphics[scale=0.8]{paper-topo-tree/tree-good-0-producer-gw}
-  \vspace{-.3cm}
+  % \vspace{-.3cm}
   \caption{Interest satisfaction ratio as a function of time for binary-tree topology with 7 attackers and 9 legitimate users}
   \label{fig:small-scale attack progress}
-  \vspace{-.4cm}
+  % \vspace{-.4cm}
 \end{figure}
 
 %\paragraph{\textbf{Simple token bucket}}
@@ -777,12 +771,13 @@ To this end, we vary the percentage of attackers in the topology from 6\% to ove
 %Since at this point the overall attack dynamics of all the attack mitigation algorithms is relatively clear, 
 % In other words, each point captured in the box plot graph corresponds to 1-second averaged satisfaction ratio for a user in an individual simulation run.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
   \includegraphics[scale=0.8]{paper-topo-tree/tree-good-0-producer-gw-avg-1-min}
-  \vspace{-.3cm}
-  \caption{Average Interest satisfaction ratios for the first minute of the experiment as a function of increasing attackers in the network}\vspace{-.1cm}
+  % \vspace{-.3cm}
+  \caption{Average Interest satisfaction ratios for the first minute of the experiment as a function of increasing attackers in the network}
   \label{fig:small-scale-topo boxplot}
+  % \vspace{-0.5cm}
 \end{figure}
 
 In Fig.\ref{fig:small-scale-topo boxplot} we present  the Interest satisfaction ratio for legitimate users aggregated over the 10 simulation runs for the first minute of the attack. The results are as expected---for all three mitigation algorithms, as the percentage of attackers in the network increases, the lower is the Interest satisfaction ratio for legitimate users.
@@ -812,18 +807,19 @@ We extract the largest connected component comprising of 562 nodes from this ori
 %(To ensure that paths in the topology are ``valley-free,'' we augmented the topology with necessary backbone-to-backbone links.) 
 We assign bandwidth and  delay values to links based on their type---both values are random numbers within the respective ranges as shown in Table~\ref{tab:large-scale}. We experiment with placing the data producer at both a gateway node as well as backbone node, which we randomly pick for each simulation run. Similar to the binary tree topology experiments, we fix the number of malicious nodes at approximately 40\% (140 out of 344 client nodes in the topology) and randomly pick these nodes for each simulation run. We conduct 10 simulation runs for each mitigation algorithm, with the attack duration spanning a 5-minute interval.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
-  \vspace{-.1cm}\includegraphics[scale=0.15,angle=90,height=3.5cm,width=8cm]{7018-r0}
-  \vspace{-0.3cm}
-  \caption{Internet-like topology: 344 client routers (red), 109 gateway routers (green), 109 backbone routers (blue)}\vspace{-.2cm}
+  % \vspace{-.1cm}
+  \includegraphics[scale=0.15,angle=90,height=3.5cm,width=8cm]{7018-r0}
+  % \vspace{-0.3cm}
+  \caption{Internet-like topology: 344 client routers (red), 109 gateway routers (green), 109 backbone routers (blue)}
   \label{fig:large-scale-topo}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Large-scale topology link bandwidth and delay ranges}
-\vspace{-0.3cm}
+% \vspace{-0.3cm}
 \label{tab:large-scale}
 \begin{tabular}{|l||c|c||c|c|}
   \hline
@@ -840,7 +836,7 @@ We assign bandwidth and  delay values to links based on their type---both values
   Client--Gateway       & 10~ms & 70~ms   & 1~Mbps  & 3~Mbps \\
   \hline
 \end{tabular}
-\vspace{-0.3cm}
+% \vspace{-0.3cm}
 \end{table}
 
 %Priya: Leaving out this in the interest of space...
@@ -855,12 +851,14 @@ In Fig.~\ref{fig:large-scale}, we summarize our results aggregated over all simu
 %
 %The evaluation results,\footnote{Note that for larger-scale experiments we reduced attack window to 15~minutes} summarized in Fig.~\ref{fig:large-scale}, show that performance of the token bucket with per interface fairness and satisfaction-based pushback algorithms are about at the same level as in small-scale evaluations (Fig.~\ref{fig:small-scale}), but with larger variations of minimum and maximum instantaneous satisfaction rates.
 
-\begin{figure}[tbh]
+\begin{figure}[t]
  \centering
  \includegraphics[scale=0.8]{paper-topo-7018-gw/7018-r0-good-0-producer-gw}
- \vspace{-.3cm}\caption{Satisfaction ratio dynamics during the attack for large-scale topology with 40\% attackers)}\vspace{-.3cm}
+ % \vspace{-.3cm}
+ \caption{Satisfaction ratio dynamics during the attack for large-scale topology with 40\% attackers)}
  % producer on a gateway node
  \label{fig:large-scale}
+ % \vspace{-.7cm}
 \end{figure}
 
 Satisfaction-based Interest acceptance algorithm, which was very effective for binary-tree topology, is completely ineffective when deployed in a larger and more realistic topology.  For the duration of the attack, legitimate users experience poor quality of service with only 25\% of their Interests being satisfied and continue to experience degraded service long after the attack has stopped. This poor performance, as detailed in Section~\ref{sec:probabilistic}, is due to the fact that each router on the path makes an independent, uncoordinated decision on whether to forward or drop an Interest. In the case of the larger-topology, with much higher average hop count, Interest packets from legitimate users have a very low probability of reaching the data producer, resulting in poor Interest satisfaction statistics and further penalization of new Interests from them.
