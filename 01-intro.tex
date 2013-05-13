@@ -1,0 +1,16 @@
+\section{Introduction}
+\label{sec:intro}
+
+Named Data Networking (NDN)~\cite{ndn-conext, ndn-tr} is an ongoing research effort that aims to move the Internet into the future with a content-centric design that is capable of efficient content distribution and seamless mobility support. In contrast to today's Internet, a key goal of the NDN project is ``security by design." In fact, it goes a long way by guaranteeing the integrity and provenance of every Data packet with digital signatures and protecting user-privacy with no source addresses carried in the packets. However, one big question that is yet to be answered is: how does the NDN architecture fare in terms of its resilience against DDoS attacks? Especially since various forms of DDoS attacks pose a significant threat to the existing Internet infrastructure~\cite{arbor-report}, it is crucial to ensure that the new design is free of similar vulnerabilities.
+
+NDN eliminates host-based addressing and makes data the first-class network entity. Instead of sending packets to a given IP address, NDN nodes request desired data by sending Interest packets carrying application-level data names, and the network returns the requested Data packets following the path of Interests. 
+Such a shift automatically eliminates several long-standing DDoS attacks, including direct flooding and reflector attacks through source address spoofing~\cite{mirkovic2004taxonomy}.
+%
+However, malicious users can attack the network by sending an excessive number of Interests. 
+Since each Interest consumes resources at intermediate routers as it is routed through the network, an excessive number of Interests can congest the network and exhaust a router's memory. 
+We coin the term {\it Interest flooding} to refer to such attack and
+this paper exclusively investigates the problem and the solution space for it. 
+
+Our effort is an important first step towards a complete investigation of DDoS attacks in NDN. We experiment with three algorithms that allow routers to exploit their state information to thwart these attacks. Through extensive simulations, we show how one of our mitigation methodologies effectively shuts down malicious users while preventing legitimate users from service degradation. 
+The rest of the paper is organized as follows. We provide an overview of NDN architecture in Section~\ref{sec:ccn-intro} and describe Interest flooding attacks in Section~\ref{sec:interest-flooding}. In Sections~\ref{sec:design} and \ref{sec:evaluation} we introduce techniques to mitigate these attacks, evaluate their effectiveness, and discuss their limitations. We summarize related work in Section~\ref{sec:related-work}. We discuss future work and conclude in Section~\ref{sec:conclusion}. 
+

@@ -1,0 +1,81 @@
+\documentclass[10pt,conference]{IEEEtran}
+% http://networking2013.poly.edu/call-for-papers/paper-submission/
+% Page limit 9 pages
+
+\makeatletter
+\def\ps@headings{%
+\def\@oddhead{\mbox{}\scriptsize\rightmark \hfil \thepage}%
+\def\@evenhead{\scriptsize\thepage \hfil \leftmark\mbox{}}%
+\def\@oddfoot{}%
+\def\@evenfoot{}}
+\makeatother
+
+\hyphenation{incoming}
+\hyphenation{na-me-spa-ce}
+\hyphenation{sa-tis-fac-tion}
+\hyphenation{sa-tis-fied}
+
+\pagestyle{headings}
+
+\usepackage{graphicx}
+\usepackage[]{hyperref}
+\usepackage{breakurl}
+\usepackage{url}
+\usepackage[nocompress]{cite}
+\usepackage[noend]{algpseudocode,algorithm}
+\usepackage{multirow}
+\usepackage{times}
+\usepackage{color}
+
+\newfont{\nicettfont}{cmtt9}
+\newcommand{\ndnName}[1]{``{\nicettfont #1}''}
+\renewcommand{\texttt}[1]{{\nicettfont #1}}
+
+\graphicspath{{figures/}}
+
+\usepackage{eso-pic,xcolor}
+\makeatletter
+\AddToShipoutPicture*{%
+\setlength{\@tempdimb}{20pt}%
+\setlength{\@tempdimc}{\paperheight}%
+\setlength{\unitlength}{1pt}%
+\put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){%
+    \put(10,-10){\parbox[t]{\textwidth}{\color{blue}%
+\copyright\ IFIP, 2013. This is author's version of this work. It is posted here by permission of IFIP for you personal use. Not for redistribution. The definitive version was published in the proceedings of IFIP Networking 2013.}}
+  }%
+\put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){%
+  }%
+}
+\makeatother
+
+
+\title{Interest Flooding Attack and Countermeasures in Named Data Networking}
+
+\author{
+    \IEEEauthorblockN{Alexander Afanasyev\IEEEauthorrefmark{1}, Priya Mahadevan\IEEEauthorrefmark{2}, Ilya Moiseenko\IEEEauthorrefmark{1}, Ersin Uzun\IEEEauthorrefmark{2}, Lixia Zhang\IEEEauthorrefmark{1}}
+    \IEEEauthorblockA{\IEEEauthorrefmark{1}University of California, Los Angeles
+    \\\{afanasev, iliamo, lixia\}@cs.ucla.edu}
+    \IEEEauthorblockA{\IEEEauthorrefmark{2}Palo Alto Research Center
+    \\\{ersin.uzun, priya.mahadevan\}@parc.com}
+}
+
+\begin{document}
+
+\maketitle
+
+\input{00-abstract}
+
+\input{01-intro}
+\input{02-ndn-overview}
+\input{03-interest-flooding}
+\input{04-flooding-mitigation}
+\input{05-evals}
+\input{06-related}
+\input{07-conclusion}
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+
+\end{document}
